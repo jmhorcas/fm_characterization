@@ -18,14 +18,20 @@ class FMAnalysis():
         try:
             self.bdd_model = FmToBDD(model).transform()
         except Exception as e:
-            print(f'Warning: the feature model is too large to build the BDD model.')
+            print(f'Warning: the feature model is too large to build the BDD model. (Exception: {e})')
             self.bdd_model = None
 
+        self.common_features = Glucose3CoreFeatures().execute(self.sat_model).get_result()
+        self.dead_features = Glucose3DeadFeatures().execute(self.sat_model).get_result()
+
     def nof_core_features(self) -> int:
-        return len(Glucose3CoreFeatures().execute(self.sat_model).get_result())
+        return len(self.common_features)
     
     def nof_variant_features(self) -> int:
-        return len(self.fm.get_features()) - self.nof_core_features() - self.nof_dead_features()
+        self.variant_features = [f for f in self.fm.get_features()
+                                   if f.name not in self.common_features and 
+                                      f.name not in self.dead_features]
+        return len(self.variant_features)
 
     def count_configurations(self) -> int:
         if self.bdd_model is not None:
@@ -34,7 +40,7 @@ class FMAnalysis():
             return FMEstimatedProductsNumber().execute(self.fm).get_result()
 
     def nof_dead_features(self) -> int:
-        return len(Glucose3DeadFeatures().execute(self.sat_model).get_result())
+        return len(self.dead_features)
 
     def nof_false_optional_features(self) -> int:
-        return len(Glucose3FalseOptionalFeatures().execute(self.sat_model).get_result())
+        return len(Glucose3FalseOptionalFeatures(self.fm).execute(self.sat_model).get_result())

@@ -2,6 +2,7 @@ import os
 import argparse
 
 from famapy.metamodels.fm_metamodel.transformations.featureide_reader import FeatureIDEReader
+from famapy.metamodels.fm_metamodel.transformations.uvl_reader import UVLReader
 
 from fm_characterization.models.fm_characterization import FMCharacterization
 from fm_characterization.models import interfaces
@@ -13,7 +14,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
 
-    fm = FeatureIDEReader(args.feature_model).transform() 
+    #fm = FeatureIDEReader(args.feature_model).transform() 
+    fm = UVLReader(args.feature_model).transform() 
     fm_characterization = FMCharacterization(fm)
 
     # print(f'METRICS')

@@ -35,5 +35,6 @@ def get_string_output(fm_characterization: FMCharacterization) -> str:
     lines.append(f'  {FMProperties.CORE_FEATURES.value}: {fm_characterization.analysis[FMProperties.CORE_FEATURES]}')
     lines.append(f'  {FMProperties.VARIANT_FEATURES.value}: {fm_characterization.analysis[FMProperties.VARIANT_FEATURES]}')
     lines.append(f'  {FMProperties.DEAD_FEATURES.value}: {fm_characterization.analysis[FMProperties.DEAD_FEATURES]}')
+    lines.append(f'  {FMProperties.FALSE_OPTIONAL_FEATURES.value}: {fm_characterization.analysis[FMProperties.FALSE_OPTIONAL_FEATURES]}')
     lines.append(f'  {FMProperties.CONFIGURATIONS.value}: {fm_characterization.analysis[FMProperties.CONFIGURATIONS]}')
     return '\n'.join(lines)
