@@ -21,6 +21,9 @@ class FMMetrics():
 
     def nof_concrete_features(self) -> int:
         return sum(not f.is_abstract for f in self.fm.get_features())
+    
+    def nof_top_features(self) -> int:
+        return sum(len(r.children) for r in self.fm.root.get_relations())
 
     def nof_tree_relationships(self) -> int:
         return len(self.fm.get_relations())
@@ -39,6 +42,12 @@ class FMMetrics():
 
     def nof_or_groups(self) -> int:
         return sum(f.is_or_group() for f in self.fm.get_features())
+    
+    def nof_mutex_groups(self) -> int:
+        return sum(f.is_mutex_group() for f in self.fm.get_features())
+
+    def nof_cardinality_groups(self) -> int:
+        return sum(f.is_cardinality_group() for f in self.fm.get_features())
 
     def nof_leaf_features(self) -> int:
         return sum(len(f.get_relations()) == 0 for f in self.fm.get_features())

@@ -12,14 +12,15 @@ class FMProperties(Enum):
     FEATURES = 'Features'
     ABSTRACT_FEATURES = 'Abstract features'
     CONCRETE_FEATURES = 'Concrete features'
+    TOP_FEATURES = 'Top features'  # Features that are first descendants of the root.
     TREE_RELATIONSHIPS = 'Tree relationships'
     MANDATORY_FEATURES = 'Mandatory features'
     OPTIONAL_FEATURES = 'Optional features'
     GROUP_FEATURES = 'Group features'
     ALTERNATIVE_GROUPS = 'Alternative groups'
     OR_GROUPS = 'Or groups'
-    #CARDINALITY_GROUPS = 'Cardinality groups'
-    #MUTEX_GROUPS = 'Mutex groups'
+    MUTEX_GROUPS = 'Mutex groups'
+    CARDINALITY_GROUPS = 'Cardinality groups'
     BRANCHING_FACTOR = 'Branching factor'  # Also 'Avg children per feature'
     MIN_CHILDREN_PER_FEATURE = 'Min children per non-leaf feature'
     MAX_CHILDREN_PER_FEATURE = 'Max children per feature'
@@ -58,12 +59,15 @@ class FMCharacterization:
         data[FMProperties.FEATURES] = metrics.nof_features()
         data[FMProperties.ABSTRACT_FEATURES] = metrics.nof_abstract_features()
         data[FMProperties.CONCRETE_FEATURES] = metrics.nof_concrete_features()
+        data[FMProperties.TOP_FEATURES] = metrics.nof_top_features()
         data[FMProperties.TREE_RELATIONSHIPS] = metrics.nof_tree_relationships()
         data[FMProperties.MANDATORY_FEATURES] = metrics.nof_mandatory_features()
         data[FMProperties.OPTIONAL_FEATURES] = metrics.nof_optional_features()
         data[FMProperties.GROUP_FEATURES] = metrics.nof_group_features()
         data[FMProperties.ALTERNATIVE_GROUPS] = metrics.nof_alternative_groups()
         data[FMProperties.OR_GROUPS] = metrics.nof_or_groups()
+        data[FMProperties.MUTEX_GROUPS] = metrics.nof_mutex_groups()
+        data[FMProperties.CARDINALITY_GROUPS] = metrics.nof_cardinality_groups()
         
         data[FMProperties.BRANCHING_FACTOR] = metrics.avg_branching_factor()
         data[FMProperties.MIN_CHILDREN_PER_FEATURE] = metrics.min_children_per_feature()

@@ -14,8 +14,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
 
-    #fm = FeatureIDEReader(args.feature_model).transform() 
-    fm = UVLReader(args.feature_model).transform() 
+    fm = FeatureIDEReader(args.feature_model).transform() 
+    #fm = UVLReader(args.feature_model).transform() 
     fm_characterization = FMCharacterization(fm)
 
     # print(f'METRICS')

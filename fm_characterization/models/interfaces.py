@@ -15,7 +15,10 @@ def get_string_output(fm_characterization: FMCharacterization) -> str:
     lines.append(f'    {FMProperties.GROUP_FEATURES.value}: {fm_characterization.metrics[FMProperties.GROUP_FEATURES]}')
     lines.append(f'      {FMProperties.ALTERNATIVE_GROUPS.value}: {fm_characterization.metrics[FMProperties.ALTERNATIVE_GROUPS]}')
     lines.append(f'      {FMProperties.OR_GROUPS.value}: {fm_characterization.metrics[FMProperties.OR_GROUPS]}')
+    lines.append(f'      {FMProperties.MUTEX_GROUPS.value}: {fm_characterization.metrics[FMProperties.MUTEX_GROUPS]}')
+    lines.append(f'      {FMProperties.CARDINALITY_GROUPS.value}: {fm_characterization.metrics[FMProperties.CARDINALITY_GROUPS]}')
     
+    lines.append(f'  {FMProperties.TOP_FEATURES.value}: {fm_characterization.metrics[FMProperties.TOP_FEATURES]}')
     lines.append(f'  {FMProperties.LEAF_FEATURES.value}: {fm_characterization.metrics[FMProperties.LEAF_FEATURES]}')
     lines.append(f'  {FMProperties.BRANCHING_FACTOR.value}: {fm_characterization.metrics[FMProperties.BRANCHING_FACTOR]}')
     lines.append(f'    {FMProperties.MIN_CHILDREN_PER_FEATURE.value}: {fm_characterization.metrics[FMProperties.MIN_CHILDREN_PER_FEATURE]}')
