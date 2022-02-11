@@ -9,6 +9,7 @@ from fm_characterization.models import utils
 
 
 class FMProperties(Enum):
+    VALID = 'Valid (not void)'
     FEATURES = 'Features'
     ABSTRACT_FEATURES = 'Abstract features'
     CONCRETE_FEATURES = 'Concrete features'
@@ -89,9 +90,11 @@ class FMCharacterization:
     def get_analysis(self) -> dict[FMProperties, Any]:
         analysis = FMAnalysis(self.feature_model)
         data = {}
+        data[FMProperties.VALID] = analysis.valid_fm()
         data[FMProperties.CORE_FEATURES] = analysis.nof_core_features()
         data[FMProperties.VARIANT_FEATURES] = analysis.nof_variant_features()
         data[FMProperties.DEAD_FEATURES] = analysis.nof_dead_features()
         data[FMProperties.FALSE_OPTIONAL_FEATURES] = analysis.nof_false_optional_features()
+        data[FMProperties.ATOMIC_SETS] = analysis.nof_atomic_sets()
         data[FMProperties.CONFIGURATIONS] = utils.get_nof_configuration_as_str(analysis.count_configurations(), analysis.bdd_model is None, self.metrics[FMProperties.CROSS_TREE_CONSTRAINTS])
         return data

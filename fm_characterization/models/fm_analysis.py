@@ -2,12 +2,13 @@
 from famapy.metamodels.fm_metamodel.models import FeatureModel
 from famapy.metamodels.pysat_metamodel.transformations.fm_to_pysat import FmToPysat
 from famapy.metamodels.bdd_metamodel.transformations.fm_to_bdd import FmToBDD
-from famapy.metamodels.pysat_metamodel.operations.glucose3_products_number import Glucose3ProductsNumber
+from famapy.metamodels.pysat_metamodel.operations.glucose3_valid import Glucose3Valid
 from famapy.metamodels.pysat_metamodel.operations.glucose3_core_features import Glucose3CoreFeatures
 from famapy.metamodels.pysat_metamodel.operations.glucose3_dead_features import Glucose3DeadFeatures
 from famapy.metamodels.pysat_metamodel.operations.glucose3_false_optional_features import Glucose3FalseOptionalFeatures
 from famapy.metamodels.bdd_metamodel.operations.bdd_products_number import BDDProductsNumber
 from famapy.metamodels.fm_metamodel.operations.fm_estimated_products_number import FMEstimatedProductsNumber
+from famapy.metamodels.fm_metamodel.operations.fm_atomic_sets import FMAtomicSets
 
 
 class FMAnalysis():
@@ -23,6 +24,9 @@ class FMAnalysis():
 
         self.common_features = Glucose3CoreFeatures().execute(self.sat_model).get_result()
         self.dead_features = Glucose3DeadFeatures().execute(self.sat_model).get_result()
+
+    def valid_fm(self) -> bool:
+        return Glucose3Valid().execute(self.sat_model).get_result()
 
     def nof_core_features(self) -> int:
         return len(self.common_features)
@@ -44,3 +48,7 @@ class FMAnalysis():
 
     def nof_false_optional_features(self) -> int:
         return len(Glucose3FalseOptionalFeatures(self.fm).execute(self.sat_model).get_result())
+    
+    def nof_atomic_sets(self) -> int:
+        atomic_sets = FMAtomicSets().execute(self.fm).get_result()
+        return sum(len(atomic_set) > 1 for atomic_set in atomic_sets)
