@@ -29,3 +29,5 @@ if __name__ == "__main__":
     print(os.path.splitext(os.path.basename(args.feature_model))[0])
     string = interfaces.get_string_output(fm_characterization)
     print(string)
+
+    #print(fm)

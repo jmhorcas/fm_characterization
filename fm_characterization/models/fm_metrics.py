@@ -11,7 +11,6 @@ class FMMetrics():
 
     def __init__(self, model: FeatureModel):
         self.fm = model
-        self._nof_constraints = _nof_constraints(model)
 
     def nof_features(self) -> int:
         return len(self.fm.get_features())
@@ -72,60 +71,60 @@ class FMMetrics():
         return len(self.fm.get_constraints())
     
     def nof_simple_constraints(self) -> int:
-        return self.nof_requires_constraints() + self.nof_excludes_constraints()
+        return len(self.fm.get_simple_constraints())
 
     def nof_requires_constraints(self) -> int:
-        return self._nof_constraints[0]
+        return len(self.fm.get_requires_constraints())
     
     def nof_excludes_constraints(self) -> int:
-        return self._nof_constraints[1]
+        return len(self.fm.get_excludes_constraints())
     
     def nof_complex_constraints(self) -> int:
-        return self.nof_pseudocomplex_constraints() + self.nof_strictcomplex_constraints()
+        return len(self.fm.get_complex_constraints())
 
     def nof_pseudocomplex_constraints(self) -> int:
-        return self._nof_constraints[2]
+        return len(self.fm.get_pseudocomplex_constraints())
     
     def nof_strictcomplex_constraints(self) -> int:
-        return self._nof_constraints[3]
+        return len(self.fm.get_strictcomplex_constraints())
 
 
-def _nof_constraints(feature_model: FeatureModel) -> tuple[int, int, int]:
-    """Return a tuple with the number of different types of constraints.
+# def _nof_constraints(feature_model: FeatureModel) -> tuple[int, int, int]:
+#     """Return a tuple with the number of different types of constraints.
     
-    The tuple includes:
-      1. Requires constraints.
-      2. Excludes constraints.
-      3. Pseudo-complex constraints.
-      4. Strict-complex constraints.
-    """
-    nof_requires_constraints = 0
-    nof_excludes_constraints = 0
-    nof_pseudocomplex_constraints = 0
-    nof_strictcomplex_constraints = 0
-    for c in feature_model.get_constraints():
-        clauses = c.ast.get_clauses()
-        if len(clauses) == 1 and len(clauses[0]) == 2:
-            nof_negative_clauses = sum(var.startswith('-') for var in clauses[0])
-            if nof_negative_clauses == 1:
-                nof_requires_constraints += 1
-            elif nof_negative_clauses == 2:
-                nof_excludes_constraints += 1
-            else:
-                nof_strictcomplex_constraints += 1
-        else:
-            strictcomplex = False
-            i = iter(clauses)
-            while not strictcomplex and (cls := next(i, None)) is not None:
-                if len(cls) != 2:
-                    strictcomplex = True
-                else:
-                    nof_negative_clauses = sum(var.startswith('-') for var in cls)
-                    if nof_negative_clauses not in [1, 2]:
-                        strictcomplex = True
-            if strictcomplex:
-                nof_strictcomplex_constraints += 1
-            else:
-                nof_pseudocomplex_constraints += 1
-    return (nof_requires_constraints, nof_excludes_constraints, nof_pseudocomplex_constraints, nof_strictcomplex_constraints)
+#     The tuple includes:
+#       1. Requires constraints.
+#       2. Excludes constraints.
+#       3. Pseudo-complex constraints.
+#       4. Strict-complex constraints.
+#     """
+#     nof_requires_constraints = 0
+#     nof_excludes_constraints = 0
+#     nof_pseudocomplex_constraints = 0
+#     nof_strictcomplex_constraints = 0
+#     for c in feature_model.get_constraints():
+#         clauses = c.ast.get_clauses()
+#         if len(clauses) == 1 and len(clauses[0]) == 2:
+#             nof_negative_clauses = sum(var.startswith('-') for var in clauses[0])
+#             if nof_negative_clauses == 1:
+#                 nof_requires_constraints += 1
+#             elif nof_negative_clauses == 2:
+#                 nof_excludes_constraints += 1
+#             else:
+#                 nof_strictcomplex_constraints += 1
+#         else:
+#             strictcomplex = False
+#             i = iter(clauses)
+#             while not strictcomplex and (cls := next(i, None)) is not None:
+#                 if len(cls) != 2:
+#                     strictcomplex = True
+#                 else:
+#                     nof_negative_clauses = sum(var.startswith('-') for var in cls)
+#                     if nof_negative_clauses not in [1, 2]:
+#                         strictcomplex = True
+#             if strictcomplex:
+#                 nof_strictcomplex_constraints += 1
+#             else:
+#                 nof_pseudocomplex_constraints += 1
+#     return (nof_requires_constraints, nof_excludes_constraints, nof_pseudocomplex_constraints, nof_strictcomplex_constraints)
 
