@@ -1,0 +1,33 @@
+{
+    "name": null,
+    "root": "Pizza",
+    "metrics": [
+        {
+            "name": "Features",
+            "value": [
+                "Pizza",
+                "Topping",
+                "Salami",
+                "Ham",
+                "Mozzarella",
+                "Size",
+                "Normal",
+                "Big",
+                "Dough",
+                "Neapolitan",
+                "Sicilian",
+                "CheesyCrust"
+            ],
+            "size": 12,
+            "ratio": null
+        },
+        {
+            "name": "Abstract features",
+            "value": [
+                "Pizza"
+            ],
+            "size": 1,
+            "ratio": 0.0833
+        }
+    ]
+}

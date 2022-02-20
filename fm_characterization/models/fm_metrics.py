@@ -1,5 +1,8 @@
+from multiprocessing.sharedctypes import Value
+from typing import Any, Optional
+from enum import Enum
 
-from famapy.metamodels.fm_metamodel.models import FeatureModel
+from famapy.metamodels.fm_metamodel.models import FeatureModel, Feature
 
 from famapy.metamodels.fm_metamodel.operations import (
     average_branching_factor, 
@@ -7,10 +10,80 @@ from famapy.metamodels.fm_metamodel.operations import (
 )
 
 
+class FMProperties(Enum):
+    VALID = 'Valid (not void)'
+    FEATURES = 'Features'
+    ABSTRACT_FEATURES = 'Abstract features'
+    CONCRETE_FEATURES = 'Concrete features'
+    TOP_FEATURES = 'Top features'  # Features that are first descendants of the root.
+    TREE_RELATIONSHIPS = 'Tree relationships'
+    MANDATORY_FEATURES = 'Mandatory features'
+    OPTIONAL_FEATURES = 'Optional features'
+    GROUP_FEATURES = 'Group features'
+    ALTERNATIVE_GROUPS = 'Alternative groups'
+    OR_GROUPS = 'Or groups'
+    MUTEX_GROUPS = 'Mutex groups'
+    CARDINALITY_GROUPS = 'Cardinality groups'
+    BRANCHING_FACTOR = 'Branching factor'  # Also 'Avg children per feature'
+    MIN_CHILDREN_PER_FEATURE = 'Min children per non-leaf feature'
+    MAX_CHILDREN_PER_FEATURE = 'Max children per feature'
+    AVG_CHILDREN_PER_FEATURE = 'Avg children per feature'
+    LEAF_FEATURES = 'Leaf features'
+    MAX_DEPTH_TREE = 'Max depth tree'
+
+    CROSS_TREE_CONSTRAINTS = 'Cross-tree constraints'
+    SIMPLE_CONSTRAINTS = 'Simple constraints'  # Requires and excludes
+    REQUIRES_CONSTRAINTS = 'Requires constraints'
+    EXCLUDES_CONSTRAINTS = 'Excludes constraints'
+    COMPLEX_CONSTRAINTS = 'Complex constraints'  # Prop logic constraints (aka advanced constraints)
+    PSEUDO_COMPLEX_CONSTRAINTS = 'Pseudo-complex constraints'
+    STRICT_COMPLEX_CONSTRAINTS = 'Strict-complex constraints'
+    #MAX_CONSTRAINTS_PER_FEATURE = 'Max constraints per feature'
+    #AVG_CONSTRAINTS_PER_FEATURE = 'Avg constraints per feature'
+
+    CORE_FEATURES = 'Core features'  # Also 'Common features'
+    VARIANT_FEATURES = 'Variant features'  # Also 'Real optional features'
+    DEAD_FEATURES = 'Dead features'
+    UNIQUE_FEATURES = 'Unique features'
+    FALSE_OPTIONAL_FEATURES = 'False-optional features'
+    ATOMIC_SETS = 'Atomic sets'
+    CONFIGURATIONS = 'Configurations'
+
+
+class FMMetric():
+
+    def __init__(self, 
+                 name: str, 
+                 value: Optional[Any] = None, 
+                 size: Optional[Any] = None,
+                 ratio: Optional[Any] = None):
+        self.name = name
+        self.value = value
+        self.size = size 
+        self.ratio = ratio
+
+    def get_metric(self) -> dict[str, Any]:
+        return {'name': self.name, 
+                'value': self.value,
+                'size': self.size,
+                'ratio': self.ratio}
+
+
 class FMMetrics():
 
     def __init__(self, model: FeatureModel):
         self.fm = model
+        
+    def features(self) -> FMMetric:
+        features = [f.name for f in self.fm.get_features()]
+        return FMMetric(FMProperties.FEATURES.value, features, len(features))
+
+    def abstract_features(self) -> FMMetric:
+        abstract_features = [f.name for f in self.fm.get_features() if f.is_abstract]
+        return FMMetric(FMProperties.ABSTRACT_FEATURES.value, 
+                        abstract_features, 
+                        len(abstract_features),
+                        round(len(abstract_features) / len(self.fm.get_features()), 4))
 
     def nof_features(self) -> int:
         return len(self.fm.get_features())

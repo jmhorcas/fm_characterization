@@ -49,13 +49,32 @@ class FMProperties(Enum):
 
 class FMCharacterization:
 
-    def __init__(self, model: FeatureModel):
-        self.feature_model = model
-        self.metrics = self.get_metrics()
-        self.analysis = self.get_analysis()
+    def __init__(self, model: FeatureModel, name: str = None):
+        self._feature_model = model
+        self.name = name
 
-    def get_metrics(self) -> dict[FMProperties, Any]:
-        metrics = FMMetrics(self.feature_model)
+        self._metrics = FMMetrics(self._feature_model)
+
+        #self.metrics = self.get_metrics()
+        #self.analysis = self.get_analysis()
+
+    def get_characterization(self) -> dict[str, Any]:
+        data = {}
+        data['name'] = self.name
+        data['root'] = self._feature_model.root.name
+        #data['properties'] = []
+        data['metrics'] = self.get_metrics()
+        return data
+    
+    def get_metrics(self) -> list[dict[str, Any]]:
+        metrics = []
+        metrics.append(self._metrics.features().get_metric())
+        metrics.append(self._metrics.abstract_features().get_metric())
+        return metrics
+
+
+    def get_metrics2(self) -> dict[FMProperties, Any]:
+        metrics = FMMetrics(self._feature_model)
         data = {}
         data[FMProperties.FEATURES] = metrics.nof_features()
         data[FMProperties.ABSTRACT_FEATURES] = metrics.nof_abstract_features()
@@ -88,7 +107,7 @@ class FMCharacterization:
         return data
 
     def get_analysis(self) -> dict[FMProperties, Any]:
-        analysis = FMAnalysis(self.feature_model)
+        analysis = FMAnalysis(self._feature_model)
         data = {}
         data[FMProperties.VALID] = analysis.valid_fm()
         data[FMProperties.CORE_FEATURES] = analysis.nof_core_features()
