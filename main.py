@@ -1,9 +1,7 @@
 import os
 import argparse
 
-from famapy.metamodels.fm_metamodel.transformations.featureide_reader import FeatureIDEReader
-from famapy.metamodels.fm_metamodel.transformations.uvl_reader import UVLReader
-
+from famapy.metamodels.fm_metamodel.transformations import FeatureIDEReader
 from fm_characterization.models.fm_characterization import FMCharacterization
 from fm_characterization.models import interfaces
 
@@ -13,30 +11,11 @@ if __name__ == "__main__":
     parser.add_argument('feature_model', type=str, help='Feature model.')
     args = parser.parse_args()
 
-
     fm = FeatureIDEReader(args.feature_model).transform() 
-    #fm = UVLReader(args.feature_model).transform() 
-    fm_characterization = FMCharacterization(fm)
+    name = os.path.splitext(os.path.basename(args.feature_model))[0]
+    fm_characterization = FMCharacterization(fm, name)
 
-    # print(f'METRICS')
-    # for property, value in fm_characterization.metrics.items():
-    #     print(f'  {property.value}: {value}')
+    str_result = interfaces.get_string_output(fm_characterization)
+    print(str_result)
+    interfaces.to_json(fm_characterization, 'metrics.json')
     
-    # print(f'ANALYSIS')
-    # for property, value in fm_characterization.analysis.items():
-    #     print(f'  {property.value}: {value}')
-
-    print(os.path.splitext(os.path.basename(args.feature_model))[0])
-    #string = interfaces.get_string_output(fm_characterization)
-    #print(string)
-
-    characterization = fm_characterization.get_characterization()
-    print(characterization)
-
-    import json
-    with open('metrics.json', 'w') as output_file:
-        json.dump(characterization, output_file, indent=4)
-
-
-
-    #print(fm)
