@@ -15,8 +15,8 @@
 </style>
 <script>
 function draw(data) {
-  var width = 250,
-      barHeight = 20;
+  var width = 420,
+  barHeight = 20;
 
   console.log("metrics: " + data);
   console.log("length: " + data.length);
@@ -28,7 +28,7 @@ function draw(data) {
        .attr("height", barHeight * data.length);
 
   var x = d3.scaleLinear()
-            .domain([0, width])
+            .domain([0, d3.max(data, function(d) { return d.name.length; })])
             .range([0, width]);
 
   console.log("x(0):" + x(0));
@@ -39,7 +39,7 @@ function draw(data) {
                  .attr("transform", function(d, i) { return "translate(0," + i * barHeight + ")"; });
   
   bar.append("rect")
-     .attr("width", width)
+     .attr("width", function(d) { return x(d.name.length); })
      .attr("height", barHeight - 1);
 
   bar.append("text")
@@ -51,15 +51,10 @@ function draw(data) {
 
   bar.append("text")
      .attr("text-anchor", "end")
-     .attr("x", width - 3)
+     .attr("x", function(d) { return x(d.name.length) - 3; })
      .attr("y", barHeight / 2)
      .attr("dy", ".35em")
-     .text(function(d) { return n_parents(data, d); });
-
-  stratify = d3.stratify()
-               .id(d => d[name])
-               .parentId(d => d[parent])
-  root = stratify(data)
+     .text(function(d) { return d.size; });
 }
 </script>
 </head>
@@ -70,24 +65,6 @@ function draw(data) {
   function type(d) {
     d.value = +d.value; // coerce to number
     return d;
-  }
-
-  function get_property(data, name) {
-    for (let p in data) {
-      if (p.name == name) {
-        return p;
-      }
-    }
-  }
-
-  function n_parents(data, d) {
-    console.log("n-parents: " + d.name)
-    if (d.parent === undefined || d.parent === null) {
-      return 0;
-    } else {
-      console.log("n-parents2: " + d.parent)
-      return 1 + n_parents(data, get_property(data, d.parent))
-    }
   }
 
   d3.json("metrics.json").then(draw);
