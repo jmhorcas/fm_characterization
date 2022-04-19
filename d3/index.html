@@ -2,66 +2,9 @@
 <html>
 <head>
 <meta charset="utf-8">
+<link rel="stylesheet" href="fm_fact.css">
 <script src="http://d3js.org/d3.v7.min.js"></script>
-<style>
-.chart rect {
-  fill: steelblue;
-}
-
-.chart text {
-  fill: black;
-  font: 12px sans-serif;
-}
-</style>
-<script>
-function draw(data) {
-  var width = 250,
-      barHeight = 20;
-
-  console.log("metrics: " + data);
-  console.log("length: " + data.length);
-  console.log("length: " + data[0].name);
-
-  var chart = d3.select(".chart");
-  
-  chart.attr("width", width)
-       .attr("height", barHeight * data.length);
-
-  var x = d3.scaleLinear()
-            .domain([0, width])
-            .range([0, width]);
-
-  console.log("x(0):" + x(0));
-
-  var bar = chart.selectAll("g")
-                 .data(data)
-                 .enter().append("g")
-                 .attr("transform", function(d, i) { return "translate(0," + i * barHeight + ")"; });
-  
-  bar.append("rect")
-     .attr("width", width)
-     .attr("height", barHeight - 1);
-
-  bar.append("text")
-     .attr("text-anchor", "start")
-     .attr("x", function(d) { return x(0) + 3; })
-     .attr("y", barHeight / 2)
-     .attr("dy", ".35em")
-     .text(function(d) { return d.name; });
-
-  bar.append("text")
-     .attr("text-anchor", "end")
-     .attr("x", width - 3)
-     .attr("y", barHeight / 2)
-     .attr("dy", ".35em")
-     .text(function(d) { return n_parents(data, d); });
-
-  stratify = d3.stratify()
-               .id(d => d[name])
-               .parentId(d => d[parent])
-  root = stratify(data)
-}
-</script>
+<script src="fm_fact_completetag.js"></script>
 </head>
 <body>
   <svg class="chart"></svg>
@@ -72,25 +15,9 @@ function draw(data) {
     return d;
   }
 
-  function get_property(data, name) {
-    for (let p in data) {
-      if (p.name == name) {
-        return p;
-      }
-    }
-  }
 
-  function n_parents(data, d) {
-    console.log("n-parents: " + d.name)
-    if (d.parent === undefined || d.parent === null) {
-      return 0;
-    } else {
-      console.log("n-parents2: " + d.parent)
-      return 1 + n_parents(data, get_property(data, d.parent))
-    }
-  }
 
-  d3.json("metrics.json").then(draw);
+  d3.json("metrics.json").then(drawFMFactTag);
 
   </script>
 </body>

@@ -1,0 +1,20 @@
+.chart text {
+  fill: black;
+}
+
+.FMlabel_rule {
+  fill: black;
+  height: 7pt;
+}
+
+.FMlabel_property {
+  fill: white;
+}
+
+.FMlabel_title {
+  font-size: 24px;
+  font-family: 'Franklin Gothic Heavy', 'Helvetica';
+  font-weight: bold;
+  text-align: center;
+  text-anchor: start;
+}
