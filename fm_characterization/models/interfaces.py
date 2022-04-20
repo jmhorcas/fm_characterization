@@ -13,7 +13,13 @@ def get_parents_numbers(property: FMProperty) -> int:
     return 1 + get_parents_numbers(property.parent)
 
 def get_string_output(fm_characterization: FMCharacterization) -> str:
-    lines = ['METRICS']
+    lines = ['METADATA']
+    for metric in fm_characterization.get_metadata():
+        name = metric.property.name
+        value = str(metric.value)
+        lines.append(f'{name}: {value}')    
+
+    lines.append('METRICS')
     for metric in fm_characterization.get_metrics():
         indentation = SPACE * get_parents_numbers(metric.property)
         name = metric.property.name
@@ -23,9 +29,19 @@ def get_string_output(fm_characterization: FMCharacterization) -> str:
     return '\n'.join(lines)
 
 def to_json(fm_characterization: FMCharacterization, filepath: str) -> None:
-    result = []
+    metadata = []
+    metrics = []
+
+    for metric in fm_characterization.get_metadata():
+        metadata.append(metric.to_dict())
+
     for metric in fm_characterization.get_metrics():
-        result.append(metric.to_dict())
+        metrics.append(metric.to_dict())
+
+    result = {}
+    result['metadata'] = metadata
+    result['metrics'] = metrics
+    
     with open(filepath, 'w') as output_file:
         json.dump(result, output_file, indent=4)
     

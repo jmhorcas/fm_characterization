@@ -27,10 +27,25 @@ class FMProperty():
     def to_dict(self) -> dict[str, Any]:
         return {'name': self.name, 
                 'description': self.description,
-                'parent': self.parent.name if self.parent is not None else None}
+                'parent': self.parent.name if self.parent is not None else None,
+                'level': self.level()}
+
+    def level(self) -> int:
+        """Return the level of parents."""
+        if self.parent is None:
+            return 0
+        return 1 + self.parent.level()
 
 
 class FMProperties(Enum):
+    # METADATA
+    NAME = FMProperty('Name', 'Name of the feature model.', None)
+    DESCRIPTION = FMProperty('Description', 'Description of the feature model.', None)
+    AUTHOR = FMProperty('Author', 'Author of the feature model', None)
+    REFERENCE = FMProperty('Reference', 'Main paper for reference or DOI of the feature model', None)
+    TAGS = FMProperty('Tags', 'Tags or keywords that identify the feature model.', None)
+
+    # METRICS
     FEATURES = FMProperty('Features', "", None)
     ABSTRACT_FEATURES = FMProperty('Abstract features', "", FEATURES)
     CONCRETE_FEATURES = FMProperty('Concrete features', "", FEATURES)
@@ -94,7 +109,33 @@ class FMAnalysis():
 
     def __init__(self, model: FeatureModel):
         self.fm = model
-        
+    
+    # METADATA
+    def name(self, value: Optional[str] = None) -> FMMetric:
+        value = value if value is not None else self.fm.root.name 
+        return FMMetric(FMProperties.NAME.value, value)
+    
+    def description(self, value: Optional[str] = None) -> FMMetric:
+        if value is None:
+            return FMMetric(FMProperties.DESCRIPTION.value)    
+        return FMMetric(FMProperties.DESCRIPTION.value, value)
+
+    def author(self, value: Optional[str] = None) -> FMMetric:
+        if value is None:
+            return FMMetric(FMProperties.AUTHOR.value)    
+        return FMMetric(FMProperties.AUTHOR.value, value)
+    
+    def reference(self, value: Optional[str] = None) -> FMMetric:
+        if value is None:
+            return FMMetric(FMProperties.REFERENCE.value)    
+        return FMMetric(FMProperties.REFERENCE.value, value)
+
+    def tags(self, value: Optional[list[str]] = None) -> FMMetric:
+        if value is None:
+            return FMMetric(FMProperties.TAGS.value)    
+        return FMMetric(FMProperties.TAGS.value, value)
+
+    # METRICS
     def features(self) -> FMMetric:
         _features = [f.name for f in self.fm.get_features()]
         return FMMetric(FMProperties.FEATURES.value, _features, len(_features))

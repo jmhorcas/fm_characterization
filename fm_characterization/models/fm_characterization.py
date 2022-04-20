@@ -1,3 +1,5 @@
+from typing import Optional
+
 from famapy.metamodels.fm_metamodel.models import FeatureModel
 
 from fm_characterization.models.fm_metrics import FMMetric, FMAnalysis
@@ -10,6 +12,21 @@ class FMCharacterization:
         self.name = name
         self._analysis = FMAnalysis(self._feature_model)
     
+    def get_metadata(self, 
+                     name: Optional[str] = None,
+                     description: Optional[str] = None,
+                     author: Optional[str] = None,
+                     reference: Optional[str] = None,
+                     tags: Optional[list[str]] = None
+    ) -> list[FMMetric]:
+        data = []
+        data.append(self._analysis.name(name))
+        data.append(self._analysis.description(description))
+        data.append(self._analysis.author(author))
+        data.append(self._analysis.reference(reference))
+        data.append(self._analysis.tags(tags))
+        return data
+
     def get_metrics(self) -> list[FMMetric]:
         metrics = []
         metrics.append(self._analysis.features())
