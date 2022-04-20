@@ -1,5 +1,8 @@
-var WIDTH = 250;
+var WIDTH = 200;
 var BAR_HEIGHT = 20;
+var TITLE_HEIGHT = 20;
+var DESCRIPTION_HEIGHT = 40;
+var RULE_HEIGHT = 7;
 
 function drawFMFactTag(data) {
    var chart = d3.select(".chart");
@@ -11,63 +14,148 @@ function drawFMFactTag(data) {
              .domain([0, WIDTH])
              .range([0, WIDTH]);
 
+   // Title
    var currentHeight = BAR_HEIGHT;
    var title = chart.append("g").attr("transform", "translate(0," + currentHeight + ")");
-   
-   currentHeight += BAR_HEIGHT;
-   var metadata = chart.append("g").attr("transform", "translate(0," + currentHeight + ")");
-
-   currentHeight += BAR_HEIGHT*data.metadata.length;
-   chart.append("g")
-        .attr("transform", "translate(0," + currentHeight + ")")
-        .append("rect")
-        .classed("FMlabel_rule", true)
-        .attr("width", WIDTH);
-
-   currentHeight += BAR_HEIGHT;
-   var metrics = chart.append("g").attr("transform", "translate(0," + currentHeight + ")");
-   
-   currentHeight += BAR_HEIGHT * data.metrics.length;
-   chart.append("g")
-   .attr("transform", "translate(0," + currentHeight + ")")
-   .append("rect")
-   .classed("FMlabel_rule", true)
-   .attr("width", WIDTH);
-
-   var analysis = chart.append("g").attr("transform", "translate(0," + currentHeight + ")");
-
-   // Title
    title.append("text")
-             .attr("x", function(d) { return x(0); })
-             .attr("y", 3)
-             .classed("FMlabel_title", true)
-             .text(get_property(data, 'Name').value);
+        .text(get_property(data, 'Name').value) 
+        .attr("x", function(d) { return x(WIDTH/2); })
+        .attr("y", 3)
+        .attr("text-anchor", "middle")
+        .attr("dominant-baseline", "central")
+        .attr("font-family", "Franklin Gothic Heavy")
+        .attr("font-size", "13pt");
 
+   // Description
+   currentHeight += TITLE_HEIGHT;
+   var description = chart.append("g").attr("transform", "translate(0," + currentHeight + ")");
+   description.append("text")
+              .text(get_property(data, 'Description').value) 
+              .attr("x", function(d) { return x(0); })
+              .attr("y", BAR_HEIGHT / 2)
+              .attr("font-family", "Helvetica")
+              .attr("font-size", "8pt")
+              .call(wrap, WIDTH);      
+
+   // Other metadata
+   currentHeight += DESCRIPTION_HEIGHT;
+   var metadata = chart.append("g").attr("transform", "translate(0," + currentHeight + ")");
    var property = metadata.selectAll("g")
-                          .data(data.metadata.slice(1))
+                          .data(data.metadata.slice(2))
                           .enter().append("g")
                           .attr("transform", function(d, i) { return "translate(0," + i * BAR_HEIGHT + ")"; });
-
-   property.append("rect")
-      .attr("width", WIDTH)
-      .attr("height", BAR_HEIGHT - 1)
-      .classed("FMlabel_property", true)
-      .attr("fill", "steelblue");
-
    property.append("text")
            .attr("x", function(d) { return x(0); })
            .attr("y", BAR_HEIGHT / 2)
            .attr("font-family", "Helvetica")
-           .attr("font-size", "12px")
+           .attr("font-size", "8pt")
            .text(function(d) { return d.name + ":"; });        
-
    property.append("text")
            .attr("x", function(d) { return d.name.length*7; })
            .attr("y", BAR_HEIGHT / 2)
            .attr("font-family", "Helvetica")
-           .attr("font-size", "12px")
+           .attr("font-size", "8pt")
            .text(function(d) { return d.value; })
            .call(wrap, WIDTH);        
+
+   // Middle rule
+   currentHeight += BAR_HEIGHT*data.metadata.slice(2).length;
+   chart.append("g")
+        .attr("transform", "translate(0," + currentHeight + ")")
+        .append("rect")
+        .attr("height", RULE_HEIGHT)
+        .attr("width", WIDTH);
+
+   // Metrics
+   currentHeight += RULE_HEIGHT;
+   var metrics = chart.append("g").attr("transform", "translate(0," + currentHeight + ")");
+
+   var property = metrics.selectAll("g")
+                         .data(data.metrics)
+                         .enter().append("g")
+                         .attr("transform", function(d, i) { return "translate(0," + i * BAR_HEIGHT + ")"; });
+   // property.append("rect")
+   //         .attr("width", WIDTH)
+   //         .attr("height", BAR_HEIGHT - 1)
+   //         .classed("FMlabel_property", true)
+   //         .attr("fill", "steelblue");
+   property.append("text")
+           .attr("text-anchor", "start")
+           .attr("x", function(d) { return x(0) + 4*d.level + 4; })
+           .attr("y", BAR_HEIGHT / 2)
+           .attr("dy", ".35em")
+           .attr("font-family", "Helvetica")
+           .attr("font-size", "8pt")
+           .attr("font-weight", function(d, i) {
+               if (d.level == 0) {
+                  return "bold";
+               } else {
+                 return "normal"; 
+               }
+            })
+           .attr("fill", "black")
+           .text(function(d) { return d.name; });
+   property.append("text")
+           .attr("text-anchor", "end")
+           .attr("x", WIDTH - 3)
+           .attr("y", BAR_HEIGHT / 2)
+           .attr("dy", ".35em")
+           .attr("font-family", "Helvetica")
+           .attr("font-size", "6pt")
+           .attr("font-weight", "bold")
+           .text(function(d) { return get_value(d); });
+   // property.append("text")
+   //         .attr("text-anchor", "end")
+   //         .attr("x", WIDTH - 3)
+   //         .attr("y", BAR_HEIGHT / 2)
+   //         .attr("dy", ".35em")
+   //         .attr("font-family", "Helvetica")
+   //         .attr("font-size", "6pt")
+   //         .attr("font-weight", "bold")
+   //         .text(function(d) { return get_ratio(d); });
+
+   // Buttom rule
+   currentHeight += BAR_HEIGHT * data.metrics.length;
+   chart.append("g")
+   .attr("transform", "translate(0," + currentHeight + ")")
+   .append("rect")
+   .attr("height", RULE_HEIGHT)
+   .attr("width", WIDTH);
+
+   // Analysis
+   var analysis = chart.append("g").attr("transform", "translate(0," + currentHeight + ")");
+
+   // title.append("rect")
+   //      .attr("width", WIDTH)
+   //      .attr("height", BAR_HEIGHT - 1)
+   //      .attr("fill", "white");
+
+   
+            //.attr("font-family", "Helvetica")
+            //.attr("font-weight", "bold")
+        
+            //.classed("FMlabel_title", true)
+            // .style("font-size", function(d) { return Math.min(2 * d.r, (2 * d.r - 8) / this.getComputedTextLength() * 24) + "px"; })
+             //.style("font-size", function(d) { console.log(this.getComputedTextLength()); return Math.min(WIDTH, WIDTH/this.getComputedTextLength()) + "px"; })
+            // .attr("dy", ".35em")
+            //.style("font-size", "1px")
+            //.each(getSize)
+            //.style("font-size", function(d) { return d.scale + "px"; });
+             //.text(get_property(data, 'Name').value) 
+             //.call(getSize)
+
+   // Description
+ 
+
+   
+
+   // property.append("rect")
+   //    .attr("width", WIDTH)
+   //    .attr("height", BAR_HEIGHT - 1)
+   //    .classed("FMlabel_property", true)
+   //    .attr("fill", "steelblue");
+
+   
 
   
 
@@ -78,31 +166,7 @@ function drawFMFactTag(data) {
    //         .attr("font-size", "12px")
    //         .text("Metrics");          
 
-   var property = metrics.selectAll("g")
-             .data(data.metrics)
-             .enter().append("g")
-             .attr("transform", function(d, i) { return "translate(0," + i * BAR_HEIGHT + ")"; });
-
-   property.append("rect")
- .attr("width", WIDTH)
- .attr("height", BAR_HEIGHT - 1)
- .classed("FMlabel_property", true)
- .attr("fill", "steelblue");
-
- property.append("text")
- .attr("text-anchor", "start")
- .attr("x", function(d) { return x(0) + 10*d.level + 3; })
- .attr("y", BAR_HEIGHT / 2)
- .attr("dy", ".35em")
- .attr("fill", "black")
- .text(function(d) { return d.name; });
-
- property.append("text")
- .attr("text-anchor", "end")
- .attr("x", WIDTH - 3)
- .attr("y", BAR_HEIGHT / 2)
- .attr("dy", ".35em")
- .text(function(d) { return get_value(d); });
+  
 
 
    //drawMetadata(data);
@@ -172,6 +236,15 @@ function get_value(d) {
       return d.size;
    }
 }
+
+function get_ratio(d) {
+   if (d.ratio === null) {
+      return "";
+   } else {
+      return Math.round((d.ratio + Number.EPSILON) * 100) + "%";
+   }
+}
+
 
 function get_property(data, propertyName) {
    for (let p of data.metadata) {
@@ -263,3 +336,17 @@ function _8(DOM,rasterize,chart){return(
      return promise;
    }
    )}
+
+   function getSize(d) {
+      var bbox = this.getBBox(),
+          cbbox = this.parentNode.getBBox(),
+          scale = Math.min(cbbox.width/bbox.width, cbbox.height/bbox.height);
+      d.scale = scale;
+    }
+
+    function getSize2(d) {
+      var bbox = d.node().getBBox(),
+          cbbox = d.node().parentNode.getBBox(),
+          scale = Math.min(cbbox.width/bbox.width, cbbox.height/bbox.height);
+      d.scale = scale;
+    }

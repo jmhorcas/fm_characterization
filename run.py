@@ -1,4 +1,5 @@
 import os
+import re
 from flask import Flask, render_template, request
 
 from famapy.metamodels.fm_metamodel.transformations import FeatureIDEReader
@@ -51,6 +52,7 @@ def index():
                     name = os.path.splitext(os.path.basename(filename))[0]
                 
                 fm_characterization = FMCharacterization(fm, name)
+                fm_characterization.set_metadata(name, description, author, reference, keywords)
                 interfaces.to_json(fm_characterization, FM_FACT_JSON_FILE)
             except:
                 data['fm_facts'] = False

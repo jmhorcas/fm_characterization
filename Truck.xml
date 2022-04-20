@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<featureModel>
+	<properties>
+		<graphics key="legendautolayout" value="true"/>
+		<graphics key="showshortnames" value="false"/>
+		<graphics key="layout" value="horizontal"/>
+		<graphics key="showcollapsedconstraints" value="true"/>
+		<graphics key="legendhidden" value="false"/>
+		<graphics key="layoutalgorithm" value="1"/>
+	</properties>
+	<struct>
+		<and mandatory="true" name="Truck">
+			<alt mandatory="true" name="Weight">
+				<alt name="Lightweight">
+					<feature name="Tons12"/>
+					<feature name="Tons18"/>
+				</alt>
+				<alt name="Heavyweight">
+					<feature name="Tons23"/>
+					<feature name="Tons40"/>
+				</alt>
+			</alt>
+			<alt mandatory="true" name="Type">
+				<feature name="Semitrailer"/>
+				<feature name="Tank"/>
+				<and name="Flatbed">
+					<feature mandatory="true" name="Dumper"/>
+				</and>
+			</alt>
+			<alt mandatory="true" name="Engine">
+				<feature name="KW160"/>
+				<feature name="KW280"/>
+				<feature name="KW400"/>
+			</alt>
+			<and mandatory="true" name="Cabin">
+				<feature name="HighRoof"/>
+				<alt name="SleeperCabin">
+					<feature name="Bed1"/>
+					<feature name="Beds2"/>
+				</alt>
+			</and>
+			<and mandatory="true" name="Axles">
+				<alt mandatory="true" name="Count">
+					<feature name="Axles2"/>
+					<alt name="MultipleRearAxles">
+						<feature name="Axles3"/>
+						<feature name="Axles4"/>
+					</alt>
+				</alt>
+				<feature name="AdditionalSteeringAxle"/>
+				<alt mandatory="true" name="Drivetrain">
+					<feature name="DrivenAxle1"/>
+					<feature name="DrivenAxles2"/>
+					<feature name="DrivenAxles3"/>
+				</alt>
+			</and>
+		</and>
+	</struct>
+	<constraints>
+		<rule>
+			<imp>
+				<var>Beds2</var>
+				<var>HighRoof</var>
+			</imp>
+		</rule>
+		<rule>
+			<imp>
+				<var>DrivenAxles2</var>
+				<var>MultipleRearAxles</var>
+			</imp>
+		</rule>
+		<rule>
+			<imp>
+				<var>DrivenAxles3</var>
+				<var>Axles4</var>
+			</imp>
+		</rule>
+		<rule>
+			<imp>
+				<var>Tons40</var>
+				<var>KW400</var>
+			</imp>
+		</rule>
+		<rule>
+			<imp>
+				<var>AdditionalSteeringAxle</var>
+				<var>Axles4</var>
+			</imp>
+		</rule>
+		<rule>
+			<imp>
+				<var>HighRoof</var>
+				<var>Heavyweight</var>
+			</imp>
+		</rule>
+		<rule>
+			<imp>
+				<var>Semitrailer</var>
+				<var>Tons18</var>
+			</imp>
+		</rule>
+		<rule>
+			<imp>
+				<var>SleeperCabin</var>
+				<not>
+					<var>Flatbed</var>
+				</not>
+			</imp>
+		</rule>
+		<rule>
+			<imp>
+				<var>SleeperCabin</var>
+				<not>
+					<var>Tank</var>
+				</not>
+			</imp>
+		</rule>
+		<rule>
+			<imp>
+				<var>Tank</var>
+				<var>KW400</var>
+			</imp>
+		</rule>
+	</constraints>
+</featureModel>

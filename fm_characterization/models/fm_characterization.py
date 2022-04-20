@@ -11,21 +11,24 @@ class FMCharacterization:
         self._feature_model = model
         self.name = name
         self._analysis = FMAnalysis(self._feature_model)
-    
-    def get_metadata(self, 
+        self.set_metadata(name)
+
+    def set_metadata(self, 
                      name: Optional[str] = None,
                      description: Optional[str] = None,
                      author: Optional[str] = None,
                      reference: Optional[str] = None,
-                     tags: Optional[list[str]] = None
-    ) -> list[FMMetric]:
+                     tags: Optional[list[str]] = None):
         data = []
         data.append(self._analysis.name(name))
         data.append(self._analysis.description(description))
         data.append(self._analysis.author(author))
         data.append(self._analysis.reference(reference))
         data.append(self._analysis.tags(tags))
-        return data
+        self._metadata = data
+
+    def get_metadata(self) -> list[FMMetric]:
+        return self._metadata
 
     def get_metrics(self) -> list[FMMetric]:
         metrics = []
