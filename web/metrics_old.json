@@ -1,0 +1,360 @@
+{
+    "metadata": [
+        {
+            "name": "Name",
+            "description": "Name of the feature model.",
+            "parent": null,
+            "level": 0,
+            "value": "Pizzas FM",
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Description",
+            "description": "Description of the feature model.",
+            "parent": null,
+            "level": 0,
+            "value": "This is a brief description of the feature model that can fit several lines because it can be as long as you want?.",
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Author",
+            "description": "Author of the feature model",
+            "parent": null,
+            "level": 0,
+            "value": "J.M. Horcas",
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Reference",
+            "description": "Main paper for reference or DOI of the feature model",
+            "parent": null,
+            "level": 0,
+            "value": "https://sites.google.com/view/josemiguelhorcas",
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Tags",
+            "description": "Tags or keywords that identify the feature model.",
+            "parent": null,
+            "level": 0,
+            "value": [
+                "Pizza",
+                "D3",
+                "Visualization",
+                "Feature model"
+            ],
+            "size": null,
+            "ratio": null
+        }
+    ],
+    "metrics": [
+        {
+            "name": "Features",
+            "description": "",
+            "parent": null,
+            "level": 0,
+            "value": [
+                "Pizza",
+                "Topping",
+                "Salami",
+                "Ham",
+                "Mozzarella",
+                "Size",
+                "Normal",
+                "Big",
+                "Dough",
+                "Neapolitan",
+                "Sicilian",
+                "CheesyCrust"
+            ],
+            "size": 12,
+            "ratio": null
+        },
+        {
+            "name": "Abstract features",
+            "description": "",
+            "parent": "Features",
+            "level": 1,
+            "value": [
+                "Pizza"
+            ],
+            "size": 1,
+            "ratio": 0.0833
+        },
+        {
+            "name": "Concrete features",
+            "description": "",
+            "parent": "Features",
+            "level": 1,
+            "value": [
+                "Topping",
+                "Salami",
+                "Ham",
+                "Mozzarella",
+                "Size",
+                "Normal",
+                "Big",
+                "Dough",
+                "Neapolitan",
+                "Sicilian",
+                "CheesyCrust"
+            ],
+            "size": 11,
+            "ratio": 0.9167
+        },
+        {
+            "name": "Root feature",
+            "description": "The root of the feature model.",
+            "parent": null,
+            "level": 0,
+            "value": "Pizza",
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Top features",
+            "description": "Features that are first descendants of the root.",
+            "parent": "Root feature",
+            "level": 1,
+            "value": [
+                "Topping",
+                "Size",
+                "Dough",
+                "CheesyCrust"
+            ],
+            "size": 4,
+            "ratio": 0.3333
+        },
+        {
+            "name": "Leaf features",
+            "description": "",
+            "parent": "Features",
+            "level": 1,
+            "value": [
+                "Salami",
+                "Ham",
+                "Mozzarella",
+                "Normal",
+                "Big",
+                "Neapolitan",
+                "Sicilian",
+                "CheesyCrust"
+            ],
+            "size": 8,
+            "ratio": 0.6667
+        },
+        {
+            "name": "Tree relationships",
+            "description": "",
+            "parent": null,
+            "level": 0,
+            "value": [
+                "(mandatory) Pizza[1,1]Topping ",
+                "(or) Topping[1,3]Salami Ham Mozzarella ",
+                "(mandatory) Pizza[1,1]Size ",
+                "(alternative) Size[1,1]Normal Big ",
+                "(mandatory) Pizza[1,1]Dough ",
+                "(alternative) Dough[1,1]Neapolitan Sicilian ",
+                "(optional) Pizza[0,1]CheesyCrust "
+            ],
+            "size": 7,
+            "ratio": null
+        },
+        {
+            "name": "Mandatory features",
+            "description": "",
+            "parent": "Tree relationships",
+            "level": 1,
+            "value": [
+                "Topping",
+                "Size",
+                "Dough"
+            ],
+            "size": 3,
+            "ratio": 0.4286
+        },
+        {
+            "name": "Optional features",
+            "description": "",
+            "parent": "Tree relationships",
+            "level": 1,
+            "value": [
+                "CheesyCrust"
+            ],
+            "size": 1,
+            "ratio": 0.1429
+        },
+        {
+            "name": "Group features",
+            "description": "",
+            "parent": "Tree relationships",
+            "level": 1,
+            "value": [
+                "Topping",
+                "Size",
+                "Dough"
+            ],
+            "size": 3,
+            "ratio": 0.4286
+        },
+        {
+            "name": "Alternative groups",
+            "description": "",
+            "parent": "Group features",
+            "level": 2,
+            "value": [
+                "Size",
+                "Dough"
+            ],
+            "size": 2,
+            "ratio": 0.6667
+        },
+        {
+            "name": "Or groups",
+            "description": "",
+            "parent": "Group features",
+            "level": 2,
+            "value": [
+                "Topping"
+            ],
+            "size": 1,
+            "ratio": 0.3333
+        },
+        {
+            "name": "Mutex groups",
+            "description": "",
+            "parent": "Group features",
+            "level": 2,
+            "value": [],
+            "size": 0,
+            "ratio": 0.0
+        },
+        {
+            "name": "Cardinality groups",
+            "description": "",
+            "parent": "Group features",
+            "level": 2,
+            "value": [],
+            "size": 0,
+            "ratio": 0.0
+        },
+        {
+            "name": "Max depth tree",
+            "description": "",
+            "parent": null,
+            "level": 0,
+            "value": 2,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Branching factor",
+            "description": "",
+            "parent": null,
+            "level": 0,
+            "value": 2.75,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Avg children per feature",
+            "description": "",
+            "parent": "Branching factor",
+            "level": 1,
+            "value": 0.92,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Min children per non-leaf feature",
+            "description": "",
+            "parent": "Branching factor",
+            "level": 1,
+            "value": 2,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Max children per feature",
+            "description": "",
+            "parent": "Branching factor",
+            "level": 1,
+            "value": 4,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Cross-tree constraints",
+            "description": "",
+            "parent": null,
+            "level": 0,
+            "value": [
+                "(1) IMPLIES[CheesyCrust][Big]"
+            ],
+            "size": 1,
+            "ratio": null
+        },
+        {
+            "name": "Simple constraints",
+            "description": "Requires and Excludes constraints.",
+            "parent": "Cross-tree constraints",
+            "level": 1,
+            "value": [
+                "(1) IMPLIES[CheesyCrust][Big]"
+            ],
+            "size": 1,
+            "ratio": 1.0
+        },
+        {
+            "name": "Requires constraints",
+            "description": "",
+            "parent": "Simple constraints",
+            "level": 2,
+            "value": [
+                "(1) IMPLIES[CheesyCrust][Big]"
+            ],
+            "size": 1,
+            "ratio": 1.0
+        },
+        {
+            "name": "Excludes constraints",
+            "description": "",
+            "parent": "Simple constraints",
+            "level": 2,
+            "value": [],
+            "size": 0,
+            "ratio": 0.0
+        },
+        {
+            "name": "Complex constraints",
+            "description": "",
+            "parent": "Cross-tree constraints",
+            "level": 1,
+            "value": [],
+            "size": 0,
+            "ratio": 0.0
+        },
+        {
+            "name": "Pseudo-complex constraints",
+            "description": "",
+            "parent": "Complex constraints",
+            "level": 2,
+            "value": [],
+            "size": 0,
+            "ratio": 0.0
+        },
+        {
+            "name": "Strict-complex constraints",
+            "description": "",
+            "parent": "Complex constraints",
+            "level": 2,
+            "value": [],
+            "size": 0,
+            "ratio": 0.0
+        }
+    ]
+}

@@ -7,6 +7,7 @@ const VALUES_FONT_FAMILY = "Helvetica";
 const VALUES_FONT_SIZE = "10pt";
 const PROPERTY_INDENTATION = 2;
 const TOP_MARGING = 20;
+const LEFT_MARGING = 5;
 const MAIN_RULE_HEIGHT = 7 * POINT_TO_PIXEL;
 const MARGING_BETWEEN_PROPERTIES = 3;
 const PROPERTIES_VALUES_SPACE = 10;
@@ -23,11 +24,11 @@ function drawFMFactTag(data) {
 
    // Calculate maximum width for the label.
    //var maxWidth = calculateTotalMaxWidth(data.metrics);
-   var maxIndentationWidth = calculateMaxIndentationWidth(data.metrics);
-   var maxNameWidth = calculateMaxNameWidth(data.metrics);
-   var maxValueWidth = calculateMaxValueWidth(data.metrics);
-   var maxRatioWidth = calculateMaxRatioWidth(data.metrics);
-   var maxWidth = maxIndentationWidth + maxNameWidth + PROPERTIES_VALUES_SPACE + maxValueWidth + PROPERTIES_RATIO_SPACE + maxRatioWidth;
+   var maxIndentationWidth = Math.max(calculateMaxIndentationWidth(data.metrics), calculateMaxIndentationWidth(data.analysis));
+   var maxNameWidth = Math.max(calculateMaxNameWidth(data.metrics), calculateMaxNameWidth(data.analysis));
+   var maxValueWidth = Math.max(calculateMaxValueWidth(data.metrics), calculateMaxValueWidth(data.analysis));
+   var maxRatioWidth = Math.max(calculateMaxRatioWidth(data.metrics), calculateMaxRatioWidth(data.analysis));
+   var maxWidth = maxIndentationWidth + maxNameWidth + PROPERTIES_VALUES_SPACE + maxValueWidth + PROPERTIES_RATIO_SPACE + maxRatioWidth + LEFT_MARGING; //textSize("-".repeat(PROPERTY_INDENTATION), PROPERTY_FONT_FAMILY, PROPERTY_FONT_SIZE).width;
                 
    chart.attr("width", maxWidth)
         .attr("height", BAR_HEIGHT*10 + BAR_HEIGHT*data.metadata.length + BAR_HEIGHT*data.metrics.length); // CAMBIAR EL *10 AJUSTANDOLO BIEN
@@ -98,11 +99,6 @@ function drawFMFactTag(data) {
                          .data(data.metrics)
                          .enter().append("g")
                          .attr("transform", function(d, i) { return "translate(0," + i * propertyHeight + ")"; });
-   // property.append("rect")
-   //         .attr("width", WIDTH)
-   //         .attr("height", BAR_HEIGHT - 1)
-   //         .classed("FMlabel_property", true)
-   //         .attr("fill", "steelblue");
    property.append("text")
            .attr("text-anchor", "start")
            .attr("x", function(d) { return x(textSize("-".repeat(1 + PROPERTY_INDENTATION * parseInt(d.level, 10)), PROPERTY_FONT_FAMILY, PROPERTY_FONT_SIZE).width); })
@@ -123,7 +119,7 @@ function drawFMFactTag(data) {
            .text(function(d) { return get_value(d); });
    property.append("text")
            .attr("text-anchor", "end")
-           .attr("x", function(d) { return x(maxWidth); })
+           .attr("x", function(d) { return x(maxWidth-LEFT_MARGING); })
            .attr("y", propertyHeight / 2)
            .attr("dy", ".35em")
            .attr("font-family", PROPERTY_FONT_FAMILY)
@@ -140,17 +136,51 @@ function drawFMFactTag(data) {
         .attr("width", maxWidth);
 
    // Analysis
+   currentHeight += MAIN_RULE_HEIGHT;
    var analysis = chart.append("g").attr("transform", "translate(0," + currentHeight + ")");
+   var property = analysis.selectAll("g")
+                         .data(data.analysis)
+                         .enter().append("g")
+                         .attr("transform", function(d, i) { return "translate(0," + i * propertyHeight + ")"; });
+   property.append("text")
+           .attr("text-anchor", "start")
+           .attr("x", function(d) { return x(textSize("-".repeat(1 + PROPERTY_INDENTATION * parseInt(d.level, 10)), PROPERTY_FONT_FAMILY, PROPERTY_FONT_SIZE).width); })
+           .attr("y", propertyHeight / 2)
+           .attr("dy", ".35em")
+           .attr("font-family", PROPERTY_FONT_FAMILY)
+           .attr("font-size", PROPERTY_FONT_SIZE)
+           .attr("font-weight", function(d) { return d.level == 0 ? "bold" : "normal"; })
+           .text(function(d) { return d.name; });
+   property.append("text")
+           .attr("text-anchor", "end")
+           .attr("x", function(d) { return x(maxIndentationWidth + maxNameWidth + PROPERTIES_VALUES_SPACE + maxValueWidth); })
+           .attr("y", propertyHeight / 2)
+           .attr("dy", ".35em")
+           .attr("font-family", PROPERTY_FONT_FAMILY)
+           .attr("font-size", VALUES_FONT_SIZE)
+           .attr("font-weight", "bold")
+           .text(function(d) { return get_value(d); });
+   property.append("text")
+           .attr("text-anchor", "end")
+           .attr("x", function(d) { return x(maxWidth-LEFT_MARGING); })
+           .attr("y", propertyHeight / 2)
+           .attr("dy", ".35em")
+           .attr("font-family", PROPERTY_FONT_FAMILY)
+           .attr("font-size", VALUES_FONT_SIZE)
+           .attr("font-weight", "bold")
+           .text(function(d) { return get_ratio(d); });
 
-//    var borderPath = chart.append("rect")
-//   .attr("x", 0)
-//   .attr("y", 0)
-//   .attr("height", currentHeight)
-//   .attr("width", maxWidth)
-//   .style("stroke", "black")
-//   .style("fill", "none")
-//   .style("stroke-width", "3pt");
 
+   // Border of the label
+   currentHeight += propertyHeight * data.analysis.length;
+   var borderPath = chart.append("rect")
+                         .attr("x", 0)
+                         .attr("y", 0)
+                         .attr("height", currentHeight)
+                         .attr("width", maxWidth)
+                         .style("stroke", "black")
+                         .style("fill", "none")
+                         .style("stroke-width", "3pt");
 }
 
 function get_value(d) {

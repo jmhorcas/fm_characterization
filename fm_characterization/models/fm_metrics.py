@@ -18,6 +18,7 @@ from famapy.metamodels.bdd_metamodel.operations.bdd_products_number import BDDPr
 from famapy.metamodels.fm_metamodel.operations.fm_estimated_products_number import FMEstimatedProductsNumber
 from famapy.metamodels.fm_metamodel.operations.fm_atomic_sets import FMAtomicSets
 
+from .utils import get_nof_configuration_as_str
 
 def get_ratio(collection1: Collection, collection2: Collection, precision: int = 4) -> float:
     if not collection2:
@@ -368,8 +369,11 @@ class FMAnalysis():
     def configurations(self) -> FMMetric:
         if self.bdd_model is not None:
             _configurations = BDDProductsNumber().execute(self.bdd_model).get_result()
+            _approximation = False
         else:
             _configurations = FMEstimatedProductsNumber().execute(self.fm).get_result()
+            _approximation = True
+        _configurations = get_nof_configuration_as_str(_configurations, _approximation, len(self.fm.get_constraints()))
         return FMMetric(FMProperties.CONFIGURATIONS.value, _configurations)
 
 # def _nof_constraints(feature_model: FeatureModel) -> tuple[int, int, int]:
