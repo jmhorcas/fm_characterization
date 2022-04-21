@@ -5,7 +5,7 @@
             "description": "Name of the feature model.",
             "parent": null,
             "level": 0,
-            "value": "Pizza",
+            "value": "jHipster",
             "size": null,
             "ratio": null
         },
@@ -53,20 +53,53 @@
             "parent": null,
             "level": 0,
             "value": [
-                "Pizza",
-                "Topping",
-                "Salami",
-                "Ham",
-                "Mozzarella",
-                "Size",
-                "Normal",
-                "Big",
-                "Dough",
-                "Neapolitan",
-                "Sicilian",
-                "CheesyCrust"
+                "JHipster",
+                "Generator",
+                "Server",
+                "Application",
+                "MicroserviceApplication",
+                "UaaServer",
+                "MicroserviceGateway",
+                "Monolithic",
+                "Authentication",
+                "HTTPSession",
+                "OAuth2",
+                "Uaa",
+                "JWT",
+                "SocialLogin",
+                "Database",
+                "SQL",
+                "Cassandra",
+                "MongoDB",
+                "Hibernate2ndLvlCache",
+                "HazelCast",
+                "EhCache",
+                "Development",
+                "H2",
+                "PostgreSQLDev",
+                "MariaDBDev",
+                "MySql",
+                "DiskBased",
+                "InMemory",
+                "Production",
+                "MySQL",
+                "MariaDB",
+                "PostgreSQL",
+                "ElasticSearch",
+                "SpringWebSockets",
+                "Libsass",
+                "ClusteredSession",
+                "BackEnd",
+                "Gradle",
+                "Maven",
+                "InternationalizationSupport",
+                "Docker",
+                "TestingFrameworks",
+                "Protractor",
+                "Gatling",
+                "Cucumber"
             ],
-            "size": 12,
+            "size": 45,
             "ratio": null
         },
         {
@@ -75,10 +108,22 @@
             "parent": "Features",
             "level": 1,
             "value": [
-                "Pizza"
+                "JHipster",
+                "Generator",
+                "Server",
+                "Application",
+                "Authentication",
+                "Database",
+                "SQL",
+                "Hibernate2ndLvlCache",
+                "Development",
+                "H2",
+                "Production",
+                "BackEnd",
+                "TestingFrameworks"
             ],
-            "size": 1,
-            "ratio": 0.0833
+            "size": 13,
+            "ratio": 0.2889
         },
         {
             "name": "Concrete features",
@@ -86,27 +131,48 @@
             "parent": "Features",
             "level": 1,
             "value": [
-                "Topping",
-                "Salami",
-                "Ham",
-                "Mozzarella",
-                "Size",
-                "Normal",
-                "Big",
-                "Dough",
-                "Neapolitan",
-                "Sicilian",
-                "CheesyCrust"
+                "MicroserviceApplication",
+                "UaaServer",
+                "MicroserviceGateway",
+                "Monolithic",
+                "HTTPSession",
+                "OAuth2",
+                "Uaa",
+                "JWT",
+                "SocialLogin",
+                "Cassandra",
+                "MongoDB",
+                "HazelCast",
+                "EhCache",
+                "PostgreSQLDev",
+                "MariaDBDev",
+                "MySql",
+                "DiskBased",
+                "InMemory",
+                "MySQL",
+                "MariaDB",
+                "PostgreSQL",
+                "ElasticSearch",
+                "SpringWebSockets",
+                "Libsass",
+                "ClusteredSession",
+                "Gradle",
+                "Maven",
+                "InternationalizationSupport",
+                "Docker",
+                "Protractor",
+                "Gatling",
+                "Cucumber"
             ],
-            "size": 11,
-            "ratio": 0.9167
+            "size": 32,
+            "ratio": 0.7111
         },
         {
             "name": "Root feature",
             "description": "The root of the feature model.",
             "parent": null,
             "level": 0,
-            "value": "Pizza",
+            "value": "JHipster",
             "size": null,
             "ratio": null
         },
@@ -116,13 +182,20 @@
             "parent": "Root feature",
             "level": 1,
             "value": [
-                "Topping",
-                "Size",
-                "Dough",
-                "CheesyCrust"
+                "Generator",
+                "Authentication",
+                "SocialLogin",
+                "Database",
+                "SpringWebSockets",
+                "Libsass",
+                "ClusteredSession",
+                "BackEnd",
+                "InternationalizationSupport",
+                "Docker",
+                "TestingFrameworks"
             ],
-            "size": 4,
-            "ratio": 0.3333
+            "size": 11,
+            "ratio": 0.2444
         },
         {
             "name": "Leaf features",
@@ -130,17 +203,41 @@
             "parent": "Features",
             "level": 1,
             "value": [
-                "Salami",
-                "Ham",
-                "Mozzarella",
-                "Normal",
-                "Big",
-                "Neapolitan",
-                "Sicilian",
-                "CheesyCrust"
+                "MicroserviceApplication",
+                "UaaServer",
+                "MicroserviceGateway",
+                "Monolithic",
+                "HTTPSession",
+                "OAuth2",
+                "Uaa",
+                "JWT",
+                "SocialLogin",
+                "Cassandra",
+                "MongoDB",
+                "HazelCast",
+                "EhCache",
+                "PostgreSQLDev",
+                "MariaDBDev",
+                "MySql",
+                "DiskBased",
+                "InMemory",
+                "MySQL",
+                "MariaDB",
+                "PostgreSQL",
+                "ElasticSearch",
+                "SpringWebSockets",
+                "Libsass",
+                "ClusteredSession",
+                "Gradle",
+                "Maven",
+                "InternationalizationSupport",
+                "Docker",
+                "Protractor",
+                "Gatling",
+                "Cucumber"
             ],
-            "size": 8,
-            "ratio": 0.6667
+            "size": 32,
+            "ratio": 0.7111
         },
         {
             "name": "Tree relationships",
@@ -148,15 +245,36 @@
             "parent": null,
             "level": 0,
             "value": [
-                "(mandatory) Pizza[1,1]Topping ",
-                "(or) Topping[1,3]Salami Ham Mozzarella ",
-                "(mandatory) Pizza[1,1]Size ",
-                "(alternative) Size[1,1]Normal Big ",
-                "(mandatory) Pizza[1,1]Dough ",
-                "(alternative) Dough[1,1]Neapolitan Sicilian ",
-                "(optional) Pizza[0,1]CheesyCrust "
+                "(mandatory) JHipster[1,1]Generator ",
+                "(alternative) Generator[1,1]Server Application ",
+                "(alternative) Server[1,1]MicroserviceApplication UaaServer ",
+                "(alternative) Application[1,1]MicroserviceGateway Monolithic ",
+                "(mandatory) JHipster[1,1]Authentication ",
+                "(alternative) Authentication[1,1]HTTPSession OAuth2 Uaa JWT ",
+                "(optional) JHipster[0,1]SocialLogin ",
+                "(optional) JHipster[0,1]Database ",
+                "(alternative) Database[1,1]SQL Cassandra MongoDB ",
+                "(optional) SQL[0,1]Hibernate2ndLvlCache ",
+                "(alternative) Hibernate2ndLvlCache[1,1]HazelCast EhCache ",
+                "(mandatory) SQL[1,1]Development ",
+                "(alternative) Development[1,1]H2 PostgreSQLDev MariaDBDev MySql ",
+                "(alternative) H2[1,1]DiskBased InMemory ",
+                "(mandatory) SQL[1,1]Production ",
+                "(alternative) Production[1,1]MySQL MariaDB PostgreSQL ",
+                "(optional) SQL[0,1]ElasticSearch ",
+                "(optional) JHipster[0,1]SpringWebSockets ",
+                "(optional) JHipster[0,1]Libsass ",
+                "(optional) JHipster[0,1]ClusteredSession ",
+                "(mandatory) JHipster[1,1]BackEnd ",
+                "(alternative) BackEnd[1,1]Gradle Maven ",
+                "(optional) JHipster[0,1]InternationalizationSupport ",
+                "(optional) JHipster[0,1]Docker ",
+                "(mandatory) JHipster[1,1]TestingFrameworks ",
+                "(optional) TestingFrameworks[0,1]Protractor ",
+                "(mandatory) TestingFrameworks[1,1]Gatling ",
+                "(mandatory) TestingFrameworks[1,1]Cucumber "
             ],
-            "size": 7,
+            "size": 28,
             "ratio": null
         },
         {
@@ -165,12 +283,17 @@
             "parent": "Tree relationships",
             "level": 1,
             "value": [
-                "Topping",
-                "Size",
-                "Dough"
+                "Generator",
+                "Authentication",
+                "Development",
+                "Production",
+                "BackEnd",
+                "TestingFrameworks",
+                "Gatling",
+                "Cucumber"
             ],
-            "size": 3,
-            "ratio": 0.4286
+            "size": 8,
+            "ratio": 0.2857
         },
         {
             "name": "Optional features",
@@ -178,10 +301,19 @@
             "parent": "Tree relationships",
             "level": 1,
             "value": [
-                "CheesyCrust"
+                "SocialLogin",
+                "Database",
+                "Hibernate2ndLvlCache",
+                "ElasticSearch",
+                "SpringWebSockets",
+                "Libsass",
+                "ClusteredSession",
+                "InternationalizationSupport",
+                "Docker",
+                "Protractor"
             ],
-            "size": 1,
-            "ratio": 0.1429
+            "size": 10,
+            "ratio": 0.3571
         },
         {
             "name": "Group features",
@@ -189,12 +321,19 @@
             "parent": "Tree relationships",
             "level": 1,
             "value": [
-                "Topping",
-                "Size",
-                "Dough"
+                "Generator",
+                "Server",
+                "Application",
+                "Authentication",
+                "Database",
+                "Hibernate2ndLvlCache",
+                "Development",
+                "H2",
+                "Production",
+                "BackEnd"
             ],
-            "size": 3,
-            "ratio": 0.4286
+            "size": 10,
+            "ratio": 0.3571
         },
         {
             "name": "Alternative groups",
@@ -202,22 +341,28 @@
             "parent": "Group features",
             "level": 2,
             "value": [
-                "Size",
-                "Dough"
+                "Generator",
+                "Server",
+                "Application",
+                "Authentication",
+                "Database",
+                "Hibernate2ndLvlCache",
+                "Development",
+                "H2",
+                "Production",
+                "BackEnd"
             ],
-            "size": 2,
-            "ratio": 0.6667
+            "size": 10,
+            "ratio": 1.0
         },
         {
             "name": "Or groups",
             "description": "",
             "parent": "Group features",
             "level": 2,
-            "value": [
-                "Topping"
-            ],
-            "size": 1,
-            "ratio": 0.3333
+            "value": [],
+            "size": 0,
+            "ratio": 0.0
         },
         {
             "name": "Mutex groups",
@@ -242,7 +387,7 @@
             "description": "",
             "parent": null,
             "level": 0,
-            "value": 2,
+            "value": 5,
             "size": null,
             "ratio": null
         },
@@ -251,7 +396,7 @@
             "description": "",
             "parent": null,
             "level": 0,
-            "value": 2.75,
+            "value": 3.38,
             "size": null,
             "ratio": null
         },
@@ -260,7 +405,7 @@
             "description": "",
             "parent": "Branching factor",
             "level": 1,
-            "value": 0.92,
+            "value": 0.98,
             "size": null,
             "ratio": null
         },
@@ -278,7 +423,7 @@
             "description": "",
             "parent": "Branching factor",
             "level": 1,
-            "value": 4,
+            "value": 11,
             "size": null,
             "ratio": null
         },
@@ -288,9 +433,21 @@
             "parent": null,
             "level": 0,
             "value": [
-                "(1) IMPLIES[CheesyCrust][Big]"
+                "(1) IMPLIES[AND[OAuth2][AND[NOT[SocialLogin][]][NOT[MicroserviceApplication][]]]][OR[SQL][MongoDB]]",
+                "(2) IMPLIES[SocialLogin][AND[OR[HTTPSession][JWT]][AND[Monolithic][OR[SQL][MongoDB]]]]",
+                "(3) IMPLIES[UaaServer][Uaa]",
+                "(4) IMPLIES[AND[NOT[OAuth2][]][AND[NOT[SocialLogin][]][NOT[MicroserviceApplication][]]]][OR[SQL][OR[MongoDB][Cassandra]]]",
+                "(5) IMPLIES[Server][NOT[Protractor][]]",
+                "(6) IMPLIES[NOT[Server][]][Protractor]",
+                "(7) IMPLIES[MySQL][OR[H2][MySql]]",
+                "(8) IMPLIES[OR[MicroserviceApplication][MicroserviceGateway]][OR[JWT][Uaa]]",
+                "(9) IMPLIES[Monolithic][OR[JWT][OR[HTTPSession][OAuth2]]]",
+                "(10) IMPLIES[MariaDB][OR[H2][MariaDBDev]]",
+                "(11) IMPLIES[PostgreSQL][OR[H2][PostgreSQLDev]]",
+                "(12) IMPLIES[OR[SpringWebSockets][ClusteredSession]][Application]",
+                "(13) IMPLIES[Libsass][Application]"
             ],
-            "size": 1,
+            "size": 13,
             "ratio": null
         },
         {
@@ -299,10 +456,12 @@
             "parent": "Cross-tree constraints",
             "level": 1,
             "value": [
-                "(1) IMPLIES[CheesyCrust][Big]"
+                "(3) IMPLIES[UaaServer][Uaa]",
+                "(5) IMPLIES[Server][NOT[Protractor][]]",
+                "(13) IMPLIES[Libsass][Application]"
             ],
-            "size": 1,
-            "ratio": 1.0
+            "size": 3,
+            "ratio": 0.2308
         },
         {
             "name": "Requires constraints",
@@ -310,46 +469,72 @@
             "parent": "Simple constraints",
             "level": 2,
             "value": [
-                "(1) IMPLIES[CheesyCrust][Big]"
+                "(3) IMPLIES[UaaServer][Uaa]",
+                "(13) IMPLIES[Libsass][Application]"
             ],
-            "size": 1,
-            "ratio": 1.0
+            "size": 2,
+            "ratio": 0.6667
         },
         {
             "name": "Excludes constraints",
             "description": "",
             "parent": "Simple constraints",
             "level": 2,
-            "value": [],
-            "size": 0,
-            "ratio": 0.0
+            "value": [
+                "(5) IMPLIES[Server][NOT[Protractor][]]"
+            ],
+            "size": 1,
+            "ratio": 0.3333
         },
         {
             "name": "Complex constraints",
             "description": "",
             "parent": "Cross-tree constraints",
             "level": 1,
-            "value": [],
-            "size": 0,
-            "ratio": 0.0
+            "value": [
+                "(1) IMPLIES[AND[OAuth2][AND[NOT[SocialLogin][]][NOT[MicroserviceApplication][]]]][OR[SQL][MongoDB]]",
+                "(2) IMPLIES[SocialLogin][AND[OR[HTTPSession][JWT]][AND[Monolithic][OR[SQL][MongoDB]]]]",
+                "(4) IMPLIES[AND[NOT[OAuth2][]][AND[NOT[SocialLogin][]][NOT[MicroserviceApplication][]]]][OR[SQL][OR[MongoDB][Cassandra]]]",
+                "(6) IMPLIES[NOT[Server][]][Protractor]",
+                "(7) IMPLIES[MySQL][OR[H2][MySql]]",
+                "(8) IMPLIES[OR[MicroserviceApplication][MicroserviceGateway]][OR[JWT][Uaa]]",
+                "(9) IMPLIES[Monolithic][OR[JWT][OR[HTTPSession][OAuth2]]]",
+                "(10) IMPLIES[MariaDB][OR[H2][MariaDBDev]]",
+                "(11) IMPLIES[PostgreSQL][OR[H2][PostgreSQLDev]]",
+                "(12) IMPLIES[OR[SpringWebSockets][ClusteredSession]][Application]"
+            ],
+            "size": 10,
+            "ratio": 0.7692
         },
         {
             "name": "Pseudo-complex constraints",
             "description": "",
             "parent": "Complex constraints",
             "level": 2,
-            "value": [],
-            "size": 0,
-            "ratio": 0.0
+            "value": [
+                "(12) IMPLIES[OR[SpringWebSockets][ClusteredSession]][Application]"
+            ],
+            "size": 1,
+            "ratio": 0.1
         },
         {
             "name": "Strict-complex constraints",
             "description": "",
             "parent": "Complex constraints",
             "level": 2,
-            "value": [],
-            "size": 0,
-            "ratio": 0.0
+            "value": [
+                "(1) IMPLIES[AND[OAuth2][AND[NOT[SocialLogin][]][NOT[MicroserviceApplication][]]]][OR[SQL][MongoDB]]",
+                "(2) IMPLIES[SocialLogin][AND[OR[HTTPSession][JWT]][AND[Monolithic][OR[SQL][MongoDB]]]]",
+                "(4) IMPLIES[AND[NOT[OAuth2][]][AND[NOT[SocialLogin][]][NOT[MicroserviceApplication][]]]][OR[SQL][OR[MongoDB][Cassandra]]]",
+                "(6) IMPLIES[NOT[Server][]][Protractor]",
+                "(7) IMPLIES[MySQL][OR[H2][MySql]]",
+                "(8) IMPLIES[OR[MicroserviceApplication][MicroserviceGateway]][OR[JWT][Uaa]]",
+                "(9) IMPLIES[Monolithic][OR[JWT][OR[HTTPSession][OAuth2]]]",
+                "(10) IMPLIES[MariaDB][OR[H2][MariaDBDev]]",
+                "(11) IMPLIES[PostgreSQL][OR[H2][PostgreSQLDev]]"
+            ],
+            "size": 9,
+            "ratio": 0.9
         }
     ]
 }

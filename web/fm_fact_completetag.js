@@ -1,3 +1,17 @@
+const POINT_TO_PIXEL = 1.3281472327365;
+const TITLE_FONT_FAMILY = "Franklin Gothic Heavy";
+const TITLE_FONT_SIZE = "24pt";
+const PROPERTY_FONT_FAMILY = "Helvetica";
+const PROPERTY_FONT_SIZE = "12pt";
+const VALUES_FONT_FAMILY = "Helvetica";
+const VALUES_FONT_SIZE = "10pt";
+const PROPERTY_INDENTATION = 2;
+const TOP_MARGING = 20;
+const MAIN_RULE_HEIGHT = 7 * POINT_TO_PIXEL;
+const MARGING_BETWEEN_PROPERTIES = 3;
+const PROPERTIES_VALUES_SPACE = 10;
+const PROPERTIES_RATIO_SPACE = 3;
+
 var WIDTH = 200;
 var BAR_HEIGHT = 20;
 var TITLE_HEIGHT = 20;
@@ -7,25 +21,33 @@ var RULE_HEIGHT = 7;
 function drawFMFactTag(data) {
    var chart = d3.select(".chart");
 
-   chart.attr("width", WIDTH)
+   // Calculate maximum width for the label.
+   //var maxWidth = calculateTotalMaxWidth(data.metrics);
+   var maxIndentationWidth = calculateMaxIndentationWidth(data.metrics);
+   var maxNameWidth = calculateMaxNameWidth(data.metrics);
+   var maxValueWidth = calculateMaxValueWidth(data.metrics);
+   var maxRatioWidth = calculateMaxRatioWidth(data.metrics);
+   var maxWidth = maxIndentationWidth + maxNameWidth + PROPERTIES_VALUES_SPACE + maxValueWidth + PROPERTIES_RATIO_SPACE + maxRatioWidth;
+                
+   chart.attr("width", maxWidth)
         .attr("height", BAR_HEIGHT*10 + BAR_HEIGHT*data.metadata.length + BAR_HEIGHT*data.metrics.length); // CAMBIAR EL *10 AJUSTANDOLO BIEN
    
-   var x = d3.scaleLinear()
-             .domain([0, WIDTH])
-             .range([0, WIDTH]);
+   var x = d3.scaleLinear().domain([0, maxWidth]).range([0, maxWidth]);
 
    // Title
-   var currentHeight = BAR_HEIGHT;
+   var titleSize = textSize(get_property(data, "Name").value, TITLE_FONT_FAMILY, TITLE_FONT_SIZE);
+   var currentHeight = TOP_MARGING;
    var title = chart.append("g").attr("transform", "translate(0," + currentHeight + ")");
    title.append("text")
         .text(get_property(data, 'Name').value) 
-        .attr("x", function(d) { return x(WIDTH/2); })
-        .attr("y", 3)
+        .attr("x", function(d) { return x(maxWidth/2); })
+        //.attr("y", 3)
         .attr("text-anchor", "middle")
         .attr("dominant-baseline", "central")
-        .attr("font-family", "Franklin Gothic Heavy")
-        .attr("font-size", "13pt");
+        .attr("font-family", TITLE_FONT_FAMILY)
+        .attr("font-size", TITLE_FONT_SIZE);
 
+   /*
    // Description
    currentHeight += TITLE_HEIGHT;
    var description = chart.append("g").attr("transform", "translate(0," + currentHeight + ")");
@@ -56,24 +78,26 @@ function drawFMFactTag(data) {
            .attr("font-family", "Helvetica")
            .attr("font-size", "8pt")
            .text(function(d) { return d.value; })
-           .call(wrap, WIDTH);        
+           .call(wrap, WIDTH);
+   */
 
    // Middle rule
-   currentHeight += BAR_HEIGHT*data.metadata.slice(2).length;
+   currentHeight += titleSize.height; //*data.metadata.slice(2).length;
    chart.append("g")
         .attr("transform", "translate(0," + currentHeight + ")")
         .append("rect")
-        .attr("height", RULE_HEIGHT)
-        .attr("width", WIDTH);
+        .attr("height", MAIN_RULE_HEIGHT)
+        .attr("width", maxWidth);
 
    // Metrics
-   currentHeight += RULE_HEIGHT;
+   currentHeight += MAIN_RULE_HEIGHT;
    var metrics = chart.append("g").attr("transform", "translate(0," + currentHeight + ")");
 
+   var propertyHeight = textSize("Any text", PROPERTY_FONT_FAMILY, PROPERTY_FONT_SIZE, "bold").height + MARGING_BETWEEN_PROPERTIES;
    var property = metrics.selectAll("g")
                          .data(data.metrics)
                          .enter().append("g")
-                         .attr("transform", function(d, i) { return "translate(0," + i * BAR_HEIGHT + ")"; });
+                         .attr("transform", function(d, i) { return "translate(0," + i * propertyHeight + ")"; });
    // property.append("rect")
    //         .attr("width", WIDTH)
    //         .attr("height", BAR_HEIGHT - 1)
@@ -81,152 +105,52 @@ function drawFMFactTag(data) {
    //         .attr("fill", "steelblue");
    property.append("text")
            .attr("text-anchor", "start")
-           .attr("x", function(d) { return x(0) + 4*d.level + 4; })
-           .attr("y", BAR_HEIGHT / 2)
+           .attr("x", function(d) { return x(textSize("-".repeat(1 + PROPERTY_INDENTATION * parseInt(d.level, 10)), PROPERTY_FONT_FAMILY, PROPERTY_FONT_SIZE).width); })
+           .attr("y", propertyHeight / 2)
            .attr("dy", ".35em")
-           .attr("font-family", "Helvetica")
-           .attr("font-size", "8pt")
-           .attr("font-weight", function(d, i) {
-               if (d.level == 0) {
-                  return "bold";
-               } else {
-                 return "normal"; 
-               }
-            })
-           .attr("fill", "black")
+           .attr("font-family", PROPERTY_FONT_FAMILY)
+           .attr("font-size", PROPERTY_FONT_SIZE)
+           .attr("font-weight", function(d) { return d.level == 0 ? "bold" : "normal"; })
            .text(function(d) { return d.name; });
    property.append("text")
            .attr("text-anchor", "end")
-           .attr("x", WIDTH - 3)
-           .attr("y", BAR_HEIGHT / 2)
+           .attr("x", function(d) { return x(maxIndentationWidth + maxNameWidth + PROPERTIES_VALUES_SPACE + maxValueWidth); })
+           .attr("y", propertyHeight / 2)
            .attr("dy", ".35em")
-           .attr("font-family", "Helvetica")
-           .attr("font-size", "6pt")
+           .attr("font-family", PROPERTY_FONT_FAMILY)
+           .attr("font-size", VALUES_FONT_SIZE)
            .attr("font-weight", "bold")
            .text(function(d) { return get_value(d); });
-   // property.append("text")
-   //         .attr("text-anchor", "end")
-   //         .attr("x", WIDTH - 3)
-   //         .attr("y", BAR_HEIGHT / 2)
-   //         .attr("dy", ".35em")
-   //         .attr("font-family", "Helvetica")
-   //         .attr("font-size", "6pt")
-   //         .attr("font-weight", "bold")
-   //         .text(function(d) { return get_ratio(d); });
+   property.append("text")
+           .attr("text-anchor", "end")
+           .attr("x", function(d) { return x(maxWidth); })
+           .attr("y", propertyHeight / 2)
+           .attr("dy", ".35em")
+           .attr("font-family", PROPERTY_FONT_FAMILY)
+           .attr("font-size", VALUES_FONT_SIZE)
+           .attr("font-weight", "bold")
+           .text(function(d) { return get_ratio(d); });
 
-   // Buttom rule
-   currentHeight += BAR_HEIGHT * data.metrics.length;
+   // Middle rule
+   currentHeight += propertyHeight * data.metrics.length;
    chart.append("g")
-   .attr("transform", "translate(0," + currentHeight + ")")
-   .append("rect")
-   .attr("height", RULE_HEIGHT)
-   .attr("width", WIDTH);
+        .attr("transform", "translate(0," + currentHeight + ")")
+        .append("rect")
+        .attr("height", MAIN_RULE_HEIGHT)
+        .attr("width", maxWidth);
 
    // Analysis
    var analysis = chart.append("g").attr("transform", "translate(0," + currentHeight + ")");
 
-   // title.append("rect")
-   //      .attr("width", WIDTH)
-   //      .attr("height", BAR_HEIGHT - 1)
-   //      .attr("fill", "white");
+//    var borderPath = chart.append("rect")
+//   .attr("x", 0)
+//   .attr("y", 0)
+//   .attr("height", currentHeight)
+//   .attr("width", maxWidth)
+//   .style("stroke", "black")
+//   .style("fill", "none")
+//   .style("stroke-width", "3pt");
 
-   
-            //.attr("font-family", "Helvetica")
-            //.attr("font-weight", "bold")
-        
-            //.classed("FMlabel_title", true)
-            // .style("font-size", function(d) { return Math.min(2 * d.r, (2 * d.r - 8) / this.getComputedTextLength() * 24) + "px"; })
-             //.style("font-size", function(d) { console.log(this.getComputedTextLength()); return Math.min(WIDTH, WIDTH/this.getComputedTextLength()) + "px"; })
-            // .attr("dy", ".35em")
-            //.style("font-size", "1px")
-            //.each(getSize)
-            //.style("font-size", function(d) { return d.scale + "px"; });
-             //.text(get_property(data, 'Name').value) 
-             //.call(getSize)
-
-   // Description
- 
-
-   
-
-   // property.append("rect")
-   //    .attr("width", WIDTH)
-   //    .attr("height", BAR_HEIGHT - 1)
-   //    .classed("FMlabel_property", true)
-   //    .attr("fill", "steelblue");
-
-   
-
-  
-
-   // metadata.append("text")
-   //         .attr("x", function(d) { return x(0); })
-   //         .attr("y", 3)
-   //         .attr("font-family", "Helvetica")
-   //         .attr("font-size", "12px")
-   //         .text("Metrics");          
-
-  
-
-
-   //drawMetadata(data);
-   //drawMetrics(data);
-   //drawAnalysis(data);
-}
-
-function drawMetadata(data) {
-   var chart = d3.select(".chart");
-   
-   chart.append("text")
-     .attr("x", 3)
-     .attr("y", 3)
-     .attr("font-family", "sans-serif")
-     .attr("font-size", "24px")
-     .text(get_property(data, 'Features').name);
-}
-
-function drawAnalysis(data) {
-
-}
-
-function drawMetrics(data) {  
-   console.log("metrics: " + data);
-   console.log("length: " + data.length);
-   console.log("length: " + data[0].name);
-  
-   var chart = d3.select(".chart");
-    
-   chart.attr("width", WIDTH)
-        .attr("height", BAR_HEIGHT * data.length);
-  
-   var x = d3.scaleLinear()
-             .domain([0, WIDTH])
-             .range([0, WIDTH]);
-  
-   console.log("x(0):" + x(0));
-  
-   var bar = chart.selectAll("g")
-                  .data(data)
-                  .enter().append("g")
-                  .attr("transform", function(d, i) { return "translate(0," + i * BAR_HEIGHT + ")"; });
-   
-   bar.append("rect")
-      .attr("width", WIDTH)
-      .attr("height", BAR_HEIGHT - 1);
-  
-   bar.append("text")
-      .attr("text-anchor", "start")
-      .attr("x", function(d) { return x(0) + 10*d.level + 3; })
-      .attr("y", BAR_HEIGHT / 2)
-      .attr("dy", ".35em")
-      .text(function(d) { return d.name; });
-  
-   bar.append("text")
-      .attr("text-anchor", "end")
-      .attr("x", WIDTH - 3)
-      .attr("y", BAR_HEIGHT / 2)
-      .attr("dy", ".35em")
-      .text(function(d) { return get_value(d); });
 }
 
 function get_value(d) {
@@ -241,7 +165,7 @@ function get_ratio(d) {
    if (d.ratio === null) {
       return "";
    } else {
-      return Math.round((d.ratio + Number.EPSILON) * 100) + "%";
+      return "(" + Math.round((d.ratio + Number.EPSILON) * 100) + "%)";
    }
 }
 
@@ -350,3 +274,105 @@ function _8(DOM,rasterize,chart){return(
           scale = Math.min(cbbox.width/bbox.width, cbbox.height/bbox.height);
       d.scale = scale;
     }
+
+
+/**
+ * Measure text size in pixels with D3.js
+ * 
+ * Usage: textSize("This is a very long text"); 
+ * => Return: Object {width: 140, height: 15.453125}
+ * 
+ * @param {String} text 
+ * @param {String} fontFamily 
+ * @param {String} fontSize 
+ * @param {String} fontWeight
+ * @returns Object including width and height.
+ */
+function textSize(text, fontFamily, fontSize, fontWeight="normal") {
+   var container = d3.select('body').append('svg');
+   container.append('text').text(text).attr("font-family", fontFamily).attr("font-size", fontSize).attr("font-weight", fontWeight);
+   var size = container.node().getBBox();
+   container.remove();
+   return { width: size.width, height: size.height };
+}
+
+// /**
+//  * 
+//  * @param {any} d 
+//  * @returns The eight of the property.
+//  */
+// function propertyHeight(d) { 
+//    if (isMainProperty(d)) {
+//       height = textSize(d.name, PROPERTY_FONT_FAMILY, PROPERTY_FONT_SIZE, "bold").height;
+//    } else {
+//       height = textSize(d.name, PROPERTY_FONT_FAMILY, PROPERTY_FONT_SIZE).height;
+//    }
+//    return height;
+// };
+
+// /**
+//  * 
+//  * @param {any} d Property of the label.
+//  * @returns True if the level of the property is 0, False in othercase.
+//  */
+// function isMainProperty(d) {
+//    return d.level == 0;
+// };
+
+// Calculate maximum width for the label.
+function calculateTotalMaxWidth(data) { 
+   return Math.max.apply(Math, data.map(function(d) { 
+      console.log("-----------------");
+      console.log("name: " + d.name);
+      indentationWidth = textSize("-".repeat(1 + PROPERTY_INDENTATION * parseInt(d.level, 10)), PROPERTY_FONT_FAMILY, PROPERTY_FONT_SIZE).width;
+      console.log("|-indentationWidth: " + indentationWidth);
+      nameWidth = textSize(d.name, PROPERTY_FONT_FAMILY, PROPERTY_FONT_SIZE).width;
+      console.log("|-nameWidth: " + nameWidth);
+      valueWidth = textSize(String(get_value(d)), PROPERTY_FONT_FAMILY, VALUES_FONT_SIZE).width;
+      console.log("|-valueWidth: " + valueWidth);
+      ratioWidth = textSize(get_ratio(d), PROPERTY_FONT_FAMILY, VALUES_FONT_SIZE).width;
+      console.log("|-ratioWidth: " + ratioWidth);
+      return indentationWidth + nameWidth + PROPERTIES_VALUES_SPACE + valueWidth + PROPERTIES_RATIO_SPACE + ratioWidth;
+   }))
+};
+
+// Calculate maximum width for of the properties's names.
+function calculatePropertyMaxWidth(data) { 
+   return Math.max.apply(Math, data.map(function(d) { 
+      console.log("-----------------");
+      console.log("name: " + d.name);
+      indentationWidth = textSize("-".repeat(1 + PROPERTY_INDENTATION * parseInt(d.level, 10)), PROPERTY_FONT_FAMILY, PROPERTY_FONT_SIZE).width;
+      console.log("|-indentationWidth: " + indentationWidth);
+      nameWidth = textSize(d.name, PROPERTY_FONT_FAMILY, PROPERTY_FONT_SIZE).width;
+      console.log("|-nameWidth: " + nameWidth);
+      return indentationWidth + nameWidth;
+   }))
+};
+
+// Calculate the maximum width for a property's name.
+function calculateMaxNameWidth(data) { 
+   return Math.max.apply(Math, data.map(function(d) { 
+      return textSize(d.name, PROPERTY_FONT_FAMILY, PROPERTY_FONT_SIZE).width;
+   }))
+};
+
+// Calculate the maximum width for a property's value.
+function calculateMaxValueWidth(data) { 
+   return Math.max.apply(Math, data.map(function(d) { 
+      return textSize(String(get_value(d)), VALUES_FONT_FAMILY, VALUES_FONT_SIZE).width;
+   }))
+};
+
+// Calculate the maximum width for a property's ratio.
+function calculateMaxRatioWidth(data) { 
+   return Math.max.apply(Math, data.map(function(d) { 
+      return textSize(String(get_ratio(d)), VALUES_FONT_FAMILY, VALUES_FONT_SIZE).width;
+   }))
+};
+
+// Calculate the maximum width for a property's indentation.
+function calculateMaxIndentationWidth(data) { 
+   return Math.max.apply(Math, data.map(function(d) { 
+      return textSize("-".repeat(1 + PROPERTY_INDENTATION * parseInt(d.level, 10)), PROPERTY_FONT_FAMILY, PROPERTY_FONT_SIZE).width;
+   }))
+};
