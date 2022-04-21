@@ -7,6 +7,17 @@ from famapy.metamodels.fm_metamodel.models import FeatureModel, Feature
 
 from famapy.metamodels.fm_metamodel import operations as fm_operations
 
+from famapy.metamodels.fm_metamodel.models import FeatureModel
+from famapy.metamodels.pysat_metamodel.transformations.fm_to_pysat import FmToPysat
+from famapy.metamodels.bdd_metamodel.transformations.fm_to_bdd import FmToBDD
+from famapy.metamodels.pysat_metamodel.operations.glucose3_valid import Glucose3Valid
+from famapy.metamodels.pysat_metamodel.operations.glucose3_core_features import Glucose3CoreFeatures
+from famapy.metamodels.pysat_metamodel.operations.glucose3_dead_features import Glucose3DeadFeatures
+from famapy.metamodels.pysat_metamodel.operations.glucose3_false_optional_features import Glucose3FalseOptionalFeatures
+from famapy.metamodels.bdd_metamodel.operations.bdd_products_number import BDDProductsNumber
+from famapy.metamodels.fm_metamodel.operations.fm_estimated_products_number import FMEstimatedProductsNumber
+from famapy.metamodels.fm_metamodel.operations.fm_atomic_sets import FMAtomicSets
+
 
 def get_ratio(collection1: Collection, collection2: Collection, precision: int = 4) -> float:
     if not collection2:
@@ -76,14 +87,14 @@ class FMProperties(Enum):
     #MAX_CONSTRAINTS_PER_FEATURE = FMProperty('Max constraints per feature', "", None)
     #AVG_CONSTRAINTS_PER_FEATURE = FMProperty('Avg constraints per feature', "", None)
 
-    #VALID = FMProperty('Valid (not void)', "", None)
-    # CORE_FEATURES = 'Core features'  # Also 'Common features'
-    # VARIANT_FEATURES = 'Variant features'  # Also 'Real optional features'
-    # DEAD_FEATURES = 'Dead features'
-    # UNIQUE_FEATURES = 'Unique features'
-    # FALSE_OPTIONAL_FEATURES = 'False-optional features'
-    # ATOMIC_SETS = 'Atomic sets'
-    # CONFIGURATIONS = 'Configurations'
+    VALID = FMProperty('Valid (not void)', "", None)
+    CORE_FEATURES = FMProperty('Core features', "", None)  # Also 'Common features'
+    VARIANT_FEATURES = FMProperty('Variant features', "", None)  # Also 'Real optional features'
+    DEAD_FEATURES = FMProperty('Dead features', "", None)
+    UNIQUE_FEATURES = FMProperty('Unique features', "", None)
+    FALSE_OPTIONAL_FEATURES = FMProperty('False-optional features', "", None)
+    CONFIGURATIONS = FMProperty('Configurations', "", None)
+    # ATOMIC_SETS = FMProperty('Atomic sets', "", None)  # Atomic sets need to be fixed in FLAMA.
 
 
 class FMMetric():
@@ -109,6 +120,16 @@ class FMAnalysis():
 
     def __init__(self, model: FeatureModel):
         self.fm = model
+        self.sat_model = FmToPysat(model).transform()
+        try:
+            self.bdd_model = FmToBDD(model).transform()
+        except Exception as e:
+            print(f'Warning: the feature model is too large to build the BDD model. (Exception: {e})')
+            self.bdd_model = None
+
+        # For performance purposes
+        self._common_features = Glucose3CoreFeatures().execute(self.sat_model).get_result()
+        self._dead_features = Glucose3DeadFeatures().execute(self.sat_model).get_result()
     
     # METADATA
     def name(self, value: Optional[str] = None) -> FMMetric:
@@ -309,6 +330,47 @@ class FMAnalysis():
                         len(_strictcomplex_constraints),
                         get_ratio(_strictcomplex_constraints, self.fm.get_complex_constraints()))
 
+    # ANALYSIS
+    def valid(self) -> FMMetric:
+        _valid = Glucose3Valid().execute(self.sat_model).get_result()
+        return FMMetric(FMProperties.VALID.value, _valid)
+
+    def core_features(self) -> FMMetric:
+        _core_features = self._common_features
+        return FMMetric(FMProperties.CORE_FEATURES.value, 
+                        _core_features, 
+                        len(_core_features),
+                        get_ratio(_core_features, self.fm.get_features()))
+
+    def dead_features(self) -> FMMetric:
+        _dead_features = self._dead_features
+        return FMMetric(FMProperties.DEAD_FEATURES.value, 
+                        _dead_features, 
+                        len(_dead_features),
+                        get_ratio(_dead_features, self.fm.get_features()))
+
+    def variant_features(self) -> FMMetric:
+        _variant_features = [f.name for f in self.fm.get_features() 
+                                        if f.name not in self._common_features and 
+                                           f.name not in self._dead_features]
+        return FMMetric(FMProperties.VARIANT_FEATURES.value, 
+                        _variant_features, 
+                        len(_variant_features),
+                        get_ratio(_variant_features, self.fm.get_features()))
+
+    def false_optional_features(self) -> FMMetric:
+        _false_optional_features = Glucose3FalseOptionalFeatures(self.fm).execute(self.sat_model).get_result()
+        return FMMetric(FMProperties.FALSE_OPTIONAL_FEATURES.value, 
+                        _false_optional_features, 
+                        len(_false_optional_features),
+                        get_ratio(_false_optional_features, self.fm.get_features()))
+
+    def configurations(self) -> FMMetric:
+        if self.bdd_model is not None:
+            _configurations = BDDProductsNumber().execute(self.bdd_model).get_result()
+        else:
+            _configurations = FMEstimatedProductsNumber().execute(self.fm).get_result()
+        return FMMetric(FMProperties.CONFIGURATIONS.value, _configurations)
 
 # def _nof_constraints(feature_model: FeatureModel) -> tuple[int, int, int]:
 #     """Return a tuple with the number of different types of constraints.

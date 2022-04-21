@@ -296,83 +296,30 @@ function textSize(text, fontFamily, fontSize, fontWeight="normal") {
    return { width: size.width, height: size.height };
 }
 
-// /**
-//  * 
-//  * @param {any} d 
-//  * @returns The eight of the property.
-//  */
-// function propertyHeight(d) { 
-//    if (isMainProperty(d)) {
-//       height = textSize(d.name, PROPERTY_FONT_FAMILY, PROPERTY_FONT_SIZE, "bold").height;
-//    } else {
-//       height = textSize(d.name, PROPERTY_FONT_FAMILY, PROPERTY_FONT_SIZE).height;
-//    }
-//    return height;
-// };
-
-// /**
-//  * 
-//  * @param {any} d Property of the label.
-//  * @returns True if the level of the property is 0, False in othercase.
-//  */
-// function isMainProperty(d) {
-//    return d.level == 0;
-// };
-
-// Calculate maximum width for the label.
-function calculateTotalMaxWidth(data) { 
-   return Math.max.apply(Math, data.map(function(d) { 
-      console.log("-----------------");
-      console.log("name: " + d.name);
-      indentationWidth = textSize("-".repeat(1 + PROPERTY_INDENTATION * parseInt(d.level, 10)), PROPERTY_FONT_FAMILY, PROPERTY_FONT_SIZE).width;
-      console.log("|-indentationWidth: " + indentationWidth);
-      nameWidth = textSize(d.name, PROPERTY_FONT_FAMILY, PROPERTY_FONT_SIZE).width;
-      console.log("|-nameWidth: " + nameWidth);
-      valueWidth = textSize(String(get_value(d)), PROPERTY_FONT_FAMILY, VALUES_FONT_SIZE).width;
-      console.log("|-valueWidth: " + valueWidth);
-      ratioWidth = textSize(get_ratio(d), PROPERTY_FONT_FAMILY, VALUES_FONT_SIZE).width;
-      console.log("|-ratioWidth: " + ratioWidth);
-      return indentationWidth + nameWidth + PROPERTIES_VALUES_SPACE + valueWidth + PROPERTIES_RATIO_SPACE + ratioWidth;
-   }))
-};
-
-// Calculate maximum width for of the properties's names.
-function calculatePropertyMaxWidth(data) { 
-   return Math.max.apply(Math, data.map(function(d) { 
-      console.log("-----------------");
-      console.log("name: " + d.name);
-      indentationWidth = textSize("-".repeat(1 + PROPERTY_INDENTATION * parseInt(d.level, 10)), PROPERTY_FONT_FAMILY, PROPERTY_FONT_SIZE).width;
-      console.log("|-indentationWidth: " + indentationWidth);
-      nameWidth = textSize(d.name, PROPERTY_FONT_FAMILY, PROPERTY_FONT_SIZE).width;
-      console.log("|-nameWidth: " + nameWidth);
-      return indentationWidth + nameWidth;
-   }))
-};
-
 // Calculate the maximum width for a property's name.
 function calculateMaxNameWidth(data) { 
    return Math.max.apply(Math, data.map(function(d) { 
       return textSize(d.name, PROPERTY_FONT_FAMILY, PROPERTY_FONT_SIZE).width;
    }))
-};
+}
 
 // Calculate the maximum width for a property's value.
 function calculateMaxValueWidth(data) { 
    return Math.max.apply(Math, data.map(function(d) { 
       return textSize(String(get_value(d)), VALUES_FONT_FAMILY, VALUES_FONT_SIZE).width;
    }))
-};
+}
 
 // Calculate the maximum width for a property's ratio.
 function calculateMaxRatioWidth(data) { 
    return Math.max.apply(Math, data.map(function(d) { 
       return textSize(String(get_ratio(d)), VALUES_FONT_FAMILY, VALUES_FONT_SIZE).width;
    }))
-};
+}
 
 // Calculate the maximum width for a property's indentation.
 function calculateMaxIndentationWidth(data) { 
    return Math.max.apply(Math, data.map(function(d) { 
       return textSize("-".repeat(1 + PROPERTY_INDENTATION * parseInt(d.level, 10)), PROPERTY_FONT_FAMILY, PROPERTY_FONT_SIZE).width;
    }))
-};
+}

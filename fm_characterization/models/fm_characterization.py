@@ -60,6 +60,28 @@ class FMCharacterization:
         metrics.append(self._analysis.strictcomplex_constraints())
         return metrics
 
+    def get_analysis(self) -> list[FMMetric]:
+        result = []
+        result.append(self._analysis.valid())
+        result.append(self._analysis.core_features())
+        result.append(self._analysis.dead_features())
+        result.append(self._analysis.variant_features())
+        result.append(self._analysis.false_optional_features())
+        result.append(self._analysis.configurations())
+        return result
+
+    # def get_analysis(self) -> dict[FMProperties, Any]:
+    #     analysis = FMAnalysis(self._feature_model)
+    #     data = {}
+    #     data[FMProperties.VALID] = analysis.valid_fm()
+    #     data[FMProperties.CORE_FEATURES] = analysis.nof_core_features()
+    #     data[FMProperties.VARIANT_FEATURES] = analysis.nof_variant_features()
+    #     data[FMProperties.DEAD_FEATURES] = analysis.nof_dead_features()
+    #     data[FMProperties.FALSE_OPTIONAL_FEATURES] = analysis.nof_false_optional_features()
+    #     data[FMProperties.ATOMIC_SETS] = analysis.nof_atomic_sets()
+    #     data[FMProperties.CONFIGURATIONS] = utils.get_nof_configuration_as_str(analysis.count_configurations(), analysis.bdd_model is None, self.metrics[FMProperties.CROSS_TREE_CONSTRAINTS])
+    #     return data
+
 
     # def get_metrics2(self) -> dict[FMProperties, Any]:
     #     metrics = FMMetrics(self._feature_model)
