@@ -72,7 +72,7 @@ class FMProperties(Enum):
     MUTEX_GROUPS = FMProperty('Mutex groups', "", GROUP_FEATURES)
     CARDINALITY_GROUPS = FMProperty('Cardinality groups', "", GROUP_FEATURES)
     BRANCHING_FACTOR = FMProperty('Branching factor', "", None)  # Also 'Avg children per feature'
-    MIN_CHILDREN_PER_FEATURE = FMProperty('Min children per non-leaf feature', "", BRANCHING_FACTOR)
+    MIN_CHILDREN_PER_FEATURE = FMProperty('Min children per feature', "", BRANCHING_FACTOR)
     MAX_CHILDREN_PER_FEATURE = FMProperty('Max children per feature', "", BRANCHING_FACTOR)
     AVG_CHILDREN_PER_FEATURE = FMProperty('Avg children per feature', "", BRANCHING_FACTOR)
     LEAF_FEATURES = FMProperty('Leaf features', "", FEATURES)

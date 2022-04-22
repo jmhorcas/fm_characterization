@@ -1,4 +1,5 @@
 import json
+from typing import Any, Optional
 
 from fm_characterization.models.fm_characterization import FMCharacterization
 from fm_characterization.models.fm_metrics import FMProperty
@@ -36,7 +37,15 @@ def get_string_output(fm_characterization: FMCharacterization) -> str:
         lines.append(f'{indentation}{name}: {value}{ratio}')    
     return '\n'.join(lines)
 
-def to_json(fm_characterization: FMCharacterization, filepath: str) -> None:
+def to_json_str(fm_characterization: FMCharacterization, filepath: Optional[str] = None) -> str:
+    result = to_json(fm_characterization)
+    if filepath is not None:
+        with open(filepath, 'w') as output_file:
+            json.dump(result, output_file, indent=4)
+    return json.dumps(result, indent=4).encode("utf8")
+
+
+def to_json(fm_characterization: FMCharacterization) -> dict[Any]:
     metadata = []
     metrics = []
     analysis = []
@@ -55,7 +64,4 @@ def to_json(fm_characterization: FMCharacterization, filepath: str) -> None:
     result['metadata'] = metadata
     result['metrics'] = metrics
     result['analysis'] = analysis
-    
-    with open(filepath, 'w') as output_file:
-        json.dump(result, output_file, indent=4)
-    
+    return result

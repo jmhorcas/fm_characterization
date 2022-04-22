@@ -25,6 +25,9 @@
     <!-- FM fact label visualization script -->
     <script src="fm_fact_completetag.js"></script>
 
+    <!-- To save as files. -->
+    <script src="js/FileSaver.js"></script>
+    <!-- <script src="js/canvas-to-blob.min.js"></script> -->
 </head>
 
 <body id="page-top">
@@ -57,20 +60,6 @@
                                 <div
                                     class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                                     <h6 class="m-0 font-weight-bold text-primary">Upload your feature model</h6>
-                                    <div class="dropdown no-arrow">
-                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                                        </a>
-                                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                                            aria-labelledby="dropdownMenuLink">
-                                            <div class="dropdown-header">Dropdown Header:</div>
-                                            <a class="dropdown-item" href="#">Action</a>
-                                            <a class="dropdown-item" href="#">Another action</a>
-                                            <div class="dropdown-divider"></div>
-                                            <a class="dropdown-item" href="#">Something else here</a>
-                                        </div>
-                                    </div>
                                 </div>
                                 <!-- Card Body -->
                                 <div class="card-body">
@@ -132,17 +121,20 @@
                                         </a>
                                         <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
                                             aria-labelledby="dropdownMenuLink">
-                                            <div class="dropdown-header">Dropdown Header:</div>
-                                            <a class="dropdown-item" href="#">Action</a>
-                                            <a class="dropdown-item" href="#">Another action</a>
+                                            <div class="dropdown-header">Save as...</div>
+                                            <a class="dropdown-item" id="saveSVG" href="#">SVG</a>
+                                            <a class="dropdown-item" id="savePNG" href="#">PNG</a>
+                                            <a class="dropdown-item" id="savePDF" href="#">PDF</a>
                                             <div class="dropdown-divider"></div>
-                                            <a class="dropdown-item" href="#">Something else here</a>
+                                            <div class="dropdown-header">Export to...</div>
+                                            <a class="dropdown-item" id="saveJSON" href="#">JSON</a>
+                                            <a class="dropdown-item" id="saveTXT" href="#">Plain text</a>
                                         </div>
                                     </div>
                                 </div>
                                 <!-- Card Body -->
                                 <div class="card-body">
-                                    <svg class="chart"></svg>
+                                    <svg class="chart" id="FMFactLabelChart"></svg>
                                     <div class="mt-4 text-center small">
                                         <span class="mr-2">
                                             <i class="fas fa-circle text-primary"></i> Direct
@@ -191,15 +183,19 @@
     <script src="js/sb-admin-2.min.js"></script>
 
     <!-- Page level plugins -->
-    <script src="vendor/chart.js/Chart.min.js"></script>
+    <!-- <script src="vendor/chart.js/Chart.min.js"></script> -->
 
     <!-- Page level custom scripts -->
-    <script src="js/demo/chart-area-demo.js"></script>
-    <script src="js/demo/chart-pie-demo.js"></script>
+    <!-- <script src="js/demo/chart-area-demo.js"></script> -->
+    <!-- <script src="js/demo/chart-pie-demo.js"></script> -->
 
     {% if data and data.fm_facts %}
     <script type="text/javascript">
-        d3.json('fm_facts.json').then(drawFMFactTag);  
+        // d3.json('fm_facts.json').then(drawFMFactTag);  
+        var fmCharacterizationString = '{{ data.fm_characterization | safe }}';
+        var fmCharacterizationJson = '{{ data.fm_facts | tojson | safe }}';
+        fmCharacterizationJson = JSON.parse(fmCharacterizationJson);
+        drawFMFactTag(fmCharacterizationJson);
     </script>
     {% endif %}
 </body>

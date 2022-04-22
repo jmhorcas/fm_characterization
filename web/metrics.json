@@ -32357,7 +32357,7 @@
             "ratio": null
         },
         {
-            "name": "Min children per non-leaf feature",
+            "name": "Min children per feature",
             "description": "",
             "parent": "Branching factor",
             "level": 1,
