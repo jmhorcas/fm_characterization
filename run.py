@@ -56,9 +56,11 @@ def index():
             characterization.set_metadata(name, description, author, reference, keywords)
             #json_characterization = interfaces.to_json(fm_characterization, FM_FACT_JSON_FILE)
             json_characterization = interfaces.to_json(characterization)
+            json_str_characterization = interfaces.to_json_str(characterization)
             str_characterization = interfaces.get_string_output(characterization)
             data['fm_facts'] = json_characterization
-            data['fm_characterization'] = str_characterization
+            data['fm_characterization_str'] = str_characterization
+            data['fm_characterization_json_str'] = json_str_characterization
         except Exception as e:
             data = None
             print(e)

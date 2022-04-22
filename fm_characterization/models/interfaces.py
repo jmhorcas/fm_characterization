@@ -42,7 +42,7 @@ def to_json_str(fm_characterization: FMCharacterization, filepath: Optional[str]
     if filepath is not None:
         with open(filepath, 'w') as output_file:
             json.dump(result, output_file, indent=4)
-    return json.dumps(result, indent=4).encode("utf8")
+    return json.dumps(result, indent=4)
 
 
 def to_json(fm_characterization: FMCharacterization) -> dict[Any]:

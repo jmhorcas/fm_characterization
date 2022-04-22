@@ -189,13 +189,13 @@
     <!-- <script src="js/demo/chart-area-demo.js"></script> -->
     <!-- <script src="js/demo/chart-pie-demo.js"></script> -->
 
-    {% if data and data.fm_facts %}
+    {% if data %}
     <script type="text/javascript">
         // d3.json('fm_facts.json').then(drawFMFactTag);  
-        var fmCharacterizationString = '{{ data.fm_characterization | safe }}';
-        var fmCharacterizationJson = '{{ data.fm_facts | tojson | safe }}';
-        fmCharacterizationJson = JSON.parse(fmCharacterizationJson);
-        drawFMFactTag(fmCharacterizationJson);
+        var fmCharacterizationStr = `{{ data.fm_characterization_str | safe }}`;
+        var fmCharacterizationJSONStr = `{{ data.fm_characterization_json_str | safe }}`;
+        var fmFactsJSON = '{{ data.fm_facts | tojson | safe }}';
+        drawFMFactTag(JSON.parse(fmFactsJSON));
     </script>
     {% endif %}
 </body>

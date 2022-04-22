@@ -198,20 +198,27 @@ function drawFMFactTag(data) {
    d3.select('#savePNG').on('click', function () {
       //download(() => rasterize(chart.node()), undefined, "Save as PNG");
       var blob = rasterize(chart.node());
-      saveAs(blob, get_property(data, 'Name').value + ".png")
+      saveAs(blob, get_property(data, 'Name').value + ".png");
    });
 
    // Set-up the export button
    d3.select('#saveSVG').on('click', function () {
       //download(() => serialize(chart.node()), undefined, "Save as SVG");
       var blob = serialize(chart.node());
-      saveAs(blob, get_property(data, 'Name').value + ".svg")
+      saveAs(blob, get_property(data, 'Name').value + ".svg");
    });
 
    // Set-up the export button
    d3.select('#saveTXT').on('click', function () {
-      var blob = new Blob([fmCharacterizationString], { type: "text/plain" });
-      saveAs(blob, get_property(data, 'Name').value + ".txt")
+      var blob = new Blob([fmCharacterizationStr], { type: "text/plain" });
+      saveAs(blob, get_property(data, 'Name').value + ".txt");
+   });
+
+   // Set-up the export button
+   d3.select('#saveJSON').on('click', function () {
+      //var strJson = JSON.stringify(fmCharacterizationStringJson, null, 4);
+      var blob = new Blob([fmCharacterizationJSONStr], { type: "application/json" });
+      saveAs(blob, get_property(data, 'Name').value + ".json");
    });
 }
 
