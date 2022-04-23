@@ -2,6 +2,8 @@ const POINT_TO_PIXEL = 1.3281472327365;
 //const TITLE_FONT_FAMILY = "Franklin Gothic Heavy";
 const TITLE_FONT_FAMILY = "'Libre Franklin', sans-serif";
 const TITLE_FONT_SIZE = "24pt";
+const DESCRIPTION_FONT_FAMILY = "Helvetica";
+const DESCRIPTION_FONT_SIZE = "8pt";
 const PROPERTY_FONT_FAMILY = "Helvetica";
 const PROPERTY_FONT_SIZE = "12pt";
 const VALUES_FONT_FAMILY = "Helvetica";
@@ -33,7 +35,7 @@ function drawFMFactLabel(data) {
    var maxWidth = maxIndentationWidth + maxNameWidth + PROPERTIES_VALUES_SPACE + maxValueWidth + PROPERTIES_RATIO_SPACE + maxRatioWidth + LEFT_MARGING; //textSize("-".repeat(PROPERTY_INDENTATION), PROPERTY_FONT_FAMILY, PROPERTY_FONT_SIZE).width;
 
    chart.attr("width", maxWidth);
-      //.attr("height", BAR_HEIGHT * 10 + BAR_HEIGHT * data.metadata.length + BAR_HEIGHT * data.metrics.length); // CAMBIAR EL *10 AJUSTANDOLO BIEN
+   //.attr("height", BAR_HEIGHT * 10 + BAR_HEIGHT * data.metadata.length + BAR_HEIGHT * data.metrics.length); // CAMBIAR EL *10 AJUSTANDOLO BIEN
 
    var x = d3.scaleLinear().domain([0, maxWidth]).range([0, maxWidth]);
 
@@ -50,42 +52,44 @@ function drawFMFactLabel(data) {
       .attr("font-family", TITLE_FONT_FAMILY)
       .attr("font-size", TITLE_FONT_SIZE);
 
-   /*
    // Description
-   currentHeight += TITLE_HEIGHT;
+   currentHeight = titleSize.height + 1;
+   var indentationDescription = textSize("-".repeat(PROPERTY_INDENTATION), DESCRIPTION_FONT_FAMILY, DESCRIPTION_FONT_SIZE).width;
    var description = chart.append("g").attr("transform", "translate(0," + currentHeight + ")");
    description.append("text")
-              .text(get_property(data, 'Description').value) 
-              .attr("x", function(d) { return x(0); })
-              .attr("y", BAR_HEIGHT / 2)
-              .attr("font-family", "Helvetica")
-              .attr("font-size", "8pt")
-              .call(wrap, WIDTH);      
+      .text(get_property(data, 'Description').value)
+      .attr("x", function (d) { return x(indentationDescription)})
+      .attr("y", BAR_HEIGHT / 2)
+      .attr("font-family", "Helvetica")
+      .attr("font-size", "8pt")
+      .call(wrap, maxWidth-indentationDescription);
+   var descriptionSize = description.node().getBBox();
 
-   // Other metadata
-   currentHeight += DESCRIPTION_HEIGHT;
-   var metadata = chart.append("g").attr("transform", "translate(0," + currentHeight + ")");
-   var property = metadata.selectAll("g")
-                          .data(data.metadata.slice(2))
-                          .enter().append("g")
-                          .attr("transform", function(d, i) { return "translate(0," + i * BAR_HEIGHT + ")"; });
-   property.append("text")
-           .attr("x", function(d) { return x(0); })
-           .attr("y", BAR_HEIGHT / 2)
-           .attr("font-family", "Helvetica")
-           .attr("font-size", "8pt")
-           .text(function(d) { return d.name + ":"; });        
-   property.append("text")
-           .attr("x", function(d) { return d.name.length*7; })
-           .attr("y", BAR_HEIGHT / 2)
-           .attr("font-family", "Helvetica")
-           .attr("font-size", "8pt")
-           .text(function(d) { return d.value; })
-           .call(wrap, WIDTH);
-   */
+   /*
+    // Other metadata
+    currentHeight += DESCRIPTION_HEIGHT;
+    var metadata = chart.append("g").attr("transform", "translate(0," + currentHeight + ")");
+    var property = metadata.selectAll("g")
+                           .data(data.metadata.slice(2))
+                           .enter().append("g")
+                           .attr("transform", function(d, i) { return "translate(0," + i * BAR_HEIGHT + ")"; });
+    property.append("text")
+            .attr("x", function(d) { return x(0); })
+            .attr("y", BAR_HEIGHT / 2)
+            .attr("font-family", "Helvetica")
+            .attr("font-size", "8pt")
+            .text(function(d) { return d.name + ":"; });        
+    property.append("text")
+            .attr("x", function(d) { return d.name.length*7; })
+            .attr("y", BAR_HEIGHT / 2)
+            .attr("font-family", "Helvetica")
+            .attr("font-size", "8pt")
+            .text(function(d) { return d.value; })
+            .call(wrap, WIDTH);
+    */
 
    // Middle rule
-   currentHeight += titleSize.height; //*data.metadata.slice(2).length;
+   currentHeight += descriptionSize.height + 1; //*data.metadata.slice(2).length;
    chart.append("g")
       .attr("transform", "translate(0," + currentHeight + ")")
       .append("rect")
@@ -183,7 +187,7 @@ function drawFMFactLabel(data) {
       .style("stroke", "black")
       .style("fill", "none")
       .style("stroke-width", "3pt");
-   
+
    chart.attr("height", currentHeight);
 }
 
@@ -202,7 +206,7 @@ function get_value(d) {
  * @returns The percentage for the property.
  */
 function get_ratio(d) {
-   return d.ratio === null ? "" : "(" + Math.round((d.ratio + Number.EPSILON) * 100) + "%)"; 
+   return d.ratio === null ? "" : "(" + Math.round((d.ratio + Number.EPSILON) * 100) + "%)";
 }
 
 /**
@@ -340,7 +344,7 @@ function calculateMaxIndentationWidth(data) {
 }
 
 // function calculateTotalMaxWidth(data) {
-//    return Math.max.apply(Math, data.map(function(d) { 
+//    return Math.max.apply(Math, data.map(function(d) {
 //       indentationWidth = textSize("-".repeat(1 + PROPERTY_INDENTATION * parseInt(d.level, 10)), PROPERTY_FONT_FAMILY, PROPERTY_FONT_SIZE).width;
 //       nameWidth = textSize(d.name, PROPERTY_FONT_FAMILY, PROPERTY_FONT_SIZE).width;
 //       valueWidth = textSize(String(get_value(d)), VALUES_FONT_FAMILY, VALUES_FONT_SIZE).width;
