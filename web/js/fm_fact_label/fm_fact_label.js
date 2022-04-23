@@ -128,7 +128,8 @@ function drawFMFactLabel(data) {
    chart.attr("height", maxHeight);
 
    // Set the configuration options
-   d3.select('#collapseZeroValues').on('change', function () { console.log("hola"); collapseZeroValues(data); });
+   d3.select('#collapseZeroValues').on('change', function () { collapseZeroValues(data); });
+   d3.select('#collapseSubProperties').on('change', function () { collapseSubProperties(data); });
 }
 
 function updateProperties(data, id) {
@@ -144,7 +145,7 @@ function updateProperties(data, id) {
       .attr("dy", ".35em")
       .attr("font-family", PROPERTY_FONT_FAMILY)
       .attr("font-size", PROPERTY_FONT_SIZE)
-      .attr("font-weight", function (d) { return d.level == 0 ? "bold" : "normal"; })
+      .attr("font-weight", function (d) { return parseInt(d.level, 10) == 0 ? "bold" : "normal"; })
       .text(function (d) { return d.name; });
    property.append("text")
       .attr("text-anchor", "end")
@@ -323,11 +324,26 @@ function calculateMaxIndentationWidth(data) {
    }))
 }
 
+function filterData(data) {
+   if (d3.select("#collapseZeroValues").property("checked")) {
+      metrics = data.metrics.filter(function (d, i) { return get_value(d) != '0'; });
+      analysis = data.analysis.filter(function (d, i) { return get_value(d) != '0'; });
+   } else {
+      metrics = data.metrics;
+      analysis = data.analysis;
+   }
+   if (d3.select("#collapseSubProperties").property("checked")) {
+      metrics = metrics.filter(function (d, i) { return parseInt(d.level, 10) == 0; });
+      analysis = analysis.filter(function (d, i) { return parseInt(d.level, 10) == 0; });
+   }
+   return {"metadata": data.metadata, "metrics": metrics, "analysis": analysis};
+}
+
 /**
  * Set-up the collapse zero values option.
  */
 function collapseZeroValues(data) {
-   console.log("collapseZeroValues");
+   var metrics, analysis;
    if (d3.select("#collapseZeroValues").property("checked")) {
       metrics = data.metrics.filter(function (d, i) { return get_value(d) != '0'; });
       analysis = data.analysis.filter(function (d, i) { return get_value(d) != '0'; });
@@ -344,7 +360,28 @@ function collapseZeroValues(data) {
    var analysisHeight = updateProperties(analysis, "analysis");
    height += analysisHeight + MARGING_BETWEEN_PROPERTIES;
    drawBorders(maxWidth, height);
-   chart.attr("height", height);
+   d3.select("chart").attr("height", height);
+}
+
+function collapseSubProperties(data) {
+   var metrics, analysis;
+   if (d3.select("#collapseSubProperties").property("checked")) {
+      metrics = data.metrics.filter(function (d, i) { return parseInt(d.level, 10) == 0; });
+      analysis = data.analysis.filter(function (d, i) { return parseInt(d.level, 10) == 0; });
+   } else {
+      metrics = data.metrics;
+      analysis = data.analysis;
+   }
+   var height = 0;
+   var metricsHeight = updateProperties(metrics, "metrics");
+   height = yMetrics + metricsHeight;
+   drawRule("rule2", height);
+   height += MAIN_RULE_HEIGHT;
+   d3.select("#analysis").attr("transform", "translate(0," + height + ")")
+   var analysisHeight = updateProperties(analysis, "analysis");
+   height += analysisHeight + MARGING_BETWEEN_PROPERTIES;
+   drawBorders(maxWidth, height);
+   d3.select("chart").attr("height", height);
 }
 
 // function calculateTotalMaxWidth(data) {
