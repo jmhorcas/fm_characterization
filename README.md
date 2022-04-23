@@ -1,13 +1,12 @@
 # Table of Contents
 - [Table of Contents](#table-of-contents)
-- [Variability in Data Visualization: a Software Product Line Approach](#variability-in-data-visualization-a-software-product-line-approach)
+- [FM Characterization: A Fact Label for Feature Models](#fm-characterization-a-fact-label-for-feature-models)
   - [Artifact description](#artifact-description)
   - [How to use it](#how-to-use-it)
+  - [Deployment of the web application](#deployment-of-the-web-application)
     - [Requirements](#requirements)
     - [Download and install](#download-and-install)
     - [Execution](#execution)
-    - [Results output](#results-output)
-  - [Validation replication](#validation-replication)
   - [References and third-party software](#references-and-third-party-software)
 
 # FM Characterization: A Fact Label for Feature Models
