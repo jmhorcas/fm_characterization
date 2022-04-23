@@ -1,5 +1,6 @@
 const POINT_TO_PIXEL = 1.3281472327365;
-const TITLE_FONT_FAMILY = "Franklin Gothic Heavy";
+//const TITLE_FONT_FAMILY = "Franklin Gothic Heavy";
+const TITLE_FONT_FAMILY = "'Libre Franklin', sans-serif";
 const TITLE_FONT_SIZE = "24pt";
 const PROPERTY_FONT_FAMILY = "Helvetica";
 const PROPERTY_FONT_SIZE = "12pt";
