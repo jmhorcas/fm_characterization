@@ -38,6 +38,20 @@ d3.select('#saveJSON').on('click', function () {
 });
 
 /**
+ * Generic code to download a file available in the server.
+ * (Not used actually.)
+ */
+function downloadUsingAnchorElement() {
+    const anchor = document.createElement("a");
+    anchor.href = IMG_URL;
+    anchor.download = FILE_NAME;
+    
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
+}
+
+/**
  * Third-party code:
  * - For saving SVG and PNG: https://observablehq.com/@mbostock/saving-svg
  * - FileSaver (for saving files on the clien-side): https://github.com/eligrey/FileSaver.js/
