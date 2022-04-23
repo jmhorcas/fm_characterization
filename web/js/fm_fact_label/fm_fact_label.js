@@ -23,8 +23,13 @@ var DESCRIPTION_HEIGHT = 40;
 var RULE_HEIGHT = 7;
 
 function drawFMFactLabel(data) {
-   var chart = d3.select(".chart");
+   var chart = d3.select(".chart");  // The svg 
 
+   chart.append('defs')
+      .append('style')
+      .attr('type', 'text/css')
+      .text("@import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@900');");
+      
    // Calculate maximum width for the label.
    //var maxWidth = Math.max(calculateTotalMaxWidth(data.metrics), calculateTotalMaxWidth(data.analysis));
 
@@ -50,7 +55,8 @@ function drawFMFactLabel(data) {
       .attr("text-anchor", "middle")
       .attr("dominant-baseline", "central")
       .attr("font-family", TITLE_FONT_FAMILY)
-      .attr("font-size", TITLE_FONT_SIZE);
+      .attr("font-size", TITLE_FONT_SIZE)
+      .attr("font-weight", "bold");
 
    // Description
    currentHeight = titleSize.height + 1;
@@ -58,11 +64,11 @@ function drawFMFactLabel(data) {
    var description = chart.append("g").attr("transform", "translate(0," + currentHeight + ")");
    description.append("text")
       .text(get_property(data, 'Description').value)
-      .attr("x", function (d) { return x(indentationDescription)})
+      .attr("x", function (d) { return x(indentationDescription) })
       .attr("y", BAR_HEIGHT / 2)
       .attr("font-family", "Helvetica")
       .attr("font-size", "8pt")
-      .call(wrap, maxWidth-indentationDescription);
+      .call(wrap, maxWidth - indentationDescription);
    var descriptionSize = description.node().getBBox();
 
    /*
