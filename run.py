@@ -28,6 +28,7 @@ def index():
 
         name = request.form['inputName']
         description = request.form['inputDescription']
+        description = description.replace(os.linesep, ' ')
         author = request.form['inputAuthor']
         reference = request.form['inputReference']
         keywords = request.form['inputKeywords']
