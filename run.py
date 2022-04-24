@@ -1,9 +1,10 @@
-import json
 import os
-import re
+from typing import Optional
+
 from flask import Flask, render_template, request
 
-from famapy.metamodels.fm_metamodel.transformations import FeatureIDEReader
+from famapy.metamodels.fm_metamodel.models import FeatureModel
+from famapy.metamodels.fm_metamodel.transformations import UVLReader, FeatureIDEReader
 from fm_characterization.models.fm_characterization import FMCharacterization
 from fm_characterization.models import interfaces
 
@@ -13,14 +14,21 @@ app = Flask(__name__,
             template_folder='web')
 
 
-FM_FACT_JSON_FILE = 'web/fm_facts.json'
+def read_fm_file(filename: str) -> Optional[FeatureModel]:
+    try:
+        return UVLReader(filename).transform() 
+    except:
+        pass
+    try:
+        return FeatureIDEReader(filename).transform() 
+    except:
+        pass
+    return None
+
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'GET':
-        if os.path.exists(FM_FACT_JSON_FILE):
-            os.remove(FM_FACT_JSON_FILE)
-
         return render_template('index.html')
 
     if request.method == 'POST':
@@ -49,7 +57,11 @@ def index():
         try:
             fm_file.save(filename)
             
-            fm = FeatureIDEReader(filename).transform() 
+            # Read the feature model
+            fm = read_fm_file(filename)
+            if fm is None:
+                data['file_error'] = 'Feature model format not supported.'
+                return render_template('index.html', data=data) 
             if not name:
                 name = os.path.splitext(os.path.basename(filename))[0]
             
