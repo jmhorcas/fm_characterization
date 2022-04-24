@@ -37,17 +37,11 @@ def index():
         name = request.form['inputName']
         description = request.form['inputDescription']
         description = description.replace(os.linesep, ' ')
-        author = request.form['inputAuthor']
-        reference = request.form['inputReference']
-        keywords = request.form['inputKeywords']
+        # author = request.form['inputAuthor']
+        # reference = request.form['inputReference']
+        # keywords = request.form['inputKeywords']
+        # domain = request.form['inputDomain']
         fm_file = request.files['inputFM']
-
-        print(f'name: {name}')
-        print(f'description: {description}')
-        print(f'author: {author}')
-        print(f'reference: {reference}')
-        print(f'keywords: {keywords}')
-        print(f'fm_file: {fm_file}')
 
         if not fm_file:
             # The file is required and this is controlled in the front-end.
@@ -66,7 +60,7 @@ def index():
                 name = os.path.splitext(os.path.basename(filename))[0]
             
             characterization = FMCharacterization(fm, name)
-            characterization.set_metadata(name, description, author, reference, keywords)
+            characterization.set_metadata(name, description)
             #json_characterization = interfaces.to_json(fm_characterization, FM_FACT_JSON_FILE)
             json_characterization = interfaces.to_json(characterization)
             json_str_characterization = interfaces.to_json_str(characterization)
