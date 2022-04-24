@@ -108,6 +108,13 @@
                                                 <label for="inputFM" class="col-sm-2 col-form-label">FM file</label>
                                                 <div class="col-sm">
                                                     <input type="file" class="form-control-file" id="inputFM" name="inputFM" required>
+                                                    {% if data and data.file_error %}
+                                                    <div class="alert alert-danger" role="alert">
+                                                        {{ data.file_error }}
+                                                    </div>
+                                                    {% else %}
+                                                    Supported formats: UVL (.uvl), FeatureIDE (.xml, .fide)
+                                                    {% endif %}
                                                 </div>
                                             </div>
                                             <button type="submit" class="btn btn-primary">Submit</button>
@@ -117,6 +124,7 @@
                             </div>
 
                             
+                            {% if data and data.fm_facts %}
                             <!-- FM Fact Label chart -->
                             <div class="col-xl-6 col-lg-7">
                                 <div class="card shadow mb-4">
@@ -134,7 +142,7 @@
                                                 <div class="dropdown-header">Save as...</div>
                                                 <a class="dropdown-item" id="saveSVG" href="#">SVG</a>
                                                 <a class="dropdown-item" id="savePNG" href="#">PNG</a>
-                                                <a class="dropdown-item" id="savePDF" href="#">PDF</a>
+                                                <!-- <a class="dropdown-item" id="savePDF" href="#">PDF</a> -->
                                                 <div class="dropdown-divider"></div>
                                                 <div class="dropdown-header">Export to...</div>
                                                 <a class="dropdown-item" id="saveJSON" href="#">JSON</a>
@@ -146,7 +154,7 @@
                                     <div class="card-body">
                                         <h6 class="h6">Label configuration:</h6>
                                         <div class="mt-0 small">
-                                            <div class="form-check form-switch row">
+                                            <!-- <div class="form-check form-switch row">
                                                 <span class="me-2">
                                                     <input class="form-check-input" type="checkbox" id="portraitOrientation">
                                                     <label class="form-check-label" for="portraitOrientation">Portrait orientation</label>
@@ -155,12 +163,14 @@
                                                     <input class="form-check-input" type="checkbox" id="intermediateRules">
                                                     <label class="form-check-label" for="intermediateRules">Intermediate rules</label>
                                                 </span>
-                                            </div>
-                                            <div class="form-check form-switch row">
+                                            </div> -->
+                                            <div class="form-check form-switch">
                                                 <span class="me-2">
                                                         <input class="form-check-input" type="checkbox" id="collapseSubProperties">
                                                         <label class="form-check-label" for="collapseSubProperties">Collapsed sub-properties</label>
                                                 </span>
+                                            </div>
+                                            <div class="form-check form-switch">
                                                 <span class="me-2">
                                                         <input class="form-check-input" type="checkbox" id="collapseZeroValues">
                                                         <label class="form-check-label" for="collapseZeroValues">Collapsed zero values</label>
@@ -175,6 +185,7 @@
                                 </div>
                             </div>
                             <!-- End of FM Fact Label chart-->
+                            {% endif %}
                             
                         </div>
                     </div>
@@ -212,7 +223,7 @@
         <!-- sb-admin-2 template (custom scripts for all pages) -->
         <script src="js/sb_admin_2/sb-admin-2.min.js"></script>
 
-        {% if data %}
+        {% if data and data.fm_facts %}
         <script type="text/javascript">
             // d3.json('fm_facts.json').then(drawFMFactTag);  
             var fmCharacterizationStr = `{{ data.fm_characterization_str | safe }}`;

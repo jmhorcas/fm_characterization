@@ -325,17 +325,17 @@ function calculateMaxIndentationWidth(data) {
 }
 
 function filterData(data) {
-   if (d3.select("#collapseZeroValues").property("checked")) {
-      metrics = data.metrics.filter(function (d, i) { return get_value(d) != '0'; });
-      analysis = data.analysis.filter(function (d, i) { return get_value(d) != '0'; });
+   if (d3.select("#collapseSubProperties").property("checked")) {
+      metrics = data.metrics.filter(function (d, i) { return parseInt(d.level, 10) == 0; });
+      analysis = data.analysis.filter(function (d, i) { return parseInt(d.level, 10) == 0; });
    } else {
       metrics = data.metrics;
       analysis = data.analysis;
    }
-   if (d3.select("#collapseSubProperties").property("checked")) {
-      metrics = metrics.filter(function (d, i) { return parseInt(d.level, 10) == 0; });
-      analysis = analysis.filter(function (d, i) { return parseInt(d.level, 10) == 0; });
-   }
+   if (d3.select("#collapseZeroValues").property("checked")) {
+      metrics = metrics.filter(function (d, i) { return get_value(d) != '0'; });
+      analysis = analysis.filter(function (d, i) { return get_value(d) != '0'; });
+   } 
    return {"metadata": data.metadata, "metrics": metrics, "analysis": analysis};
 }
 
@@ -343,14 +343,10 @@ function filterData(data) {
  * Set-up the collapse zero values option.
  */
 function collapseZeroValues(data) {
-   var metrics, analysis;
-   if (d3.select("#collapseZeroValues").property("checked")) {
-      metrics = data.metrics.filter(function (d, i) { return get_value(d) != '0'; });
-      analysis = data.analysis.filter(function (d, i) { return get_value(d) != '0'; });
-   } else {
-      metrics = data.metrics;
-      analysis = data.analysis;
-   }
+   var newData = filterData(data);
+   var metrics = newData.metrics;
+   var analysis = newData.analysis;
+
    var height = 0;
    var metricsHeight = updateProperties(metrics, "metrics");
    height = yMetrics + metricsHeight;
@@ -364,14 +360,10 @@ function collapseZeroValues(data) {
 }
 
 function collapseSubProperties(data) {
-   var metrics, analysis;
-   if (d3.select("#collapseSubProperties").property("checked")) {
-      metrics = data.metrics.filter(function (d, i) { return parseInt(d.level, 10) == 0; });
-      analysis = data.analysis.filter(function (d, i) { return parseInt(d.level, 10) == 0; });
-   } else {
-      metrics = data.metrics;
-      analysis = data.analysis;
-   }
+   var newData = filterData(data);
+   var metrics = newData.metrics;
+   var analysis = newData.analysis;
+   
    var height = 0;
    var metricsHeight = updateProperties(metrics, "metrics");
    height = yMetrics + metricsHeight;
