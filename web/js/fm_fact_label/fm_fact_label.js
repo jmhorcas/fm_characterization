@@ -65,7 +65,7 @@ function drawFMFactLabel(data) {
       .attr("font-weight", "bold");
 
    // Description
-   var yDescription = titleSize.height + 1;
+   var yDescription = yTitle + titleSize.height + 1;
    var indentationDescription = textSize("-".repeat(PROPERTY_INDENTATION), DESCRIPTION_FONT_FAMILY, DESCRIPTION_FONT_SIZE).width;
    var description = chart.append("g").attr("transform", "translate(0," + yDescription + ")");
    description.append("text")
