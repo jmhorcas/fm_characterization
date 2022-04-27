@@ -140,6 +140,16 @@ function updateProperties(data, id) {
       .attr("transform", function (d, i) { return "translate(0," + i * propertyHeight + ")"; });
    property.append("text")
       .attr("text-anchor", "start")
+      .attr("x", function (d) { return x(0); })
+      .attr("y", propertyHeight / 2)
+      .attr("dy", ".35em")
+      .attr("font-family", PROPERTY_FONT_FAMILY)
+      .attr("font-size", PROPERTY_FONT_SIZE)
+      .attr("font-weight", function (d) { return parseInt(d.level, 10) == 0 ? "bold" : "normal"; })
+      .on("click", function(d, i) { console.log(d.name); })
+      .text(function (d) { return "-".repeat(1 + PROPERTY_INDENTATION * parseInt(d.level, 10)); });
+   property.append("text")
+      .attr("text-anchor", "start")
       .attr("x", function (d) { return x(textSize("-".repeat(1 + PROPERTY_INDENTATION * parseInt(d.level, 10)), PROPERTY_FONT_FAMILY, PROPERTY_FONT_SIZE).width); })
       .attr("y", propertyHeight / 2)
       .attr("dy", ".35em")
