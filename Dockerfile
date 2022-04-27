@@ -1,4 +1,5 @@
-FROM python:alpine3.9
+FROM python:3.9-alpine
+RUN apk update && apk add build-base linux-headers
 COPY . /app
 WORKDIR /app
 RUN pip install -r requirements.txt
