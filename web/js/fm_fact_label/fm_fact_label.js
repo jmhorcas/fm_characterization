@@ -146,7 +146,7 @@ function updateProperties(data, id) {
       .attr("font-family", PROPERTY_FONT_FAMILY)
       .attr("font-size", PROPERTY_FONT_SIZE)
       .attr("font-weight", function (d) { return parseInt(d.level, 10) == 0 ? "bold" : "normal"; })
-      .on("click", function(d, i) { console.log(d.name); })
+      .on("click", function(d, i) { alert("text"); })
       .text(function (d) { return "-".repeat(1 + PROPERTY_INDENTATION * parseInt(d.level, 10)); });
    property.append("text")
       .attr("text-anchor", "start")
