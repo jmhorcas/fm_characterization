@@ -1,9 +1,7 @@
-from msilib.schema import Property
-from multiprocessing.sharedctypes import Value
 from typing import Any, Collection, Optional
 from enum import Enum
 
-from famapy.metamodels.fm_metamodel.models import FeatureModel, Feature
+from famapy.metamodels.fm_metamodel.models import FeatureModel
 
 from famapy.metamodels.fm_metamodel import operations as fm_operations
 
@@ -16,9 +14,9 @@ from famapy.metamodels.pysat_metamodel.operations.glucose3_dead_features import 
 from famapy.metamodels.pysat_metamodel.operations.glucose3_false_optional_features import Glucose3FalseOptionalFeatures
 from famapy.metamodels.bdd_metamodel.operations.bdd_products_number import BDDProductsNumber
 from famapy.metamodels.fm_metamodel.operations.fm_estimated_products_number import FMEstimatedProductsNumber
-from famapy.metamodels.fm_metamodel.operations.fm_atomic_sets import FMAtomicSets
 
 from .utils import get_nof_configuration_as_str
+
 
 def get_ratio(collection1: Collection, collection2: Collection, precision: int = 4) -> float:
     if not collection2:
@@ -101,7 +99,7 @@ class FMProperties(Enum):
 class FMMetric():
 
     def __init__(self, 
-                 property: Property,
+                 property: FMProperty,
                  value: Optional[Any] = None,  # Example: the list of abstract features
                  size: Optional[Any] = None,  # Example: number of abstract features
                  ratio: Optional[Any] = None):  # Example: percentage of abstract features from the total number of features
