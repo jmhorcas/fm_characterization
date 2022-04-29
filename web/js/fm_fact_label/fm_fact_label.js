@@ -8,6 +8,7 @@ const PROPERTY_FONT_FAMILY = "Helvetica";
 const PROPERTY_FONT_SIZE = "12pt";
 const VALUES_FONT_FAMILY = "Helvetica";
 const VALUES_FONT_SIZE = "10pt";
+const COLLAPSEICON_FONT_SIZE = "8pt";
 const PROPERTY_INDENTATION = 2;
 const TOP_MARGING = 20;
 const LEFT_MARGING = 5;
@@ -15,6 +16,8 @@ const MAIN_RULE_HEIGHT = 7 * POINT_TO_PIXEL;
 const MARGING_BETWEEN_PROPERTIES = 3;
 const PROPERTIES_VALUES_SPACE = 10;
 const PROPERTIES_RATIO_SPACE = 3;
+
+const EXPAND_ICON = '\uf150';
 
 // GLOBAL VARIABLES
 var maxWidth;
@@ -28,23 +31,30 @@ var x;
 var yRule1;
 var yMetrics;
 
+var IMPORTS = ['https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@900',
+               'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css'];
 function drawFMFactLabel(data) {
    var chart = d3.select(".chart");  // The svg 
 
-   chart.append('defs')
-      .append('style')
+   // chart.append('defs')
+   //    .append('style')
+   //    .attr('type', 'text/css')
+   //    .text("@import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@900');");
+   chart.selectAll('defs')
+      .data(IMPORTS, d => d)
+      .join("style")
       .attr('type', 'text/css')
-      .text("@import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@900');");
+      .text(function (d) { return "@import url('" + d + "');"; });
+
 
    // Calculate maximum width for the label.
    //var maxWidth = Math.max(calculateTotalMaxWidth(data.metrics), calculateTotalMaxWidth(data.analysis));
-   propertyHeight = textSize("Any text", PROPERTY_FONT_FAMILY, PROPERTY_FONT_SIZE, "bold").height + MARGING_BETWEEN_PROPERTIES;
+   propertyHeight = textSize("Any text", PROPERTY_FONT_FAMILY, PROPERTY_FONT_SIZE, "bold").height;// + MARGING_BETWEEN_PROPERTIES;
    maxIndentationWidth = Math.max(calculateMaxIndentationWidth(data.metrics), calculateMaxIndentationWidth(data.analysis));
    maxNameWidth = Math.max(calculateMaxNameWidth(data.metrics), calculateMaxNameWidth(data.analysis));
    maxValueWidth = Math.max(calculateMaxValueWidth(data.metrics), calculateMaxValueWidth(data.analysis));
    maxRatioWidth = Math.max(calculateMaxRatioWidth(data.metrics), calculateMaxRatioWidth(data.analysis));
    maxWidth = maxIndentationWidth + maxNameWidth + PROPERTIES_VALUES_SPACE + maxValueWidth + PROPERTIES_RATIO_SPACE + maxRatioWidth + LEFT_MARGING; //textSize("-".repeat(PROPERTY_INDENTATION), PROPERTY_FONT_FAMILY, PROPERTY_FONT_SIZE).width;
-
    chart.attr("width", maxWidth);
    //.attr("height", BAR_HEIGHT * 10 + BAR_HEIGHT * data.metadata.length + BAR_HEIGHT * data.metrics.length); // CAMBIAR EL *10 AJUSTANDOLO BIEN
 
@@ -138,13 +148,14 @@ function updateProperties(data, id) {
       .data(data, d => d)
       .join("g")
       .attr("transform", function (d, i) { return "translate(0," + i * propertyHeight + ")"; });
+   // Indentation
    property.append("rect")
       .attr("x", function (d) { return x(0); })
-      .attr("y", propertyHeight / 2)
+      .attr("y", propertyHeight)
       .attr("dy", ".35em")
-      .attr("width", function (d) { return textSize("-".repeat(1 + PROPERTY_INDENTATION * parseInt(d.level, 10)), PROPERTY_FONT_FAMILY, PROPERTY_FONT_SIZE).width; })
-      .attr("height", propertyHeight / 2)
-      .attr("fill", "blue")
+      .attr("width", function (d) { return get_indentation(d); })
+      .attr("height", propertyHeight)
+      .attr("fill", "white");
       //.append("text")
       // .attr("text-anchor", "start")
       // .attr("x", function (d) { return x(0); })
@@ -153,12 +164,35 @@ function updateProperties(data, id) {
       // .attr("font-family", PROPERTY_FONT_FAMILY)
       // .attr("font-size", PROPERTY_FONT_SIZE)
       // .attr("font-weight", function (d) { return parseInt(d.level, 10) == 0 ? "bold" : "normal"; })
-      .attr("cursor", "pointer")
-      .on("click", function(d, i) { alert("text"); });
+      
       //.text(function (d) { return "-".repeat(1 + PROPERTY_INDENTATION * parseInt(d.level, 10)); });
+   // Collapse icon
+   var maxLevel = calculateMaxLevel(data)
+   var collapseIcon = property.append('text')
+      .attr("x", function (d) { return get_indentation(d); })
+      .attr("dy", ".35em")
+      .attr("y", propertyHeight / 2)
+      .attr('font-family', 'FontAwesome')
+      .attr('font-size', COLLAPSEICON_FONT_SIZE)
+      .text(EXPAND_ICON)
+      .attr("visibility", function(d) { return getChildrenProperties(data, d).length > 0 ? "visible" : "hidden"; })
+      .attr("cursor", "pointer")
+      .on("click", function(d, i) { alert("text"); }); 
+
+   var collapseIconWidth = collapseIcon.node().getBBox().width;
+   // property.append('svg:foreignObject')
+   //    .attr("x", function (d) { return textSize("-".repeat(1 + PROPERTY_INDENTATION * parseInt(d.level, 10)), PROPERTY_FONT_FAMILY, PROPERTY_FONT_SIZE).width; })
+   //    .attr("y", propertyHeight)
+   //    .attr("dy", ".35em")
+   //    .html('<i class="fa-regular fa-square-caret-down"></i>');
+   // property.append("i")
+   //    .attr("x", function (d) { return textSize("-".repeat(1 + PROPERTY_INDENTATION * parseInt(d.level, 10)), PROPERTY_FONT_FAMILY, PROPERTY_FONT_SIZE).width; })
+   //    .attr("y", propertyHeight)
+   //    .attr("dy", ".35em")
+   //    .attr("class", "fa-regular fa-square-caret-down")
    property.append("text")
       .attr("text-anchor", "start")
-      .attr("x", function (d) { return x(textSize("-".repeat(1 + PROPERTY_INDENTATION * parseInt(d.level, 10)), PROPERTY_FONT_FAMILY, PROPERTY_FONT_SIZE).width); })
+      .attr("x", function (d) { return get_indentation(d) + collapseIconWidth + PROPERTY_INDENTATION; })
       .attr("y", propertyHeight / 2)
       .attr("dy", ".35em")
       .attr("font-family", PROPERTY_FONT_FAMILY)
@@ -221,6 +255,15 @@ function get_value(d) {
  */
 function get_ratio(d) {
    return d.ratio === null ? "" : "(" + Math.round((d.ratio + Number.EPSILON) * 100) + "%)";
+}
+
+/**
+ * 
+ * @param {any} d A FM property. 
+ * @returns The indentation width.
+ */
+function get_indentation(d) {
+   return textSize("-".repeat(1 + PROPERTY_INDENTATION * parseInt(d.level, 10)), PROPERTY_FONT_FAMILY, PROPERTY_FONT_SIZE).width;
 }
 
 /**
@@ -296,6 +339,28 @@ function textSize(text, fontFamily, fontSize, fontWeight = "normal") {
    var size = container.node().getBBox();
    container.remove();
    return { width: size.width, height: size.height };
+}
+
+/**
+ * 
+ * @param {Array} data    Array of properties.
+ * @param {any} property  Property.
+ * @returns List of children of the property.
+ */
+function getChildrenProperties(data, property) {
+   var children = [];
+   for (let p of data) {
+      if (p.parent == property.name) {
+         children.push(p);
+      }
+   }
+   return children;
+}
+
+function calculateMaxLevel(data) {
+   return Math.max.apply(Math, data.map(function (d) {
+      return parseInt(d.level, 10);
+   }))
 }
 
 /**
