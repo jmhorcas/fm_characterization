@@ -5,10 +5,13 @@
  */
 d3.select('#savePNG').on('click', function () {
     var chart = d3.select(".chart");
+    chart.selectAll("#collapseIcon").attr("visibility", "hidden");
     var blob = rasterize(chart.node());
     blob.then(value => {
         saveAs(value, get_property(fmData, 'Name').value + ".png");
     });
+    newData = filterData(ALL_DATA);
+    redrawLabel(newData);
 });
 
 /**
@@ -16,8 +19,11 @@ d3.select('#savePNG').on('click', function () {
  */
 d3.select('#saveSVG').on('click', function () {
     var chart = d3.select(".chart");
+    chart.selectAll("#collapseIcon").attr("visibility", "hidden");
     var blob = serialize(chart.node());
     saveAs(blob, get_property(fmData, 'Name').value + ".svg");
+    newData = filterData(ALL_DATA);
+    redrawLabel(newData);
 });
 
 /**
