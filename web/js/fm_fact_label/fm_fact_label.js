@@ -188,7 +188,7 @@ function updateProperties(data, id) {
       .text(function (d) { return hasChildrenProperties(d) && getChildrenProperties(data, d).length == 0 ? COLLAPSED_ICON : EXPANDED_ICON; })
       .attr("visibility", function (d) { return hasChildrenProperties(d) ? "visible" : "hidden"; })
       .attr("cursor", "pointer")
-      .on("click", function (p, d) { collapseProperty(ALL_DATA, d); });
+      .on("click", function (p, d) { hasChildrenProperties(d) && getChildrenProperties(data, d).length == 0 ? expandProperty(ALL_DATA, d) : collapseProperty(ALL_DATA, d); });
 
    var collapseIconWidth = collapseIcon.node() === null ? 0 : collapseIcon.node().getBBox().width;
 
@@ -366,6 +366,12 @@ function getChildrenProperties(data, property) {
          children.push(p);
       }
    }
+   for (let c of children) {
+      subChildren = getChildrenProperties(data, c);
+      for (let sb of subChildren) {
+         children.push(sb);
+      }
+   }
    return children;
 }
 
@@ -476,12 +482,19 @@ function collapseSubProperties(data) {
 }
 
 function collapseProperty(data, property) {
-   //alert("text");
-   console.log("property: " + property);
    var children = getChildrenProperties(data.metrics, property);
-   for (let c of children) {console.log("child: " + c); VISIBLE_PROPERTIES[c.name] = false;}
+   for (let c of children) {VISIBLE_PROPERTIES[c.name] = false;}
    var children = getChildrenProperties(data.analysis, property);
    for (let c of children) {VISIBLE_PROPERTIES[c.name] = false;}
+   newData = filterData(data);
+   redrawLabel(newData);
+}
+
+function expandProperty(data, property) {
+   var children = getChildrenProperties(data.metrics, property);
+   for (let c of children) {VISIBLE_PROPERTIES[c.name] = true;}
+   var children = getChildrenProperties(data.analysis, property);
+   for (let c of children) {VISIBLE_PROPERTIES[c.name] = true;}
    newData = filterData(data);
    redrawLabel(newData);
 }
