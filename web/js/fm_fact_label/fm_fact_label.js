@@ -96,31 +96,38 @@ function drawFMFactLabel(data) {
       .call(wrap, maxWidth - indentationDescription);
    var descriptionSize = description.node().getBBox();
 
-   /*
-    // Other metadata
-    currentHeight += DESCRIPTION_HEIGHT;
-    var metadata = chart.append("g").attr("transform", "translate(0," + currentHeight + ")");
-    var property = metadata.selectAll("g")
-                           .data(data.metadata.slice(2))
-                           .enter().append("g")
-                           .attr("transform", function(d, i) { return "translate(0," + i * BAR_HEIGHT + ")"; });
-    property.append("text")
-            .attr("x", function(d) { return x(0); })
-            .attr("y", BAR_HEIGHT / 2)
-            .attr("font-family", "Helvetica")
-            .attr("font-size", "8pt")
-            .text(function(d) { return d.name + ":"; });        
-    property.append("text")
-            .attr("x", function(d) { return d.name.length*7; })
-            .attr("y", BAR_HEIGHT / 2)
-            .attr("font-family", "Helvetica")
-            .attr("font-size", "8pt")
-            .text(function(d) { return d.value; })
-            .call(wrap, WIDTH);
-    */
+   // Keywords
+   var keywordHeight = yDescription + descriptionSize.height + 1;
+   if (get_property(data, 'Tags').value === "") {
+      var keywordsSize = descriptionSize;
+   } else {
+      var keywords = chart.append("g").attr("transform", "translate(0," + keywordHeight + ")");
+      addMetadata(keywords, "Tags:", get_property(data, 'Tags').value);
+      var keywordsSize = keywords.node().getBBox();
+   }
+   
+   // Author
+   var authorHeight = keywordHeight + keywordsSize.height;
+   if (get_property(data, 'Author').value === "") {
+      var authorSize = {"width": 0, "height": 0};
+   } else {
+      var author = chart.append("g").attr("transform", "translate(0," + authorHeight + ")");
+      addMetadata(author, "Author:", get_property(data, 'Author').value);
+      var authorSize = author.node().getBBox();
+   }
+
+   // Domain
+   var domainHeight = authorHeight + authorSize.height;
+   if (get_property(data, 'Domain').value === "") {
+      var domainSize = {"width": 0, "height": 0};
+   } else {
+      var domain = chart.append("g").attr("transform", "translate(0," + domainHeight + ")");
+      addMetadata(domain, "Domain:", get_property(data, 'Domain').value);
+      var domainSize = domain.node().getBBox();
+   }
 
    // Middle rule 1
-   yRule1 = yDescription + descriptionSize.height + 1; //*data.metadata.slice(2).length;
+   yRule1 = domainHeight + domainSize.height;
    chart.append("g").attr("id", "rule1");
    drawRule("rule1", yRule1);
 
@@ -150,6 +157,21 @@ function drawFMFactLabel(data) {
    d3.select("#collapseZeroValues").on("change", function () { collapseZeroValues(data); });
    d3.select("#collapseSubProperties").on("change", function () { collapseSubProperties(data); });
    //d3.selectAll("#collapse").on("click", function (d) { collapseProperty(data, d); });
+}
+
+function addMetadata(element, key, value) {
+   element.append("text")
+      .text(key)
+      .attr("x", function (d) { return x(PROPERTY_INDENTATION * 3) })
+      .attr("font-family", DESCRIPTION_FONT_FAMILY)
+      .attr("font-size", DESCRIPTION_FONT_SIZE)
+      .attr("font-weight", "bold");
+   element.append("text")
+      .text(value)
+      .attr("x", function (d) { return x(6 * PROPERTY_INDENTATION + textSize(key, DESCRIPTION_FONT_FAMILY, DESCRIPTION_FONT_SIZE).width); })
+      .attr("font-family", DESCRIPTION_FONT_FAMILY)
+      .attr("font-size", DESCRIPTION_FONT_SIZE)
+      .call(wrap, maxWidth - (6 * PROPERTY_INDENTATION + textSize(key, DESCRIPTION_FONT_FAMILY, DESCRIPTION_FONT_SIZE).width));
 }
 
 function updateProperties(data, id) {

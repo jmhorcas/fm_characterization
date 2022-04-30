@@ -18,13 +18,15 @@ class FMCharacterization:
                      description: Optional[str] = None,
                      author: Optional[str] = None,
                      reference: Optional[str] = None,
-                     tags: Optional[list[str]] = None):
+                     tags: Optional[str] = None,
+                     domains: Optional[list[str]] = None):
         data = []
         data.append(self._analysis.name(name))
         data.append(self._analysis.description(description))
         data.append(self._analysis.author(author))
         data.append(self._analysis.reference(reference))
         data.append(self._analysis.tags(tags))
+        data.append(self._analysis.domain(domains))
         self._metadata = data
 
     def get_metadata(self) -> list[FMMetric]:
