@@ -27,7 +27,7 @@ var maxIndentationWidth;
 var maxNameWidth
 var maxValueWidth;
 var maxRatioWidth;
-var propertyHeight;
+var PROPERTY_HEIGHT;
 var x;
 var yRule1;
 var yMetrics;
@@ -52,13 +52,13 @@ function drawFMFactLabel(data) {
 
    ALL_DATA = data
    // Initialize visible properties   
-   for (let p of data.metadata) {VISIBLE_PROPERTIES[p.name] = true;}
-   for (let p of data.metrics) {VISIBLE_PROPERTIES[p.name] = true;}
-   for (let p of data.analysis) {VISIBLE_PROPERTIES[p.name] = true;}
-    
+   for (let p of data.metadata) { VISIBLE_PROPERTIES[p.name] = true; }
+   for (let p of data.metrics) { VISIBLE_PROPERTIES[p.name] = true; }
+   for (let p of data.analysis) { VISIBLE_PROPERTIES[p.name] = true; }
+
    // Calculate maximum width for the label.
    //var maxWidth = Math.max(calculateTotalMaxWidth(data.metrics), calculateTotalMaxWidth(data.analysis));
-   propertyHeight = textSize("Any text", PROPERTY_FONT_FAMILY, PROPERTY_FONT_SIZE, "bold").height;// + MARGING_BETWEEN_PROPERTIES;
+   PROPERTY_HEIGHT = textSize("Any text", PROPERTY_FONT_FAMILY, PROPERTY_FONT_SIZE, "bold").height;// + MARGING_BETWEEN_PROPERTIES;
    maxIndentationWidth = Math.max(calculateMaxIndentationWidth(data.metrics), calculateMaxIndentationWidth(data.analysis));
    maxNameWidth = Math.max(calculateMaxNameWidth(data.metrics), calculateMaxNameWidth(data.analysis));
    maxValueWidth = Math.max(calculateMaxValueWidth(data.metrics), calculateMaxValueWidth(data.analysis));
@@ -127,20 +127,20 @@ function drawFMFactLabel(data) {
    // Metrics
    yMetrics = yRule1 + MAIN_RULE_HEIGHT;
    chart.append("g").attr("id", "metrics").attr("transform", "translate(0," + yMetrics + ")");
-   var metricsHeight = updateProperties(data.metrics, "metrics");
+   updateProperties(data.metrics, "metrics");
 
    // Middle rule 2
-   var yRule2 = yMetrics + metricsHeight;
+   var yRule2 = yMetrics + PROPERTY_HEIGHT * data.metrics.length;
    chart.append("g").attr("id", "rule2");
    drawRule("rule2", yRule2);
 
    // Analysis
    var yAnalysis = yRule2 + MAIN_RULE_HEIGHT;
    chart.append("g").attr("id", "analysis").attr("transform", "translate(0," + yAnalysis + ")");
-   var analysisHeight = updateProperties(data.analysis, "analysis");
+   updateProperties(data.analysis, "analysis");
 
    // Border of the label
-   var maxHeight = yAnalysis + analysisHeight + MARGING_BETWEEN_PROPERTIES;
+   var maxHeight = yAnalysis + MARGING_BETWEEN_PROPERTIES + PROPERTY_HEIGHT * data.analysis.length;
    chart.append("rect").attr("id", "border");
    drawBorders(maxWidth, maxHeight);
 
@@ -153,83 +153,85 @@ function drawFMFactLabel(data) {
 }
 
 function updateProperties(data, id) {
-   var property = d3.select("#" + id)
+   d3.select("#" + id)
       .selectAll("g")
       .data(data, d => d)
-      .join("g")
-      .attr("transform", function (d, i) { return "translate(0," + i * propertyHeight + ")"; });
-   // Indentation
-   property.append("id", function (d) { return d.name; })
-      .append("rect")
-      .attr("x", function (d) { return x(0); })
-      .attr("y", propertyHeight)
-      .attr("dy", ".35em")
-      .attr("width", function (d) { return get_indentation(d); })
-      .attr("height", propertyHeight)
-      .attr("fill", "white");
-   //.append("text")
-   // .attr("text-anchor", "start")
-   // .attr("x", function (d) { return x(0); })
-   // .attr("y", propertyHeight / 2)
-   // .attr("dy", ".35em")
-   // .attr("font-family", PROPERTY_FONT_FAMILY)
-   // .attr("font-size", PROPERTY_FONT_SIZE)
-   // .attr("font-weight", function (d) { return parseInt(d.level, 10) == 0 ? "bold" : "normal"; })
+      .join(
+         function (enter) {
+            // Indentation
+            var property = enter.append("g").attr("transform", function (d, i) { return "translate(0," + i * PROPERTY_HEIGHT + ")"; });
+            property.append("id", function (d) { return d.name; })
+               .append("rect")
+               .attr("id", "indentation")
+               .attr("x", function (d) { return x(0); })
+               .attr("y", PROPERTY_HEIGHT)
+               .attr("dy", ".35em")
+               .attr("width", function (d) { return get_indentation(d); })
+               .attr("height", PROPERTY_HEIGHT)
+               .attr("fill", "white");
 
-   //.text(function (d) { return "-".repeat(1 + PROPERTY_INDENTATION * parseInt(d.level, 10)); });
-   // Collapse icon
-   var maxLevel = calculateMaxLevel(data)
-   var collapseIcon = property.append('text')
-      .attr("x", function (d) { return get_indentation(d); })
-      .attr("dy", ".35em")
-      .attr("y", propertyHeight / 2)
-      .attr('font-family', 'FontAwesome')
-      .attr('font-size', COLLAPSEICON_FONT_SIZE)
-      .text(function (d) { return hasChildrenProperties(d) && getChildrenProperties(data, d).length == 0 ? COLLAPSED_ICON : EXPANDED_ICON; })
-      .attr("visibility", function (d) { return hasChildrenProperties(d) ? "visible" : "hidden"; })
-      .attr("cursor", "pointer")
-      .on("click", function (p, d) { hasChildrenProperties(d) && getChildrenProperties(data, d).length == 0 ? expandProperty(ALL_DATA, d) : collapseProperty(ALL_DATA, d); });
+            var collapseIcon = property.append('text')
+               .attr("id", "collapseIcon")
+               .attr("x", function (d) { return get_indentation(d); })
+               .attr("dy", ".35em")
+               .attr("y", PROPERTY_HEIGHT / 2)
+               .attr('font-family', 'FontAwesome')
+               .attr('font-size', COLLAPSEICON_FONT_SIZE)
+               .text(function (d) { return hasChildrenProperties(d) && getChildrenProperties(data, d).length == 0 ? COLLAPSED_ICON : EXPANDED_ICON; })
+               .attr("visibility", function (d) { return hasChildrenProperties(d) ? "visible" : "hidden"; })
+               .attr("cursor", "pointer")
+               .on("click", function (p, d) { hasChildrenProperties(d) && getChildrenProperties(data, d).length == 0 ? expandProperty(ALL_DATA, d) : collapseProperty(ALL_DATA, d); });
 
-   var collapseIconWidth = collapseIcon.node() === null ? 0 : collapseIcon.node().getBBox().width;
+            var collapseIconWidth = collapseIcon.node() === null ? 0 : collapseIcon.node().getBBox().width;
 
-   // property.append('svg:foreignObject')
-   //    .attr("x", function (d) { return textSize("-".repeat(1 + PROPERTY_INDENTATION * parseInt(d.level, 10)), PROPERTY_FONT_FAMILY, PROPERTY_FONT_SIZE).width; })
-   //    .attr("y", propertyHeight)
-   //    .attr("dy", ".35em")
-   //    .html('<i class="fa-regular fa-square-caret-down"></i>');
-   // property.append("i")
-   //    .attr("x", function (d) { return textSize("-".repeat(1 + PROPERTY_INDENTATION * parseInt(d.level, 10)), PROPERTY_FONT_FAMILY, PROPERTY_FONT_SIZE).width; })
-   //    .attr("y", propertyHeight)
-   //    .attr("dy", ".35em")
-   //    .attr("class", "fa-regular fa-square-caret-down")
-   property.append("text")
-      .attr("text-anchor", "start")
-      .attr("x", function (d) { return get_indentation(d) + collapseIconWidth + PROPERTY_INDENTATION; })
-      .attr("y", propertyHeight / 2)
-      .attr("dy", ".35em")
-      .attr("font-family", PROPERTY_FONT_FAMILY)
-      .attr("font-size", PROPERTY_FONT_SIZE)
-      .attr("font-weight", function (d) { return parseInt(d.level, 10) == 0 ? "bold" : "normal"; })
-      .text(function (d) { return d.name; });
-   property.append("text")
-      .attr("text-anchor", "end")
-      .attr("x", function (d) { return x(maxIndentationWidth + maxNameWidth + PROPERTIES_VALUES_SPACE + maxValueWidth); })
-      .attr("y", propertyHeight / 2)
-      .attr("dy", ".35em")
-      .attr("font-family", PROPERTY_FONT_FAMILY)
-      .attr("font-size", VALUES_FONT_SIZE)
-      .attr("font-weight", "bold")
-      .text(function (d) { return get_value(d); });
-   property.append("text")
-      .attr("text-anchor", "end")
-      .attr("x", function (d) { return x(maxWidth - LEFT_MARGING); })
-      .attr("y", propertyHeight / 2)
-      .attr("dy", ".35em")
-      .attr("font-family", PROPERTY_FONT_FAMILY)
-      .attr("font-size", VALUES_FONT_SIZE)
-      .attr("font-weight", "bold")
-      .text(function (d) { return get_ratio(d); });
-   return propertyHeight * data.length;
+            // Property name
+            property.append("text")
+               .attr("id", "propertyName")
+               .attr("text-anchor", "start")
+               .attr("x", function (d) { return get_indentation(d) + collapseIconWidth + PROPERTY_INDENTATION; })
+               .attr("y", PROPERTY_HEIGHT / 2)
+               .attr("dy", ".35em")
+               .attr("font-family", PROPERTY_FONT_FAMILY)
+               .attr("font-size", PROPERTY_FONT_SIZE)
+               .attr("font-weight", function (d) { return parseInt(d.level, 10) == 0 ? "bold" : "normal"; })
+               .text(function (d) { return d.name; });
+
+            // Property value (size)
+            property.append("text")
+               .attr("id", "value")
+               .attr("text-anchor", "end")
+               .attr("x", function (d) { return x(maxIndentationWidth + maxNameWidth + PROPERTIES_VALUES_SPACE + maxValueWidth); })
+               .attr("y", PROPERTY_HEIGHT / 2)
+               .attr("dy", ".35em")
+               .attr("font-family", PROPERTY_FONT_FAMILY)
+               .attr("font-size", VALUES_FONT_SIZE)
+               .attr("font-weight", "bold")
+               .text(function (d) { return get_value(d); });
+
+            // Property ratio
+            property.append("text")
+               .attr("id", "ratio")
+               .attr("text-anchor", "end")
+               .attr("x", function (d) { return x(maxWidth - LEFT_MARGING); })
+               .attr("y", PROPERTY_HEIGHT / 2)
+               .attr("dy", ".35em")
+               .attr("font-family", PROPERTY_FONT_FAMILY)
+               .attr("font-size", VALUES_FONT_SIZE)
+               .attr("font-weight", "bold")
+               .text(function (d) { return get_ratio(d); });
+
+            return property;
+         },
+         function (update) {
+            update.select("#collapseIcon")
+               .text(function (d) { return hasChildrenProperties(d) && getChildrenProperties(data, d).length == 0 ? COLLAPSED_ICON : EXPANDED_ICON; })
+               .on("click", function (p, d) { hasChildrenProperties(d) && getChildrenProperties(data, d).length == 0 ? expandProperty(ALL_DATA, d) : collapseProperty(ALL_DATA, d); });
+            return update;
+         },
+         function (exit) {
+            return exit.remove();
+         }
+      );
 }
 
 function drawRule(id, yPosition) {
@@ -458,13 +460,13 @@ function filterData(data) {
 
 function redrawLabel(data) {
    var height = 0;
-   var metricsHeight = updateProperties(data.metrics, "metrics");
-   height = yMetrics + metricsHeight;
+   updateProperties(data.metrics, "metrics");
+   height = yMetrics + PROPERTY_HEIGHT * data.metrics.length;
    drawRule("rule2", height);
    height += MAIN_RULE_HEIGHT;
    d3.select("#analysis").attr("transform", "translate(0," + height + ")")
-   var analysisHeight = updateProperties(data.analysis, "analysis");
-   height += analysisHeight + MARGING_BETWEEN_PROPERTIES;
+   updateProperties(data.analysis, "analysis");
+   height += MARGING_BETWEEN_PROPERTIES + PROPERTY_HEIGHT * data.analysis.length;
    drawBorders(maxWidth, height);
    d3.select("chart").attr("height", height);
 }
@@ -483,18 +485,18 @@ function collapseSubProperties(data) {
 
 function collapseProperty(data, property) {
    var children = getChildrenProperties(data.metrics, property);
-   for (let c of children) {VISIBLE_PROPERTIES[c.name] = false;}
+   for (let c of children) { VISIBLE_PROPERTIES[c.name] = false; }
    var children = getChildrenProperties(data.analysis, property);
-   for (let c of children) {VISIBLE_PROPERTIES[c.name] = false;}
+   for (let c of children) { VISIBLE_PROPERTIES[c.name] = false; }
    newData = filterData(data);
    redrawLabel(newData);
 }
 
 function expandProperty(data, property) {
    var children = getChildrenProperties(data.metrics, property);
-   for (let c of children) {VISIBLE_PROPERTIES[c.name] = true;}
+   for (let c of children) { VISIBLE_PROPERTIES[c.name] = true; }
    var children = getChildrenProperties(data.analysis, property);
-   for (let c of children) {VISIBLE_PROPERTIES[c.name] = true;}
+   for (let c of children) { VISIBLE_PROPERTIES[c.name] = true; }
    newData = filterData(data);
    redrawLabel(newData);
 }
