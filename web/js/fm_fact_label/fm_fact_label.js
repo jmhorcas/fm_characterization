@@ -32,14 +32,17 @@ var PROPERTY_HEIGHT;
 var x;
 var yRule1;
 var yMetrics;
-
+var tooltip;
 var VISIBLE_PROPERTIES = {};
 var ALL_DATA;
+var chart;
 
 var IMPORTS = ['https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@900',
    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css'];
+
+
 function drawFMFactLabel(data) {
-   var chart = d3.select(".chart");  // The svg 
+   chart = d3.select(".chart");  // The svg 
 
    // chart.append('defs')
    //    .append('style')
@@ -50,6 +53,18 @@ function drawFMFactLabel(data) {
       .join("style")
       .attr('type', 'text/css')
       .text(function (d) { return "@import url('" + d + "');"; });
+
+   // Create a div for mouse hover effect
+   tooltip = d3.select("body").append("div").attr("class", "tooltip").style("opacity", 0)
+      .style("position", "absolute")
+      .style("text-align", "center")
+      .style("padding", "0.1rem")
+      .style("background", "#FFFFFF")
+      .style("color", "#313639")
+      .style("border", "1px solid #313639")
+      .style("border-radius", "8px")
+      .style("pointer-events", "none")
+      .style("font-size", "0.8rem");
 
    ALL_DATA = data
    // Initialize visible properties   
@@ -139,13 +154,13 @@ function drawFMFactLabel(data) {
 
    // Reference
    if (!get_property(data, 'Reference').value == "") {
-      var reference = chart.append("g").attr("transform", "translate(0," + (domainHeight + domainSize.height - MAIN_RULE_HEIGHT - 10)  + ")");
+      var reference = chart.append("g").attr("transform", "translate(0," + (domainHeight + domainSize.height - MAIN_RULE_HEIGHT - 10) + ")");
       reference.append('a')
          .attr("id", "hrefIcon")
          .attr("href", get_property(data, 'Reference').value)
          .append("text")
          .attr("text-anchor", "end")
-         .attr("x", maxWidth-5)
+         .attr("x", maxWidth - 5)
          .attr("dy", ".35em")
          .attr("y", PROPERTY_HEIGHT / 2)
          .attr('font-family', 'FontAwesome')
@@ -244,7 +259,30 @@ function updateProperties(data, id) {
                .attr("font-family", PROPERTY_FONT_FAMILY)
                .attr("font-size", PROPERTY_FONT_SIZE)
                .attr("font-weight", function (d) { return parseInt(d.level, 10) == 0 ? "bold" : "normal"; })
-               .text(function (d) { return d.name; });
+               .text(function (d) { return d.name; })
+               .on('mouseover', function (event, d) {
+                  const [posX, posY] = d3.pointer(event, chart.node());
+                  d3.select(this).transition()
+                     .duration('50')
+                     .attr('opacity', 0.85);
+                  //Makes the new div appear on hover:
+                  tooltip.transition()
+                     .duration(50)
+                     .style("opacity", 1);
+                  tooltip.html(d.description)
+                     .style("left", (event.pageX + 10) + "px")
+                     .style("top", (event.pageY - 15) + "px")
+                     .attr("background", "red");
+               })
+               .on('mouseout', function (d, i) {
+                  d3.select(this).transition()
+                     .duration('50')
+                     .attr('opacity', 1);
+                  //Makes the new div disappear:
+                  tooltip.transition()
+                     .duration('50')
+                     .style("opacity", 0);
+               });
 
             // Property value (size)
             property.append("text")
