@@ -19,6 +19,7 @@ const PROPERTIES_RATIO_SPACE = 3;
 
 const EXPANDED_ICON = '\uf150';
 const COLLAPSED_ICON = '\uf152';
+const HREF_ICON = '\uf0ac';
 
 // GLOBAL VARIABLES
 var maxWidth;
@@ -105,11 +106,11 @@ function drawFMFactLabel(data) {
       addMetadata(keywords, "Tags:", get_property(data, 'Tags').value);
       var keywordsSize = keywords.node().getBBox();
    }
-   
+
    // Author
    var authorHeight = keywordHeight + keywordsSize.height;
    if (get_property(data, 'Author').value === "") {
-      var authorSize = {"width": 0, "height": 0};
+      var authorSize = { "width": 0, "height": 0 };
    } else {
       var author = chart.append("g").attr("transform", "translate(0," + authorHeight + ")");
       addMetadata(author, "Author:", get_property(data, 'Author').value);
@@ -119,12 +120,27 @@ function drawFMFactLabel(data) {
    // Domain
    var domainHeight = authorHeight + authorSize.height;
    if (get_property(data, 'Domain').value === "") {
-      var domainSize = {"width": 0, "height": 0};
+      var domainSize = { "width": 0, "height": 0 };
    } else {
       var domain = chart.append("g").attr("transform", "translate(0," + domainHeight + ")");
       addMetadata(domain, "Domain:", get_property(data, 'Domain').value);
       var domainSize = domain.node().getBBox();
    }
+
+   // Reference
+   var reference = chart.append("g").attr("transform", "translate(0," + (domainHeight + domainSize.height - MAIN_RULE_HEIGHT - 10)  + ")");
+   reference.append('a')
+      .attr("id", "hrefIcon")
+      .attr("href", get_property(data, 'Reference').value)
+      .append("text")
+      .attr("text-anchor", "end")
+      .attr("x", maxWidth-5)
+      .attr("dy", ".35em")
+      .attr("y", PROPERTY_HEIGHT / 2)
+      .attr('font-family', 'FontAwesome')
+      .attr('font-size', "12pt")
+      .text(HREF_ICON)
+      .attr("cursor", "pointer");
 
    // Middle rule 1
    yRule1 = domainHeight + domainSize.height;
