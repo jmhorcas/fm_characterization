@@ -5,8 +5,9 @@ from flask import Flask, render_template, request
 
 from famapy.metamodels.fm_metamodel.models import FeatureModel
 from famapy.metamodels.fm_metamodel.transformations import UVLReader, FeatureIDEReader
-from fm_characterization.models.fm_characterization import FMCharacterization
-from fm_characterization.models import interfaces
+
+from fm_characterization import FMCharacterization
+
 
 app = Flask(__name__,
             static_url_path='', 
@@ -60,15 +61,22 @@ def index():
             if not name:
                 name = os.path.splitext(os.path.basename(filename))[0]
             
-            characterization = FMCharacterization(fm, name)
-            characterization.set_metadata(name=name, description=description, author=author, year=year, tags=keywords, reference=reference, domains=domain)
+            characterization = FMCharacterization(fm)
+            characterization.metadata.name=name
+            characterization.metadata.description=description
+            characterization.metadata.author=author
+            characterization.metadata.year=year
+            characterization.metadata.tags=keywords
+            characterization.metadata.reference=reference
+            characterization.metadata.domains=domain
+            
             #json_characterization = interfaces.to_json(fm_characterization, FM_FACT_JSON_FILE)
-            json_characterization = interfaces.to_json(characterization)
-            json_str_characterization = interfaces.to_json_str(characterization)
-            str_characterization = interfaces.get_string_output(characterization)
+            json_characterization = characterization.to_json()
+            json_str_characterization = characterization.to_json_str()
+            str_characterization = str(characterization)
             data['fm_facts'] = json_characterization
-            data['fm_characterization_str'] = str_characterization
             data['fm_characterization_json_str'] = json_str_characterization
+            data['fm_characterization_str'] = str_characterization
         except Exception as e:
             data = None
             print(e)
