@@ -52,6 +52,7 @@ class FMProperties(Enum):
     NAME = FMProperty('Name', 'Name of the feature model.', None)
     DESCRIPTION = FMProperty('Description', 'Description of the feature model.', None)
     AUTHOR = FMProperty('Author', 'Author of the feature model', None)
+    YEAR = FMProperty('Year', 'Year of creating of the feature model', None)
     REFERENCE = FMProperty('Reference', 'Main paper for reference or DOI of the feature model', None)
     TAGS = FMProperty('Tags', 'Tags or keywords that identify the feature model.', None)
     DOMAIN = FMProperty('Domain', 'Domain of the feature model.', None)
@@ -145,6 +146,11 @@ class FMAnalysis():
         if value is None:
             return FMMetric(FMProperties.AUTHOR.value)    
         return FMMetric(FMProperties.AUTHOR.value, value)
+        
+    def year(self, value: Optional[str] = None) -> FMMetric:
+        if value is None:
+            return FMMetric(FMProperties.YEAR.value)    
+        return FMMetric(FMProperties.YEAR.value, value)
     
     def reference(self, value: Optional[str] = None) -> FMMetric:
         if value is None:

@@ -17,6 +17,7 @@ class FMCharacterization:
                      name: Optional[str] = None,
                      description: Optional[str] = None,
                      author: Optional[str] = None,
+                     year: Optional[int] = None,
                      reference: Optional[str] = None,
                      tags: Optional[str] = None,
                      domains: Optional[list[str]] = None):
@@ -24,6 +25,7 @@ class FMCharacterization:
         data.append(self._analysis.name(name))
         data.append(self._analysis.description(description))
         data.append(self._analysis.author(author))
+        data.append(self._analysis.year(year))
         data.append(self._analysis.reference(reference))
         data.append(self._analysis.tags(tags))
         data.append(self._analysis.domain(domains))

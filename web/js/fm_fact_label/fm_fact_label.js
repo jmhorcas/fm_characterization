@@ -99,7 +99,7 @@ function drawFMFactLabel(data) {
 
    // Keywords
    var keywordHeight = yDescription + descriptionSize.height + 1;
-   if (get_property(data, 'Tags').value === "") {
+   if (get_property(data, 'Tags').value == "") {
       var keywordsSize = descriptionSize;
    } else {
       var keywords = chart.append("g").attr("transform", "translate(0," + keywordHeight + ")");
@@ -109,7 +109,7 @@ function drawFMFactLabel(data) {
 
    // Author
    var authorHeight = keywordHeight + keywordsSize.height;
-   if (get_property(data, 'Author').value === "") {
+   if (get_property(data, 'Author').value == "") {
       var authorSize = { "width": 0, "height": 0 };
    } else {
       var author = chart.append("g").attr("transform", "translate(0," + authorHeight + ")");
@@ -117,9 +117,19 @@ function drawFMFactLabel(data) {
       var authorSize = author.node().getBBox();
    }
 
+   // Year
+   var yearHeight = authorHeight + authorSize.height;
+   if (get_property(data, 'Year').value == "") {
+      var yearSize = { "width": 0, "height": 0 };
+   } else {
+      var year = chart.append("g").attr("transform", "translate(0," + yearHeight + ")");
+      addMetadata(year, "Year:", get_property(data, 'Year').value);
+      var yearSize = year.node().getBBox();
+   }
+
    // Domain
-   var domainHeight = authorHeight + authorSize.height;
-   if (get_property(data, 'Domain').value === "") {
+   var domainHeight = yearHeight + yearSize.height;
+   if (get_property(data, 'Domain').value == "") {
       var domainSize = { "width": 0, "height": 0 };
    } else {
       var domain = chart.append("g").attr("transform", "translate(0," + domainHeight + ")");
@@ -128,19 +138,21 @@ function drawFMFactLabel(data) {
    }
 
    // Reference
-   var reference = chart.append("g").attr("transform", "translate(0," + (domainHeight + domainSize.height - MAIN_RULE_HEIGHT - 10)  + ")");
-   reference.append('a')
-      .attr("id", "hrefIcon")
-      .attr("href", get_property(data, 'Reference').value)
-      .append("text")
-      .attr("text-anchor", "end")
-      .attr("x", maxWidth-5)
-      .attr("dy", ".35em")
-      .attr("y", PROPERTY_HEIGHT / 2)
-      .attr('font-family', 'FontAwesome')
-      .attr('font-size', "12pt")
-      .text(HREF_ICON)
-      .attr("cursor", "pointer");
+   if (!get_property(data, 'Reference').value == "") {
+      var reference = chart.append("g").attr("transform", "translate(0," + (domainHeight + domainSize.height - MAIN_RULE_HEIGHT - 10)  + ")");
+      reference.append('a')
+         .attr("id", "hrefIcon")
+         .attr("href", get_property(data, 'Reference').value)
+         .append("text")
+         .attr("text-anchor", "end")
+         .attr("x", maxWidth-5)
+         .attr("dy", ".35em")
+         .attr("y", PROPERTY_HEIGHT / 2)
+         .attr('font-family', 'FontAwesome')
+         .attr('font-size', "12pt")
+         .text(HREF_ICON)
+         .attr("cursor", "pointer");
+   }
 
    // Middle rule 1
    yRule1 = domainHeight + domainSize.height;

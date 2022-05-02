@@ -41,6 +41,7 @@ def index():
         reference = request.form['inputReference']
         keywords = request.form['inputKeywords']
         domain = request.form['inputDomain']
+        year = request.form['inputYear']
         fm_file = request.files['inputFM']
 
         if not fm_file:
@@ -60,7 +61,7 @@ def index():
                 name = os.path.splitext(os.path.basename(filename))[0]
             
             characterization = FMCharacterization(fm, name)
-            characterization.set_metadata(name=name, description=description, author=author, tags=keywords, reference=reference, domains=domain)
+            characterization.set_metadata(name=name, description=description, author=author, year=year, tags=keywords, reference=reference, domains=domain)
             #json_characterization = interfaces.to_json(fm_characterization, FM_FACT_JSON_FILE)
             json_characterization = interfaces.to_json(characterization)
             json_str_characterization = interfaces.to_json_str(characterization)
