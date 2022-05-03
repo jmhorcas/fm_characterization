@@ -80,6 +80,8 @@ def index():
         except Exception as e:
             data = None
             print(e)
+            raise e
+
 
         if os.path.exists(filename):
             os.remove(filename)

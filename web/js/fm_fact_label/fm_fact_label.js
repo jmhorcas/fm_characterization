@@ -58,14 +58,14 @@ function drawFMFactLabel(data) {
    // Create a div for mouse hover effect
    tooltip = d3.select("body").append("div").attr("class", "tooltip").style("opacity", 0)
       .style("position", "absolute")
-      .style("text-align", "center")
+      .style("text-align", "left")
       .style("padding", "0.1rem")
       .style("background", "#FFFFFF")
       .style("color", "#313639")
       .style("border", "1px solid #313639")
       .style("border-radius", "8px")
       .style("pointer-events", "none")
-      .style("font-size", "0.8rem");
+      .style("font-size", "0.8rem")
 
    ALL_DATA = data
    // Initialize visible properties   
@@ -592,6 +592,7 @@ function expandProperty(data, property) {
 function drawSecondaryRules(data) {
    drawSecondaryRule("Compound features");
    drawSecondaryRule("Root feature");
+   drawSecondaryRule("Features in constraints");
    
    // var translate = d3.select("g[id='Compound features']").node() // get the node
    //    .transform          // get the animated transform list
