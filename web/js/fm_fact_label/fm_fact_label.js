@@ -34,6 +34,7 @@ var x;
 var yRule1;
 var yMetrics;
 var tooltip;
+var contentDetail;
 var VISIBLE_PROPERTIES = {};
 var ALL_DATA;
 var chart;
@@ -66,6 +67,23 @@ function drawFMFactLabel(data) {
       .style("border-radius", "8px")
       .style("pointer-events", "none")
       .style("font-size", "0.8rem")
+   
+   // Create a div to show the content detail on mouse click
+   contentDetail = d3.select("body").append("div").attr("class", "contentDetail").style("opacity", 0)
+   .style("position", "absolute")
+   .style("text-align", "left")
+   .style("padding", "0.1rem")
+   .style("background", "#FFFFFF")
+   .style("color", "#313639")
+   .style("border", "1px solid #313639")
+   .style("border-radius", "8px")
+   .style("font-size", "0.8rem")
+   //.style("width", "400px")
+   .on('mouseout', function (event, d) {
+      d3.select(this).transition()
+         .duration('50')
+         .style('opacity', 0);
+   });
 
    ALL_DATA = data
    // Initialize visible properties   
@@ -271,10 +289,9 @@ function updateProperties(data, id) {
                      .style("opacity", 1);
                   tooltip.html(d.description)
                      .style("left", (event.pageX + 10) + "px")
-                     .style("top", (event.pageY - 15) + "px")
-                     .attr("background", "red");
+                     .style("top", (event.pageY - 15) + "px");
                })
-               .on('mouseout', function (d, i) {
+               .on('mouseout', function (event, d) {
                   d3.select(this).transition()
                      .duration('50')
                      .attr('opacity', 1);
@@ -282,6 +299,17 @@ function updateProperties(data, id) {
                   tooltip.transition()
                      .duration('50')
                      .style("opacity", 0);
+               })
+               .on("click", function (event, d) { 
+                  tooltip.transition()
+                     .duration('50')
+                     .style("opacity", 0);
+                  contentDetail.transition()
+                     .duration(50)
+                     .style("opacity", 1);
+                  contentDetail.html(d.value)
+                     .style("left", (event.pageX + 10) + "px")
+                     .style("top", (event.pageY - 15) + "px")
                });
 
             // Property value (size)
