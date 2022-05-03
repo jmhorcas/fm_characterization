@@ -392,6 +392,15 @@ function get_property(data, propertyName) {
    }
 }
 
+function get_property_in_data(data, propertyName) {
+   for (let p of data) {
+      if (p.name == propertyName) {
+         return p;
+      }
+   }
+   return null;
+}
+
 /**
  * Wrap the text D3 Object to the given width.
  * 
@@ -590,9 +599,9 @@ function expandProperty(data, property) {
 }
 
 function drawSecondaryRules(data) {
-   drawSecondaryRule("Compound features");
-   drawSecondaryRule("Root feature");
-   drawSecondaryRule("Features in constraints");
+   if (get_property_in_data(data, 'Compound features') !== null) drawSecondaryRule("Compound features");
+   if (get_property_in_data(data, 'Root feature') !== null) drawSecondaryRule("Root feature");
+   if (get_property_in_data(data, 'Features in constraints') !== null) drawSecondaryRule("Features in constraints");
    
    // var translate = d3.select("g[id='Compound features']").node() // get the node
    //    .transform          // get the animated transform list
