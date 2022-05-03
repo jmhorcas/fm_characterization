@@ -17,6 +17,13 @@ app = Flask(__name__,
 
 def read_fm_file(filename: str) -> Optional[FeatureModel]:
     try:
+        if filename.endswith(".uvl"):
+            return UVLReader(filename).transform()    
+        elif filename.endswith(".xml") or filename.endswith(".fide"):
+            return FeatureIDEReader(filename).transform()     
+    except:
+        pass
+    try:
         return UVLReader(filename).transform() 
     except:
         pass

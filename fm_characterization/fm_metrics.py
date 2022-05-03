@@ -11,6 +11,12 @@ class FMMetrics():
 
     def __init__(self, model: FeatureModel):
         self.fm = model
+
+        # Variables for performance
+        self._leaf_features = [f.name for f in self.fm.get_features() if len(f.get_relations()) == 0]
+        self._constraints_per_features = constraints_per_features(model)
+        self._feature_ancestors = [len(get_feature_ancestors(self.fm, f)) for f in self._leaf_features]
+
                      
     def get_metrics(self) -> list[FMPropertyMeasure]:
         result = []
@@ -87,7 +93,7 @@ class FMMetrics():
                         get_ratio(_top_features, self.fm.get_features()))
 
     def fm_leaf_features(self) -> FMPropertyMeasure:
-        _leaf_features = [f.name for f in self.fm.get_features() if len(f.get_relations()) == 0]
+        _leaf_features = self._leaf_features
         return FMPropertyMeasure(FMProperties.LEAF_FEATURES.value, 
                         _leaf_features, 
                         len(_leaf_features),
@@ -203,21 +209,21 @@ class FMMetrics():
                         get_ratio(_cardinality_groups, _group_features))
     
     def fm_depth_tree(self) -> FMPropertyMeasure:
-        _max_depth_tree = max(len(get_feature_ancestors(self.fm, f)) for f in self.fm_leaf_features().value)
+        _max_depth_tree = max(self._feature_ancestors)
         return FMPropertyMeasure(FMProperties.DEPTH_TREE.value, _max_depth_tree)
 
     def fm_max_depth_tree(self) -> FMPropertyMeasure:
-        _max_depth_tree = max(len(get_feature_ancestors(self.fm, f)) for f in self.fm_leaf_features().value)
+        _max_depth_tree = max(self._feature_ancestors)
         #_max_depth_tree = fm_operations.max_depth_tree(self.fm)
         return FMPropertyMeasure(FMProperties.MAX_DEPTH_TREE.value, _max_depth_tree)
 
     def fm_mean_depth_tree(self) -> FMPropertyMeasure:
-        _mean_depth_tree = statistics.mean(len(get_feature_ancestors(self.fm, f)) for f in self.fm_leaf_features().value)
-        return FMPropertyMeasure(FMProperties.MEAN_DEPTH_TREE.value, _mean_depth_tree)
+        _mean_depth_tree = statistics.mean(self._feature_ancestors)
+        return FMPropertyMeasure(FMProperties.MEAN_DEPTH_TREE.value, round(_mean_depth_tree, 2))
 
     def fm_median_depth_tree(self) -> FMPropertyMeasure:
-        _median_depth_tree = statistics.median(len(get_feature_ancestors(self.fm, f)) for f in self.fm_leaf_features().value)
-        return FMPropertyMeasure(FMProperties.MEDIAN_DEPTH_TREE.value, _median_depth_tree)
+        _median_depth_tree = statistics.median(self._feature_ancestors)
+        return FMPropertyMeasure(FMProperties.MEDIAN_DEPTH_TREE.value, round(_median_depth_tree, 2))
 
     def fm_avg_branching_factor(self) -> FMPropertyMeasure:
         _avg_branching_factor = fm_operations.average_branching_factor(self.fm)
@@ -293,22 +299,26 @@ class FMMetrics():
                         _ecr)
 
     def fm_min_constraints_per_feature(self) -> FMPropertyMeasure:
-        _constraints_per_feature = constraints_per_features(self.fm)
+        _constraints_per_feature = self._constraints_per_features
         return FMPropertyMeasure(FMProperties.MIN_CONSTRAINTS_PER_FEATURE.value, min(_constraints_per_feature))
 
     def fm_max_constraints_per_feature(self) -> FMPropertyMeasure:
-        _constraints_per_feature = constraints_per_features(self.fm)
+        _constraints_per_feature = self._constraints_per_features
         return FMPropertyMeasure(FMProperties.MAX_CONSTRAINTS_PER_FEATURE.value, max(_constraints_per_feature))
 
     def fm_avg_constraints_per_feature(self) -> FMPropertyMeasure:
-        _constraints_per_feature = constraints_per_features(self.fm)
+        _constraints_per_feature = self._constraints_per_features
         return FMPropertyMeasure(FMProperties.AVG_CONSTRAINTS_PER_FEATURE.value, round(statistics.mean(_constraints_per_feature), 2))
 
 
 def constraints_per_features(fm: FeatureModel) -> list[int]:
+    _features_per_constraints = []
     _constraints_per_feature = []
+    for ctc in fm.get_constraints():
+        _features_per_constraints.append([f for f in ctc.get_features()])
+
     for feature in fm.get_features():
-        cpf = sum(feature.name in ctc.get_features() for ctc in fm.get_constraints())
+        cpf = sum(feature.name in l for l in _features_per_constraints)
         _constraints_per_feature.append(cpf)
     return _constraints_per_feature
 
