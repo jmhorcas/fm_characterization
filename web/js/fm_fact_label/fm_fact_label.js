@@ -13,6 +13,7 @@ const PROPERTY_INDENTATION = 2;
 const TOP_MARGING = 20;
 const LEFT_MARGING = 5;
 const MAIN_RULE_HEIGHT = 7 * POINT_TO_PIXEL;
+const SECONDARY_RULE_HEIGHT = .25 * POINT_TO_PIXEL;
 const MARGING_BETWEEN_PROPERTIES = 3;
 const PROPERTIES_VALUES_SPACE = 10;
 const PROPERTIES_RATIO_SPACE = 3;
@@ -224,9 +225,8 @@ function updateProperties(data, id) {
       .join(
          function (enter) {
             // Indentation
-            var property = enter.append("g").attr("transform", function (d, i) { return "translate(0," + i * PROPERTY_HEIGHT + ")"; });
-            property.append("id", function (d) { return d.name; })
-               .append("rect")
+            var property = enter.append("g").attr("id", function (d) { return d.name; }).attr("transform", function (d, i) { return "translate(0," + i * PROPERTY_HEIGHT + ")"; });
+            property.append("rect")
                .attr("id", "indentation")
                .attr("x", function (d) { return x(0); })
                .attr("y", PROPERTY_HEIGHT)
@@ -307,7 +307,6 @@ function updateProperties(data, id) {
                .attr("font-size", VALUES_FONT_SIZE)
                .attr("font-weight", "bold")
                .text(function (d) { return get_ratio(d); });
-
             return property;
          },
          function (update) {
@@ -320,6 +319,7 @@ function updateProperties(data, id) {
             return exit.remove();
          }
       );
+   drawSecondaryRules(data)
 }
 
 function drawRule(id, yPosition) {
@@ -588,6 +588,37 @@ function expandProperty(data, property) {
    newData = filterData(data);
    redrawLabel(newData);
 }
+
+function drawSecondaryRules(data) {
+   drawSecondaryRule("Compound features");
+   drawSecondaryRule("Root feature");
+   
+   // var translate = d3.select("g[id='Compound features']").node() // get the node
+   //    .transform          // get the animated transform list
+   //    .baseVal            // get its base value
+   //    .getItem(0)         // get the first transformation from the list, i.e. your translate
+   //    .matrix             // get the matrix containing the values
+
+   // // console.log(`Translate x: ${translate.e}, y: ${translate.f}`);
+
+   // var property = d3.select("g[id='Compound features']");
+   // //.append("g").attr("class", "secondaryRule").attr("transform", "translate(0," + translate.f - 3 + ")");
+   // property.append("rect")
+   // .attr("x", property.select("#propertyName").attr("x"))
+   // .attr("y", 1)
+   // .attr("height", SECONDARY_RULE_HEIGHT)
+   // .attr("width", maxWidth - property.select("#propertyName").attr("x"));
+}
+
+function drawSecondaryRule(propertyName) {
+   var property = d3.select("g[id='" + propertyName + "']");
+   property.append("rect")
+   .attr("x", property.select("#propertyName").attr("x"))
+   .attr("y", 1)
+   .attr("height", SECONDARY_RULE_HEIGHT)
+   .attr("width", maxWidth - property.select("#propertyName").attr("x"));
+}
+
 // function calculateTotalMaxWidth(data) {
 //    return Math.max.apply(Math, data.map(function(d) {
 //       indentationWidth = textSize("-".repeat(1 + PROPERTY_INDENTATION * parseInt(d.level, 10)), PROPERTY_FONT_FAMILY, PROPERTY_FONT_SIZE).width;
