@@ -34,7 +34,14 @@ def read_fm_file(filename: str) -> Optional[FeatureModel]:
     return None
 
 
-@app.route('/', methods=['GET', 'POST'])
+# This sets the basepath from FLASK_BASE_PATH env variable
+basepath = os.environ.get("FLASK_BASE_PATH")
+
+if basepath == None:
+    basepath = ""
+
+
+@app.route(basepath + '/', methods=['GET', 'POST'])
 def index():
     if request.method == 'GET':
         return render_template('index.html')
