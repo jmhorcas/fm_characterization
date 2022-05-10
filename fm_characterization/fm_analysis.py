@@ -36,7 +36,8 @@ class FMAnalysis():
 
     def fm_valid(self) -> FMPropertyMeasure:
         _valid = sat_operations.Glucose3Valid().execute(self.sat_model).get_result()
-        return FMPropertyMeasure(FMProperties.VALID.value, _valid)
+        _result = 'Yes' if _valid else 'No'
+        return FMPropertyMeasure(FMProperties.VALID.value, _result)
 
     def fm_core_features(self) -> FMPropertyMeasure:
         _core_features = self._common_features
