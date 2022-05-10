@@ -86,7 +86,8 @@ class FMMetrics():
     def fm_root_feature(self) -> FMPropertyMeasure:
         _root_feature = self.fm.root.name
         return FMPropertyMeasure(FMProperties.ROOT_FEATURE.value, 
-                        _root_feature)
+                        _root_feature,
+                        1, get_ratio([_root_feature], self._features))
 
     def fm_top_features(self) -> FMPropertyMeasure:
         _top_features = [f.name for r in self.fm.root.get_relations() for f in r.children]
