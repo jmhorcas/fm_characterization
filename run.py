@@ -1,3 +1,4 @@
+from email.mime import base
 import os
 from typing import Optional
 
@@ -10,7 +11,7 @@ from fm_characterization import FMCharacterization
 
 
 app = Flask(__name__,
-            static_url_path='', 
+            static_url_path='',
             static_folder='web',
             template_folder='web')
 
@@ -18,17 +19,17 @@ app = Flask(__name__,
 def read_fm_file(filename: str) -> Optional[FeatureModel]:
     try:
         if filename.endswith(".uvl"):
-            return UVLReader(filename).transform()    
+            return UVLReader(filename).transform()
         elif filename.endswith(".xml") or filename.endswith(".fide"):
-            return FeatureIDEReader(filename).transform()     
+            return FeatureIDEReader(filename).transform()
     except:
         pass
     try:
-        return UVLReader(filename).transform() 
+        return UVLReader(filename).transform()
     except:
         pass
     try:
-        return FeatureIDEReader(filename).transform() 
+        return FeatureIDEReader(filename).transform()
     except:
         pass
     return None
@@ -39,6 +40,9 @@ basepath = os.environ.get("FLASK_BASE_PATH")
 
 if basepath == None:
     basepath = ""
+else:
+    os.system("ln -sf /app/web /app/web/" + basepath)
+    basepath = "/" + basepath
 
 
 @app.route(basepath + '/', methods=['GET', 'POST'])
@@ -66,24 +70,24 @@ def index():
         filename = fm_file.filename
         try:
             fm_file.save(filename)
-            
+
             # Read the feature model
             fm = read_fm_file(filename)
             if fm is None:
                 data['file_error'] = 'Feature model format not supported.'
-                return render_template('index.html', data=data) 
+                return render_template('index.html', data=data)
             if not name:
                 name = os.path.splitext(os.path.basename(filename))[0]
-            
+
             characterization = FMCharacterization(fm)
-            characterization.metadata.name=name
-            characterization.metadata.description=description
-            characterization.metadata.author=author
-            characterization.metadata.year=year
-            characterization.metadata.tags=keywords
-            characterization.metadata.reference=reference
-            characterization.metadata.domains=domain
-            
+            characterization.metadata.name = name
+            characterization.metadata.description = description
+            characterization.metadata.author = author
+            characterization.metadata.year = year
+            characterization.metadata.tags = keywords
+            characterization.metadata.reference = reference
+            characterization.metadata.domains = domain
+
             #json_characterization = interfaces.to_json(fm_characterization, FM_FACT_JSON_FILE)
             json_characterization = characterization.to_json()
             json_str_characterization = characterization.to_json_str()
@@ -96,10 +100,9 @@ def index():
             print(e)
             raise e
 
-
         if os.path.exists(filename):
             os.remove(filename)
-        
+
         return render_template('index.html', data=data)
 
 
