@@ -9,11 +9,12 @@ from famapy.metamodels.fm_metamodel.transformations import UVLReader, FeatureIDE
 
 from fm_characterization import FMCharacterization
 
+static_dir = 'web'
 
 app = Flask(__name__,
             static_url_path='',
-            static_folder='web',
-            template_folder='web')
+            static_folder=static_dir,
+            template_folder=static_dir)
 
 
 def read_fm_file(filename: str) -> Optional[FeatureModel]:
@@ -41,7 +42,7 @@ basepath = os.environ.get("FLASK_BASE_PATH")
 if basepath == None:
     basepath = ""
 else:
-    os.system("ln -sf /app/web /app/web/" + basepath)
+    os.system("ln -sf /app/web /app/" + static_dir + "/" + basepath)
     basepath = "/" + basepath
 
 
