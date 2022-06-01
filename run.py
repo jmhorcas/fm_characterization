@@ -52,6 +52,7 @@ for root, dirs, files in os.walk(os.path.join(basepath, static_dir, EXAMPLE_MODE
     for file in files:
         #filepath = os.path.join(root, file)
         EXAMPLE_MODELS.append(file)
+EXAMPLE_MODELS.sort()
 
 
 @app.route(basepath + '/', methods=['GET', 'POST'])
