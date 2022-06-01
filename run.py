@@ -48,7 +48,7 @@ else:
 
 # Get example models
 EXAMPLE_MODELS = []
-for root, dirs, files in os.walk(os.path.join(basepath, static_dir, EXAMPLE_MODELS_DIR)):
+for root, dirs, files in os.walk(os.path.join(static_dir, EXAMPLE_MODELS_DIR)):
     for file in files:
         #filepath = os.path.join(root, file)
         EXAMPLE_MODELS.append(file)
@@ -84,7 +84,7 @@ def index():
             filename = fm_file.filename
             fm_file.save(filename)
         elif fm_file_example:
-            filename = os.path.join(basepath, static_dir, EXAMPLE_MODELS_DIR, fm_file_example)
+            filename = os.path.join(static_dir, EXAMPLE_MODELS_DIR, fm_file_example)
         
         try:
             # Read the feature model

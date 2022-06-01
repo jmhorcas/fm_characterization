@@ -340,6 +340,7 @@ function updateProperties(data, id) {
          function (update) {
             update.select("#collapseIcon")
                .text(function (d) { return hasChildrenProperties(d) && getChildrenProperties(data, d).length == 0 ? COLLAPSED_ICON : EXPANDED_ICON; })
+               .attr("visibility", function (d) { return hasChildrenProperties(d) ? "visible" : "hidden"; })
                .on("click", function (p, d) { hasChildrenProperties(d) && getChildrenProperties(data, d).length == 0 ? expandProperty(ALL_DATA, d) : collapseProperty(ALL_DATA, d); });
             return update;
          },
