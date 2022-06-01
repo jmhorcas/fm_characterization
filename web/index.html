@@ -119,7 +119,7 @@
                                             <div class="form-group row">
                                                 <label for="inputFM" class="col-sm-2 col-form-label">FM file</label>
                                                 <div class="col-sm">
-                                                    <input type="file" class="form-control-file" id="inputFM" name="inputFM" required>
+                                                    <input type="file" class="form-control-file" id="inputFM" name="inputFM">
                                                     {% if data and data.file_error %}
                                                     <div class="alert alert-danger" role="alert">
                                                         {{ data.file_error }}
@@ -127,9 +127,15 @@
                                                     {% else %}
                                                     Supported formats: UVL (.uvl), FeatureIDE (.xml, .fide)
                                                     {% endif %}
+                                                    <select class="custom-select" id="inputExample" name="inputExample">
+                                                        <option value="">Or select an FM</option>
+                                                        {% for file in data.models %}
+                                                        <option value="{{ file }}">{{ file }}</option>
+                                                        {% endfor %}
+                                                    </select>
                                                 </div>
                                             </div>
-                                            <button type="submit" class="btn btn-primary">Submit</button>
+                                            <button type="submit" id="submitButtom" class="spinner-button btn btn-primary">Submit</button>
                                         </form>
                                     </div>
                                 </div>
@@ -245,8 +251,21 @@
             drawFMFactLabel(fmData);
         </script>
         {% endif %}
-
+        
         <!-- FM fact label visualization script -->
         <script src="js/fm_fact_label/fm_persistence.js"></script>
+
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $("#submitButtom").click(function() {
+                    // disable button
+                    //$(this).prop("disabled", true);
+                    // add spinner to button
+                    $(this).html(
+                        '<i class="fa fa-circle-o-notch fa-spin"></i> Loading...'
+                    );
+                });
+            });
+        </script>
     </body>
 </html>

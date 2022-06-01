@@ -10,6 +10,7 @@ from famapy.metamodels.fm_metamodel.transformations import UVLReader, FeatureIDE
 from fm_characterization import FMCharacterization
 
 static_dir = 'web'
+EXAMPLE_MODELS_DIR = 'fm_models/'
 
 app = Flask(__name__,
             static_url_path='',
@@ -45,15 +46,23 @@ else:
     os.system("ln -sf /app/web /app/" + static_dir + "/" + basepath)
     basepath = "/" + basepath
 
+# Get example models
+EXAMPLE_MODELS = []
+for root, dirs, files in os.walk(os.path.join(basepath, static_dir, EXAMPLE_MODELS_DIR)):
+    for file in files:
+        #filepath = os.path.join(root, file)
+        EXAMPLE_MODELS.append(file)
+
 
 @app.route(basepath + '/', methods=['GET', 'POST'])
 def index():
+    data = {}
+    data['models'] = EXAMPLE_MODELS
+
     if request.method == 'GET':
-        return render_template('index.html')
+        return render_template('index.html', data=data)
 
     if request.method == 'POST':
-        data = {}
-
         name = request.form['inputName']
         description = request.form['inputDescription']
         description = description.replace(os.linesep, ' ')
@@ -63,15 +72,20 @@ def index():
         domain = request.form['inputDomain']
         year = request.form['inputYear']
         fm_file = request.files['inputFM']
+        fm_file_example = request.form['inputExample']
 
-        if not fm_file:
+        if not fm_file and not fm_file_example:
             # The file is required and this is controlled in the front-end.
-            pass
+            data['file_error'] = 'Please upload a feature model or select one from the examples.'
+            return render_template('index.html', data=data)
 
-        filename = fm_file.filename
-        try:
+        if fm_file:
+            filename = fm_file.filename
             fm_file.save(filename)
-
+        elif fm_file_example:
+            filename = os.path.join(basepath, static_dir, EXAMPLE_MODELS_DIR, fm_file_example)
+        
+        try:
             # Read the feature model
             fm = read_fm_file(filename)
             if fm is None:
@@ -101,7 +115,7 @@ def index():
             print(e)
             raise e
 
-        if os.path.exists(filename):
+        if os.path.exists(filename) and filename == fm_file.filename:
             os.remove(filename)
 
         return render_template('index.html', data=data)
