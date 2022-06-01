@@ -10,6 +10,7 @@ d3.select('#savePNG').on('click', function () {
     blob.then(value => {
         saveAs(value, get_property(fmData, 'Name').value + ".png");
     });
+    //chart.selectAll("#collapseIcon").attr("visibility", "visible");
     newData = filterData(ALL_DATA);
     redrawLabel(newData);
 });
@@ -22,6 +23,7 @@ d3.select('#saveSVG').on('click', function () {
     chart.selectAll("#collapseIcon").attr("visibility", "hidden");
     var blob = serialize(chart.node());
     saveAs(blob, get_property(fmData, 'Name').value + ".svg");
+    //chart.selectAll("#collapseIcon").attr("visibility", "visible");
     newData = filterData(ALL_DATA);
     redrawLabel(newData);
 });
