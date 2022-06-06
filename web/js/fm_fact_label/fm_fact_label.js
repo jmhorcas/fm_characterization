@@ -219,6 +219,7 @@ function drawFMFactLabel(data) {
    d3.select("#collapseZeroValues").on("change", function () { collapseZeroValues(data); });
    d3.select("#collapseSubProperties").on("change", function () { collapseSubProperties(data); });
    //d3.selectAll("#collapse").on("click", function (d) { collapseProperty(data, d); });
+   collapseSubProperties(data);
 }
 
 function addMetadata(element, key, value) {
@@ -260,10 +261,10 @@ function updateProperties(data, id) {
                .attr("y", PROPERTY_HEIGHT / 2)
                .attr('font-family', 'FontAwesome')
                .attr('font-size', COLLAPSEICON_FONT_SIZE)
-               .text(function (d) { return hasChildrenProperties(d) && getChildrenProperties(data, d).length == 0 ? COLLAPSED_ICON : EXPANDED_ICON; })
+               .text(function (d) { return hasChildrenProperties(d) && getChildrenProperties(data, d, false).length == 0 ? COLLAPSED_ICON : EXPANDED_ICON; })
                .attr("visibility", function (d) { return hasChildrenProperties(d) ? "visible" : "hidden"; })
                .attr("cursor", "pointer")
-               .on("click", function (p, d) { hasChildrenProperties(d) && getChildrenProperties(data, d).length == 0 ? expandProperty(ALL_DATA, d) : collapseProperty(ALL_DATA, d); });
+               .on("click", function (p, d) { hasChildrenProperties(d) && getChildrenProperties(data, d, false).length == 0 ? expandProperty(ALL_DATA, d) : collapseProperty(ALL_DATA, d); });
 
             var collapseIconWidth = collapseIcon.node() === null ? 0 : collapseIcon.node().getBBox().width;
 
@@ -487,17 +488,19 @@ function textSize(text, fontFamily, fontSize, fontWeight = "normal") {
  * @param {any} property  Property.
  * @returns List of children of the property.
  */
-function getChildrenProperties(data, property) {
+function getChildrenProperties(data, property, recursively) {
    var children = [];
    for (let p of data) {
       if (p.parent == property.name) {
          children.push(p);
       }
    }
-   for (let c of children) {
-      subChildren = getChildrenProperties(data, c);
-      for (let sb of subChildren) {
-         children.push(sb);
+   if (recursively) {
+      for (let c of children) {
+         subChildren = getChildrenProperties(data, c);
+         for (let sb of subChildren) {
+            children.push(sb);
+         }
       }
    }
    return children;
@@ -568,13 +571,8 @@ function calculateMaxIndentationWidth(data) {
 }
 
 function filterData(data) {
-   if (d3.select("#collapseSubProperties").property("checked")) {
-      metrics = data.metrics.filter(function (d, i) { return parseInt(d.level, 10) == 0; });
-      analysis = data.analysis.filter(function (d, i) { return parseInt(d.level, 10) == 0; });
-   } else {
-      metrics = data.metrics;
-      analysis = data.analysis;
-   }
+   metrics = data.metrics;
+   analysis = data.analysis;
    if (d3.select("#collapseZeroValues").property("checked")) {
       metrics = metrics.filter(function (d, i) { return get_value(d) != '0'; });
       analysis = analysis.filter(function (d, i) { return get_value(d) != '0'; });
@@ -605,23 +603,50 @@ function collapseZeroValues(data) {
 }
 
 function collapseSubProperties(data) {
-   var newData = filterData(data);
+   if (d3.select("#collapseSubProperties").property("checked")) {
+      for (let p of data.metrics) {
+         var children = getChildrenProperties(data.metrics, p, true);
+         for (let c of children) { VISIBLE_PROPERTIES[c.name] = false; }
+         var children = getChildrenProperties(data.analysis, p, true);
+         for (let c of children) { VISIBLE_PROPERTIES[c.name] = false; }
+      }
+      for (let p of data.analysis) {
+         var children = getChildrenProperties(data.metrics, p, true);
+         for (let c of children) { VISIBLE_PROPERTIES[c.name] = false; }
+         var children = getChildrenProperties(data.analysis, p, true);
+         for (let c of children) { VISIBLE_PROPERTIES[c.name] = false; }
+      }
+   } else {
+      for (let p of data.metrics) {
+         var children = getChildrenProperties(data.metrics, p, true);
+         for (let c of children) { VISIBLE_PROPERTIES[c.name] = true; }
+         var children = getChildrenProperties(data.analysis, p, true);
+         for (let c of children) { VISIBLE_PROPERTIES[c.name] = true; }
+      }
+      for (let p of data.analysis) {
+         var children = getChildrenProperties(data.metrics, p, true);
+         for (let c of children) { VISIBLE_PROPERTIES[c.name] = true; }
+         var children = getChildrenProperties(data.analysis, p, true);
+         for (let c of children) { VISIBLE_PROPERTIES[c.name] = true; }
+      }
+   }
+   newData = filterData(data);
    redrawLabel(newData);
 }
 
 function collapseProperty(data, property) {
-   var children = getChildrenProperties(data.metrics, property);
+   var children = getChildrenProperties(data.metrics, property, true);
    for (let c of children) { VISIBLE_PROPERTIES[c.name] = false; }
-   var children = getChildrenProperties(data.analysis, property);
+   var children = getChildrenProperties(data.analysis, property, true);
    for (let c of children) { VISIBLE_PROPERTIES[c.name] = false; }
    newData = filterData(data);
    redrawLabel(newData);
 }
 
 function expandProperty(data, property) {
-   var children = getChildrenProperties(data.metrics, property);
+   var children = getChildrenProperties(data.metrics, property, false);
    for (let c of children) { VISIBLE_PROPERTIES[c.name] = true; }
-   var children = getChildrenProperties(data.analysis, property);
+   var children = getChildrenProperties(data.analysis, property, false);
    for (let c of children) { VISIBLE_PROPERTIES[c.name] = true; }
    newData = filterData(data);
    redrawLabel(newData);
