@@ -133,9 +133,12 @@
                                                         <option value="{{ file }}">{{ file }}</option>
                                                         {% endfor %}
                                                     </select>
+                                                    {% if data and data.fm_example %}
+                                                        <a href="{{ data.fm_example }}" id="downloadButton" class="btn btn-primary" role="button" download>Download FM</a> 
+                                                    {% endif %}
                                                 </div>
                                             </div>
-                                            <button type="submit" id="submitButtom" class="spinner-button btn btn-primary">Submit</button>
+                                            <button type="submit" id="submitButton" class="spinner-button btn btn-primary">Submit</button>
                                         </form>
                                     </div>
                                 </div>
@@ -254,7 +257,7 @@
 
         <script type="text/javascript">
             $(document).ready(function() {
-                $("#submitButtom").click(function() {
+                $("#submitButton").click(function() {
                     // disable button
                     //$(this).prop("disabled", true);
                     // add spinner to button

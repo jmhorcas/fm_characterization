@@ -133,7 +133,7 @@ function drawFMFactLabel(data) {
 
    // Keywords
    var keywordHeight = yDescription + descriptionSize.height + 1;
-   if (get_property(data, 'Tags').value == "") {
+   if (get_property(data, 'Tags').value === null) {
       var keywordsSize = descriptionSize;
    } else {
       var keywords = chart.append("g").attr("transform", "translate(0," + keywordHeight + ")");
@@ -143,7 +143,7 @@ function drawFMFactLabel(data) {
 
    // Author
    var authorHeight = keywordHeight + keywordsSize.height;
-   if (get_property(data, 'Author').value == "") {
+   if (get_property(data, 'Author').value === null) {
       var authorSize = { "width": 0, "height": 0 };
    } else {
       var author = chart.append("g").attr("transform", "translate(0," + authorHeight + ")");
@@ -153,7 +153,7 @@ function drawFMFactLabel(data) {
 
    // Year
    var yearHeight = authorHeight + authorSize.height;
-   if (get_property(data, 'Year').value == "") {
+   if (get_property(data, 'Year').value === null) {
       var yearSize = { "width": 0, "height": 0 };
    } else {
       var year = chart.append("g").attr("transform", "translate(0," + yearHeight + ")");
@@ -163,7 +163,7 @@ function drawFMFactLabel(data) {
 
    // Domain
    var domainHeight = yearHeight + yearSize.height;
-   if (get_property(data, 'Domain').value == "") {
+   if (get_property(data, 'Domain').value === null) {
       var domainSize = { "width": 0, "height": 0 };
    } else {
       var domain = chart.append("g").attr("transform", "translate(0," + domainHeight + ")");
