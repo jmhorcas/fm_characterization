@@ -8,9 +8,10 @@ from famapy.metamodels.fm_metamodel.models import FeatureModel
 from famapy.metamodels.fm_metamodel.transformations import UVLReader, FeatureIDEReader
 
 from fm_characterization import FMCharacterization
+from fm_characterization import models_info
 
 static_dir = 'web'
-EXAMPLE_MODELS_DIR = 'fm_models/'
+
 
 app = Flask(__name__,
             static_url_path='',
@@ -47,12 +48,12 @@ else:
     basepath = "/" + basepath
 
 # Get example models
-EXAMPLE_MODELS = []
-for root, dirs, files in os.walk(os.path.join(static_dir, EXAMPLE_MODELS_DIR)):
-    for file in files:
-        #filepath = os.path.join(root, file)
-        EXAMPLE_MODELS.append(file)
-EXAMPLE_MODELS.sort()
+EXAMPLE_MODELS = {m[models_info.NAME]: m for m in models_info.MODELS}
+# for root, dirs, files in os.walk(os.path.join(static_dir, EXAMPLE_MODELS_DIR)):
+#     for file in files:
+#         #filepath = os.path.join(root, file)
+#         EXAMPLE_MODELS.append(file)
+# EXAMPLE_MODELS.sort()
 
 
 @app.route(basepath + '/', methods=['GET', 'POST'])
@@ -64,18 +65,10 @@ def index():
         return render_template('index.html', data=data)
 
     if request.method == 'POST':
-        name = request.form['inputName']
-        description = request.form['inputDescription']
-        description = description.replace(os.linesep, ' ')
-        author = request.form['inputAuthor']
-        reference = request.form['inputReference']
-        keywords = request.form['inputKeywords']
-        domain = request.form['inputDomain']
-        year = request.form['inputYear']
         fm_file = request.files['inputFM']
-        fm_file_example = request.form['inputExample']
+        fm_name = request.form['inputExample']
 
-        if not fm_file and not fm_file_example:
+        if not fm_file and not fm_name:
             # The file is required and this is controlled in the front-end.
             data['file_error'] = 'Please upload a feature model or select one from the examples.'
             return render_template('index.html', data=data)
@@ -83,9 +76,36 @@ def index():
         if fm_file:
             filename = fm_file.filename
             fm_file.save(filename)
-        elif fm_file_example:
-            filename = os.path.join(static_dir, EXAMPLE_MODELS_DIR, fm_file_example)
-        
+        elif fm_name in EXAMPLE_MODELS.keys():
+            filename = os.path.join(static_dir, models_info.EXAMPLE_MODELS_DIR, EXAMPLE_MODELS[fm_name][models_info.FILENAME])
+            name = EXAMPLE_MODELS[fm_name][models_info.NAME]
+            description = EXAMPLE_MODELS[fm_name][models_info.DESCRIPTION]
+            author = EXAMPLE_MODELS[fm_name][models_info.AUTHOR]
+            reference = EXAMPLE_MODELS[fm_name][models_info.REFERENCE]
+            keywords = EXAMPLE_MODELS[fm_name][models_info.KEYWORDS]
+            keywords = ', '.join(keywords)
+            domain = EXAMPLE_MODELS[fm_name][models_info.DOMAIN]
+            year = EXAMPLE_MODELS[fm_name][models_info.YEAR]
+        else:
+            data['file_error'] = 'Please upload a feature model or select one from the examples.'
+            return render_template('index.html', data=data)
+
+        if request.form['inputName']:
+            name = request.form['inputName']
+        if request.form['inputDescription']:
+            description = request.form['inputDescription']
+            description = description.replace(os.linesep, ' ')
+        if request.form['inputAuthor']:
+            author = request.form['inputAuthor']
+        if request.form['inputReference']:
+            reference = request.form['inputReference']
+        if request.form['inputKeywords']:
+            keywords = request.form['inputKeywords']
+        if request.form['inputDomain']:
+            domain = request.form['inputDomain']
+        if request.form['inputYear']:
+            year = request.form['inputYear']
+
         try:
             # Read the feature model
             fm = read_fm_file(filename)

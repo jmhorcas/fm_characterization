@@ -116,7 +116,7 @@ class FMProperties(Enum):
     DEAD_FEATURES = FMProperty('Dead features', 'Features that cannot appear in any configuration.', None)
     UNIQUE_FEATURES = FMProperty('Unique features', 'Features that appear in exactly one configuration.', None)
     FALSE_OPTIONAL_FEATURES = FMProperty('False-optional features', "Features defined as optionals the selection of their parents make the feature itself selected as well.", None)
-    CONFIGURATIONS = FMProperty('Configurations', 'Number of configurations represented by the feature model.', None)
+    CONFIGURATIONS = FMProperty('Configurations', 'Number of configurations represented by the feature model. If <= is shown, the number represents an upper estimation bound.', None)
     # ATOMIC_SETS = FMProperty('Atomic sets', '', None)  # Atomic sets need to be fixed in FLAMA.
 
     
