@@ -67,6 +67,13 @@ def index():
     if request.method == 'POST':
         fm_file = request.files['inputFM']
         fm_name = request.form['inputExample']
+        name = None
+        description = None
+        author = None
+        year = None
+        keywords = None
+        reference = None
+        domain = None
 
         if not fm_file and not fm_name:
             # The file is required and this is controlled in the front-end.
@@ -86,6 +93,7 @@ def index():
             keywords = ', '.join(keywords)
             domain = EXAMPLE_MODELS[fm_name][models_info.DOMAIN]
             year = EXAMPLE_MODELS[fm_name][models_info.YEAR]
+            data['fm_example'] = os.path.join(models_info.EXAMPLE_MODELS_DIR, EXAMPLE_MODELS[fm_name][models_info.FILENAME])
         else:
             data['file_error'] = 'Please upload a feature model or select one from the examples.'
             return render_template('index.html', data=data)
