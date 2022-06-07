@@ -31,6 +31,12 @@ The main use case of the tool is uploading an FM and automatically generates a v
 - Customize the FM fact label.
 - Export the FM fact label and the FM characterization.
 
+<video width="320" height="240" controls>
+  <source src="video_demo.mp4" type="video/mp4">
+</video>
+
+
+
 ## Deployment of the web application
 
 ### Requirements
