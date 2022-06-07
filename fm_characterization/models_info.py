@@ -35,7 +35,7 @@ MODELS = [
      REFERENCE: 'https://doi.org/10.1145/3023956.3023963',
      KEYWORDS: ['code generator', 'web'],
      DOMAIN: 'web applications',
-     FILENAME: 'Jhipster.uvl',
+     FILENAME: 'JHipster.uvl',
     },
     {NAME: 'GPL',
      DESCRIPTION: 'Standard SPL of classical graph applications that has been extensively used as a case study in the SPL community.',
