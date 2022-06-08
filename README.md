@@ -75,6 +75,11 @@ Access to the web service in the localhost:
 
 http://127.0.0.1:5000 or http://10.141.0.170:5000
 
+## Video
+
+https://user-images.githubusercontent.com/1789503/172726157-11ebe212-41f6-47a1-9ab7-ee378ed1aab7.mp4
+
+
 ## References and third-party software
 - [D3: Data-Driven Documents](https://d3js.org/)
 - [Python framework for automated analysis of feature models](https://github.com/diverso-lab/core)
