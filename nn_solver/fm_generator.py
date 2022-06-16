@@ -151,7 +151,6 @@ def generate_all_feature_models(n_features: int, generate_constraints: bool) -> 
                 new_gen.create_child_feature_in_group(feature_name, p.name)
                 models.append((new_gen.get_feature_model(), features[1:]))
     
-    models = copy.copy(complete_models)
     #for m in models:
     #    print(f'm:{[str(f) for f in m.get_features()]} -> {str(m)}')
     if generate_constraints:
@@ -159,11 +158,12 @@ def generate_all_feature_models(n_features: int, generate_constraints: bool) -> 
             features = [f'F{i}' for i in range(1, n_features + 1)]
             pair_wise = itertools.combinations(features, 2)
             for left, right in pair_wise:
+                models = copy.copy(complete_models)
                 for m in models:
                     new_gen = FMGenerator(copy.deepcopy(m))
                     new_gen.create_requires_constraint(left, right)
                     complete_models.add(new_gen.get_feature_model())
-                for m in models:
+                
                     new_gen = FMGenerator(copy.deepcopy(m))
                     new_gen.create_excludes_constraint(left, right)
                     complete_models.add(new_gen.get_feature_model())

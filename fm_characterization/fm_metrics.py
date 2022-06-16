@@ -234,7 +234,8 @@ class FMMetrics():
         return FMPropertyMeasure(FMProperties.BRANCHING_FACTOR.value, _avg_branching_factor)
 
     def fm_min_children_per_feature(self) -> FMPropertyMeasure:
-        _min_children_per_feature = min(sum(len(r.children) for r in feature.get_relations()) for feature in self._features if not feature.is_leaf())
+        n_children = [sum(len(r.children) for r in feature.get_relations()) for feature in self._features if not feature.is_leaf()]
+        _min_children_per_feature = min(n_children) if len(n_children) > 0 else 0
         return FMPropertyMeasure(FMProperties.MIN_CHILDREN_PER_FEATURE.value, _min_children_per_feature)
 
     def fm_max_children_per_feature(self) -> FMPropertyMeasure:
