@@ -1,7 +1,8 @@
 import os
 from nn_solver import fm_generator
 from fm_characterization import FMCharacterization
-
+from rhea.fm_language import FMLanguage
+from rhea.language_constructs import FeatureModelConstruct, RootFeature
 
 CSV_FILE = 'label.csv'
 MAX_FEATURES_WITH_CONSTRAINTS = 10
@@ -37,9 +38,11 @@ def generate_feature_models(n_features: int, generate_constraints: bool):
     print('----------')
 
 if __name__ == "__main__":
-    #for n_features in range(1, MAX_FEATURES_WITH_CONSTRAINTS + 1):
-    #    generate_feature_models(n_features, generate_constraints=False)
-    for n_features in range(5, 6):
-        generate_feature_models(n_features, generate_constraints=True)
+    features_names = [f'F{i}' for i in range(1, MAX_FEATURES_WITHOUT_CONSTRAINTS + 1)]
+    language_constructs = [FeatureModelConstruct, RootFeature]
+    language = FMLanguage(language_constructs)
+    fms = language.generate_feature_models(features_names)
+    for i, fm in enumerate(fms):
+        print(f'FM{i}: {fm}')
     
     
