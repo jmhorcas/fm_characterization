@@ -3,7 +3,6 @@ import queue
 from famapy.metamodels.fm_metamodel.models import FeatureModel, Feature
 
 from rhea import LanguageConstruct
-from rhea.fm_generator import get_applicable_language_constructs_instances
 
 
 class FMLanguage():

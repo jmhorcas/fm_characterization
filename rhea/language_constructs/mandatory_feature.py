@@ -1,5 +1,3 @@
-import copy
-
 from rhea import LanguageConstruct 
 
 from famapy.metamodels.fm_metamodel.models import FeatureModel, Feature, Relation
