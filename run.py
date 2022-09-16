@@ -45,7 +45,7 @@ if basepath == None:
     basepath = ""
 else:
     os.system("ln -sf /app/web /app/" + static_dir + "/" + basepath)
-    basepath = "/" + basepath
+    #basepath = "/" + basepath
 
 # Get example models
 EXAMPLE_MODELS = {m[models_info.NAME]: m for m in models_info.MODELS}
