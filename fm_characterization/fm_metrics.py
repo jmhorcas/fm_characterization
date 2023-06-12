@@ -2,9 +2,9 @@ import statistics
 
 from fm_characterization import FMProperties, FMPropertyMeasure
 from .fm_utils import get_ratio
-
-from famapy.metamodels.fm_metamodel.models import FeatureModel, Feature
-from famapy.metamodels.fm_metamodel import operations as fm_operations
+from . import constraints_utils as ctcs_utils
+from flamapy.metamodels.fm_metamodel.models import FeatureModel, Feature
+from flamapy.metamodels.fm_metamodel import operations as fm_operations
 
 
 class FMMetrics():
@@ -13,11 +13,42 @@ class FMMetrics():
         self.fm = model
 
         # Variables for performance
-        self._features = self.fm.get_features()
-        self._features_by_name = {f.name: f for f in self._features}
-        self._abstract_features = {f.name: f for f in self._features if f.is_abstract}
-        self._concrete_features = {f.name: f for f in self._features if not f.is_abstract}
-        self._leaf_features = [f.name for f in self._features if len(f.get_relations()) == 0]
+        self._features = []
+        self._features_by_name = {}
+        self._abstract_features = {}
+        self._concrete_features = {}
+        self._leaf_features = {}
+        for f in self.fm.get_features():
+            self._features.append(f)
+            self._features_by_name[f.name] = f
+            if f.is_abstract:
+                self._abstract_features[f.name] = f
+            else:
+                self._concrete_features[f.name] = f
+            if len(f.get_relations()) == 0:
+                self._leaf_features[f.name] = f
+
+        self._constraints = []
+        self._simple_constraints = []
+        self._requires_constraints = []
+        self._excludes_constraints = []
+        self._complex_constraints = []
+        self._strictcomplex_constraints = []
+        self._pseudocomplex_constraints = []
+        for ctc in self.fm.get_constraints():
+            if ctcs_utils.is_requires_constraint(ctc):
+                self._simple_constraints.append(str(ctc))
+                self._requires_constraints.append(str(ctc))
+            elif ctcs_utils.is_excludes_constraint(ctc):
+                self._simple_constraints.append(str(ctc))
+                self._excludes_constraints.append(str(ctc))
+            else:
+                self._complex_constraints.append(str(ctc))
+                if ctcs_utils.is_pseudo_complex_constraint(ctc):
+                    self._pseudocomplex_constraints.append(str(ctc))
+                else:
+                    self._strictcomplex_constraints.append(str(ctc))
+
         self._constraints_per_features = constraints_per_features(model, self._features)
         self._feature_ancestors = [len(get_feature_ancestors(self._features_by_name[f])) for f in self._leaf_features]
                      
@@ -97,7 +128,7 @@ class FMMetrics():
                         get_ratio(_top_features, self._features))
 
     def fm_leaf_features(self) -> FMPropertyMeasure:
-        _leaf_features = self._leaf_features
+        _leaf_features = list(self._leaf_features.keys())
         return FMPropertyMeasure(FMProperties.LEAF_FEATURES.value, 
                         _leaf_features, 
                         len(_leaf_features),
@@ -248,52 +279,52 @@ class FMMetrics():
         return FMPropertyMeasure(FMProperties.AVG_CHILDREN_PER_FEATURE.value, _avg_children_per_feature)
 
     def fm_cross_tree_constraints(self) -> FMPropertyMeasure:
-        _cross_tree_constraints = [str(ctc) for ctc in self.fm.get_constraints()]
+        _cross_tree_constraints = self._constraints
         return FMPropertyMeasure(FMProperties.CROSS_TREE_CONSTRAINTS.value, 
                         _cross_tree_constraints,
                         len(_cross_tree_constraints))
 
     def fm_simple_constraints(self) -> FMPropertyMeasure:
-        _simple_constraints = [str(ctc) for ctc in self.fm.get_simple_constraints()]
+        _simple_constraints = self._simple_constraints
         return FMPropertyMeasure(FMProperties.SIMPLE_CONSTRAINTS.value, 
                         _simple_constraints,
                         len(_simple_constraints),
-                        get_ratio(_simple_constraints, self.fm.get_constraints()))
+                        get_ratio(_simple_constraints, self._constraints))
 
     def fm_requires_constraints(self) -> FMPropertyMeasure:
-        _requires_constraints = [str(ctc) for ctc in self.fm.get_requires_constraints()]
+        _requires_constraints = self._requires_constraints
         return FMPropertyMeasure(FMProperties.REQUIRES_CONSTRAINTS.value, 
                         _requires_constraints,
                         len(_requires_constraints),
-                        get_ratio(_requires_constraints, self.fm.get_simple_constraints()))
+                        get_ratio(_requires_constraints, self._simple_constraints))
 
     def fm_excludes_constraints(self) -> FMPropertyMeasure:
-        _excludes_constraints = [str(ctc) for ctc in self.fm.get_excludes_constraints()]
+        _excludes_constraints = self._excludes_constraints
         return FMPropertyMeasure(FMProperties.EXCLUDES_CONSTRAINTS.value, 
                         _excludes_constraints,
                         len(_excludes_constraints),
-                        get_ratio(_excludes_constraints, self.fm.get_simple_constraints()))
+                        get_ratio(_excludes_constraints, self._simple_constraints))
 
     def fm_complex_constraints(self) -> FMPropertyMeasure:
-        _complex_constraints = [str(ctc) for ctc in self.fm.get_complex_constraints()]
+        _complex_constraints = self._complex_constraints
         return FMPropertyMeasure(FMProperties.COMPLEX_CONSTRAINTS.value, 
                         _complex_constraints,
                         len(_complex_constraints),
-                        get_ratio(_complex_constraints, self.fm.get_constraints()))
+                        get_ratio(_complex_constraints, self._constraints))
 
     def fm_pseudocomplex_constraints(self) -> FMPropertyMeasure:
-        _pseudocomplex_constraints = [str(ctc) for ctc in self.fm.get_pseudocomplex_constraints()]
+        _pseudocomplex_constraints = self._pseudocomplex_constraints
         return FMPropertyMeasure(FMProperties.PSEUDO_COMPLEX_CONSTRAINTS.value, 
                         _pseudocomplex_constraints,
                         len(_pseudocomplex_constraints),
-                        get_ratio(_pseudocomplex_constraints, self.fm.get_complex_constraints()))
+                        get_ratio(_pseudocomplex_constraints, self._complex_constraints))
 
     def fm_strictcomplex_constraints(self) -> FMPropertyMeasure:
-        _strictcomplex_constraints = [str(ctc) for ctc in self.fm.get_strictcomplex_constraints()]
+        _strictcomplex_constraints = self._strictcomplex_constraints
         return FMPropertyMeasure(FMProperties.STRICT_COMPLEX_CONSTRAINTS.value, 
                         _strictcomplex_constraints,
                         len(_strictcomplex_constraints),
-                        get_ratio(_strictcomplex_constraints, self.fm.get_complex_constraints()))
+                        get_ratio(_strictcomplex_constraints, self._complex_constraints))
 
     def fm_extra_constraint_representativeness(self) -> FMPropertyMeasure:
         _features_in_constraints = list({f for ctc in self.fm.get_constraints() for f in ctc.get_features()})

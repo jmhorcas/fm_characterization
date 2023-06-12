@@ -1,4 +1,4 @@
-EXAMPLE_MODELS_DIR = 'nn_solver/fm_models/'
+EXAMPLE_MODELS_DIR = 'fm_models/'
 
 NAME = 0
 DESCRIPTION = 1

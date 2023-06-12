@@ -2,7 +2,7 @@ from typing import Optional
 
 from fm_characterization import FMProperties, FMPropertyMeasure
 
-from famapy.metamodels.fm_metamodel.models import FeatureModel
+from flamapy.metamodels.fm_metamodel.models import FeatureModel
 
 
 class FMMetadata():

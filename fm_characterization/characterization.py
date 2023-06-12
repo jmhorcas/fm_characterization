@@ -1,7 +1,7 @@
 import json
 from typing import Any, Optional
 
-from famapy.metamodels.fm_metamodel.models import FeatureModel
+from flamapy.metamodels.fm_metamodel.models import FeatureModel
 
 from fm_characterization import FMProperty, FMAnalysis, FMMetadata, FMMetrics
 
