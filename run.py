@@ -1,11 +1,10 @@
-from email.mime import base
 import os
 from typing import Optional
 
 from flask import Flask, render_template, request
 
-from famapy.metamodels.fm_metamodel.models import FeatureModel
-from famapy.metamodels.fm_metamodel.transformations import UVLReader, FeatureIDEReader
+from flamapy.metamodels.fm_metamodel.models import FeatureModel
+from flamapy.metamodels.fm_metamodel.transformations import UVLReader, FeatureIDEReader
 
 from fm_characterization import FMCharacterization
 from fm_characterization import models_info
@@ -25,27 +24,30 @@ def read_fm_file(filename: str) -> Optional[FeatureModel]:
             return UVLReader(filename).transform()
         elif filename.endswith(".xml") or filename.endswith(".fide"):
             return FeatureIDEReader(filename).transform()
-    except:
+    except Exception as e:
+        print(e)
         pass
     try:
         return UVLReader(filename).transform()
-    except:
+    except Exception as e:
+        print(e)
         pass
     try:
         return FeatureIDEReader(filename).transform()
-    except:
+    except Exception as e:
+        print(e)
         pass
     return None
 
 
 # This sets the basepath from FLASK_BASE_PATH env variable
-basepath = os.environ.get("FLASK_BASE_PATH")
+# basepath = os.environ.get("FLASK_BASE_PATH")
 
-if basepath == None:
-    basepath = ""
-else:
-    os.system("ln -sf /app/web /app/" + static_dir + "/" + basepath)
-    basepath = "/" + basepath
+# if basepath == None:
+#     basepath = ""
+# else:
+#     os.system("ln -sf /app/web /app/" + static_dir + "/" + basepath)
+#     basepath = "/" + basepath
 
 # Get example models
 EXAMPLE_MODELS = {m[models_info.NAME]: m for m in models_info.MODELS}
@@ -56,7 +58,7 @@ EXAMPLE_MODELS = {m[models_info.NAME]: m for m in models_info.MODELS}
 # EXAMPLE_MODELS.sort()
 
 
-@app.route(basepath + '/', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def index():
     data = {}
     data['models'] = EXAMPLE_MODELS

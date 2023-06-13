@@ -1,12 +1,12 @@
 from fm_characterization import FMProperties, FMPropertyMeasure
 from .fm_utils import get_ratio, get_nof_configuration_as_str
 
-from famapy.metamodels.fm_metamodel.models import FeatureModel
-from famapy.metamodels.pysat_metamodel.transformations.fm_to_pysat import FmToPysat
-from famapy.metamodels.bdd_metamodel.transformations.fm_to_bdd import FmToBDD
-from famapy.metamodels.pysat_metamodel import operations as sat_operations
-from famapy.metamodels.bdd_metamodel import operations as bdd_operations
-from famapy.metamodels.fm_metamodel import operations as fm_operations
+from flamapy.metamodels.fm_metamodel.models import FeatureModel
+from flamapy.metamodels.pysat_metamodel.transformations.fm_to_pysat import FmToPysat
+from flamapy.metamodels.bdd_metamodel.transformations.fm_to_bdd import FmToBDD
+from flamapy.metamodels.pysat_metamodel import operations as sat_operations
+from flamapy.metamodels.bdd_metamodel import operations as bdd_operations
+from flamapy.metamodels.fm_metamodel import operations as fm_operations
 
 
 class FMAnalysis():

@@ -1,7 +1,7 @@
 import json
 from typing import Any, Optional
 
-from famapy.metamodels.fm_metamodel.models import FeatureModel
+from flamapy.metamodels.fm_metamodel.models import FeatureModel
 
 from fm_characterization import FMProperty, FMAnalysis, FMMetadata, FMMetrics
 
@@ -60,13 +60,16 @@ class FMCharacterization():
         result['analysis'] = analysis
         return result
 
-    def to_json_str(self, filepath: Optional[str] = None) -> str:
+    def to_json_str(self) -> str:
         result = self.to_json()
-        if filepath is not None:
-            with open(filepath, 'w') as output_file:
-                json.dump(result, output_file, indent=4)
         return json.dumps(result, indent=4)
-            
+
+    def to_json_file(self, filepath: str = None) -> None:
+        result = self.to_json()
+        with open(filepath, 'w') as output_file:
+            json.dump(result, output_file, indent=4)
+
+
 def get_parents_numbers(property: FMProperty) -> int:
     if property.parent is None:
         return 1
