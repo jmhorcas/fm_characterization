@@ -1,5 +1,3 @@
-EXAMPLE_MODELS_DIR = 'fm_models/'
-
 NAME = 0
 DESCRIPTION = 1
 AUTHOR = 2

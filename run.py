@@ -9,13 +9,15 @@ from flamapy.metamodels.fm_metamodel.transformations import UVLReader, FeatureID
 from fm_characterization import FMCharacterization
 from fm_characterization import models_info
 
-static_dir = 'web'
+
+STATIC_DIR = 'web'
+EXAMPLE_MODELS_DIR = 'fm_models'
 
 
 app = Flask(__name__,
             static_url_path='',
-            static_folder=static_dir,
-            template_folder=static_dir)
+            static_folder=STATIC_DIR,
+            template_folder=STATIC_DIR)
 
 
 def read_fm_file(filename: str) -> Optional[FeatureModel]:
@@ -86,7 +88,7 @@ def index():
             filename = fm_file.filename
             fm_file.save(filename)
         elif fm_name in EXAMPLE_MODELS.keys():
-            filename = os.path.join(static_dir, models_info.EXAMPLE_MODELS_DIR, EXAMPLE_MODELS[fm_name][models_info.FILENAME])
+            filename = os.path.join(STATIC_DIR, EXAMPLE_MODELS_DIR, EXAMPLE_MODELS[fm_name][models_info.FILENAME])
             name = EXAMPLE_MODELS[fm_name][models_info.NAME]
             description = EXAMPLE_MODELS[fm_name][models_info.DESCRIPTION]
             author = EXAMPLE_MODELS[fm_name][models_info.AUTHOR]
@@ -95,7 +97,7 @@ def index():
             keywords = ', '.join(keywords)
             domain = EXAMPLE_MODELS[fm_name][models_info.DOMAIN]
             year = EXAMPLE_MODELS[fm_name][models_info.YEAR]
-            data['fm_example'] = os.path.join(models_info.EXAMPLE_MODELS_DIR, EXAMPLE_MODELS[fm_name][models_info.FILENAME])
+            data['fm_example'] = os.path.join(EXAMPLE_MODELS_DIR, EXAMPLE_MODELS[fm_name][models_info.FILENAME])
         else:
             data['file_error'] = 'Please upload a feature model or select one from the examples.'
             return render_template('index.html', data=data)
