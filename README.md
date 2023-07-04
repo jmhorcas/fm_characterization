@@ -1,7 +1,7 @@
 # Table of Contents
 - [Table of Contents](#table-of-contents)
 - [FM Fact Label: A Configurable and Interactive Visualization of Feature Model Characterizations](#fm-fact-label-a-configurable-and-interactive-visualization-of-feature-model-characterizations)
-- [Available online](#available-online)
+  - [Available online](#available-online)
   - [Artifact description](#artifact-description)
   - [How to use it](#how-to-use-it)
   - [Deployment of the web application](#deployment-of-the-web-application)
@@ -13,7 +13,7 @@
 # FM Fact Label: A Configurable and Interactive Visualization of Feature Model Characterizations
 A tool to generate visualizations of feature model characterizations as a fact label similar to the [nutritions fact label](https://en.wikipedia.org/wiki/Nutrition_facts_label).
 
-# Available online
+## Available online
 - [FM Fact Label (UMA)](https://fmfactlabel.adabyron.uma.es/)
 - [FM Fact Label (US)](https://web.diverso-lab.us.es/fmfactlabel/)
 
