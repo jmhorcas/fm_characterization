@@ -28,7 +28,7 @@ The fact label visualization is automatically generated using [D3](https://d3js.
 ## How to use it
 The tool is currently deployed and available online in the following link: 
 
-https://web.diverso-lab.us.es/fmfactlabel
+https://fmfactlabel.adabyron.uma.es/
 
 The main use case of the tool is uploading an FM and automatically generates a visualization of its characterization which can be customized and exported. The use case can be described with the following steps:
 - Upload an FM and provide metadata.
