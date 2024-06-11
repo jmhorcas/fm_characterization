@@ -100,8 +100,6 @@ class FMProperties(Enum):
     FEATURE_ATTRIBUTES = FMProperty('Feature attributes', 'Number of unique attributes associated with features.', None)
     FEATURES_WITH_ATTRIBUTES = FMProperty('Features with attributes', 'Number of features with associated attributes.', FEATURE_ATTRIBUTES)
 
-   
-
     CROSS_TREE_CONSTRAINTS = FMProperty('Cross-tree constraints', 'Textual cross-tree constraints.', None)
     SIMPLE_CONSTRAINTS = FMProperty('Simple constraints', 'Requires and Excludes constraints.', CROSS_TREE_CONSTRAINTS)  # Requires and excludes
     REQUIRES_CONSTRAINTS = FMProperty('Requires constraints', 'Constraints modeling that the activation of a feature f1 implies the activation of a feature f2.', SIMPLE_CONSTRAINTS)
