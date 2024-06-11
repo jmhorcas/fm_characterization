@@ -98,6 +98,8 @@ class FMProperties(Enum):
     MEAN_DEPTH_TREE = FMProperty('Mean depth of tree', 'Number of features of the mean path from the root to the leaf features.', DEPTH_TREE)
     MEDIAN_DEPTH_TREE = FMProperty('Median depth of tree', 'Number of features of the median path from the root to the leaf features.', DEPTH_TREE)
     FEATURE_ATTRIBUTES = FMProperty('Feature attributes', 'Number of unique attributes associated with features.', None)
+    FEATURES_WITH_ATTRIBUTES = FMProperty('Features with attributes', 'Number of features with associated attributes.', FEATURE_ATTRIBUTES)
+
    
 
     CROSS_TREE_CONSTRAINTS = FMProperty('Cross-tree constraints', 'Textual cross-tree constraints.', None)
