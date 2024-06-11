@@ -354,7 +354,8 @@ class FMMetrics():
 
     def fm_features_with_attributes(self) -> FMPropertyMeasure:
         _features_with_attributes = [feature.name for feature in self.fm.get_features() if feature.get_attributes()]
-        return FMPropertyMeasure(FMProperties.FEATURES_WITH_ATTRIBUTES.value, _features_with_attributes, len(_features_with_attributes))
+        return FMPropertyMeasure(FMProperties.FEATURES_WITH_ATTRIBUTES.value, _features_with_attributes, len(_features_with_attributes), 
+                                 get_ratio(_features_with_attributes, self._features))
 
 
 def constraints_per_features(fm: FeatureModel, features: list[Feature]) -> list[int]:
