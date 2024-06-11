@@ -94,6 +94,7 @@ class FMMetrics():
         result.append(self.fm_avg_constraints_per_feature())
         result.append(self.fm_min_constraints_per_feature())
         result.append(self.fm_max_constraints_per_feature())
+        result.append(self.fm_feature_attributes())
         return result
 
     def fm_features(self) -> FMPropertyMeasure:
@@ -345,6 +346,11 @@ class FMMetrics():
     def fm_avg_constraints_per_feature(self) -> FMPropertyMeasure:
         _constraints_per_feature = self._constraints_per_features
         return FMPropertyMeasure(FMProperties.AVG_CONSTRAINTS_PER_FEATURE.value, round(statistics.mean(_constraints_per_feature), 2))
+    
+    def fm_feature_attributes(self) -> FMPropertyMeasure:
+        attributes_names = {attribute.name for feature in self.fm.get_features() for attribute in feature.get_attributes()}
+        return FMPropertyMeasure(FMProperties.FEATURE_ATTRIBUTES.value, list(attributes_names), len(list(attributes_names)))
+
 
 
 def constraints_per_features(fm: FeatureModel, features: list[Feature]) -> list[int]:
