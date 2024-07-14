@@ -28,6 +28,48 @@ d3.select('#saveSVG').on('click', function () {
     redrawLabel(newData);
 });
 
+d3.select('#savePDF').on('click', async function () {
+    const chart = d3.select(".chart");
+    const svgElement = chart.node();
+    const originalWidth = svgElement.getAttribute("width");
+    const originalHeight = svgElement.getAttribute("height");
+
+    try {
+        chart.selectAll("#collapseIcon").attr("visibility", "hidden");
+
+        const bbox = svgElement.getBBox();
+        svgElement.setAttribute("width", bbox.width);
+        svgElement.setAttribute("height", bbox.height);
+
+        const blob = await rasterize(svgElement);
+
+        const imgData = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = () => reject(new Error("Error reading the blob"));
+            reader.readAsDataURL(blob);
+        });
+
+        const pdf = new jspdf.jsPDF({
+            orientation: (bbox.width > bbox.height) ? 'landscape' : 'portrait',
+            unit: 'pt',
+            format: [bbox.width, bbox.height]
+        });
+
+        pdf.addImage(imgData, 'PNG', 0, 0, bbox.width, bbox.height);
+        pdf.save(get_property(fmData, 'Name').value + ".pdf");
+    } catch (error) {
+        console.error("An error occurred while saving the PDF:", error);
+    } finally {
+        svgElement.setAttribute("width", originalWidth);
+        svgElement.setAttribute("height", originalHeight);
+        newData = filterData(ALL_DATA);
+        redrawLabel(newData);
+    }
+});
+
+
+
 /**
  * Set-up the save TXT button.
  */
@@ -91,16 +133,26 @@ function rasterize(svg) {
     let resolve, reject;
     const promise = new Promise((y, n) => (resolve = y, reject = n));
     const image = new Image;
-    image.onerror = reject;
+    image.onerror = (e) => {
+        console.error("Image onerror event:", e);
+        reject(e);
+    };
     image.onload = () => {
         const rect = svg.getBoundingClientRect();
         const context = context2d(rect.width, rect.height);
         context.drawImage(image, 0, 0, rect.width, rect.height);
-        context.canvas.toBlob(resolve);
+        context.canvas.toBlob((blob) => {
+            console.log('Rasterized Blob:', blob);
+            resolve(blob);
+        }, 'image/png');
     };
-    image.src = URL.createObjectURL(serialize(svg));
+    const serializedSVG = serialize(svg);
+    console.log('Serialized SVG:', serializedSVG);
+    image.src = URL.createObjectURL(serializedSVG);
     return promise;
 }
+
+
 
 function context2d(width, height, dpi) {
     if (dpi == null) dpi = devicePixelRatio;
