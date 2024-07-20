@@ -237,6 +237,44 @@ function addMetadata(element, key, value) {
       .call(wrap, maxWidth - (6 * PROPERTY_INDENTATION + textSize(key, DESCRIPTION_FONT_FAMILY, DESCRIPTION_FONT_SIZE).width));
 }
 
+document.addEventListener('DOMContentLoaded', function () {
+   function copyToClipboard(text) {
+       navigator.clipboard.writeText(text).then(function() {
+           const copyButton = document.getElementById('copyButton');
+           copyButton.textContent = 'Copied!';
+           copyButton.classList.remove('btn-primary');
+           copyButton.classList.add('btn-success');
+           copyButton.disabled = true;
+
+           setTimeout(() => {
+               copyButton.textContent = 'Copy';
+               copyButton.classList.remove('btn-success');
+               copyButton.classList.add('btn-primary');
+               copyButton.disabled = false;
+           }, 2000); 
+       }, function(err) {
+           console.error('Could not copy text: ', err);
+       });
+   }
+
+   // Event listener for the copy button
+   document.getElementById('copyButton').addEventListener('click', function () {
+       const modalBodyText = document.querySelector('#metricModal .modal-body').textContent;
+       copyToClipboard(modalBodyText);
+   });
+});
+
+function showMetricModal(metric) {
+   const modalTitle = document.getElementById('metricModalLabel');
+   const modalBody = document.querySelector('#metricModal .modal-body');
+
+   modalTitle.innerHTML = `${metric.name} <br><small>${metric.description}</small>`;
+   modalBody.innerHTML = `${metric.value}`;
+
+   const metricModal = new bootstrap.Modal(document.getElementById('metricModal'));
+   metricModal.show();
+}
+
 function updateProperties(data, id) {
    d3.select("#" + id)
       .selectAll("g")
@@ -300,18 +338,15 @@ function updateProperties(data, id) {
                   tooltip.transition()
                      .duration('50')
                      .style("opacity", 0);
-               })
-               .on("click", function (event, d) { 
-                  tooltip.transition()
-                     .duration('50')
-                     .style("opacity", 0);
-                  contentDetail.transition()
-                     .duration(50)
-                     .style("opacity", 1);
-                  contentDetail.html(d.value)
-                     .style("left", (event.pageX + 10) + "px")
-                     .style("top", (event.pageY - 15) + "px")
-               });
+                  })
+                  .on("click", function (event, d) { 
+                      // Hide the tooltip
+                      tooltip.transition()
+                          .duration('50')
+                          .style("opacity", 0);
+                      // Show the modal
+                      showMetricModal(d);
+                  });
 
             // Property value (size)
             property.append("text")
