@@ -3,52 +3,27 @@
 /**
  * Set-up the save PNG button.
  */
-d3.select('#savePNG').on('click', function () {
-    var chart = d3.select(".chart");
-    chart.selectAll("#collapseIcon").attr("visibility", "hidden");
-    var blob = rasterize(chart.node());
-    blob.then(value => {
-        saveAs(value, get_property(fmData, 'Name').value + ".png");
-    });
-    //chart.selectAll("#collapseIcon").attr("visibility", "visible");
-    newData = filterData(ALL_DATA);
-    redrawLabel(newData);
-});
+d3.select('#savePNG').on('click', () => handleSave('#savePNG', rasterize, ".png", "image/png"));
+
 
 /**
  * Set-up the save SVG button.
  */
-d3.select('#saveSVG').on('click', function () {
-    var chart = d3.select(".chart");
-    chart.selectAll("#collapseIcon").attr("visibility", "hidden");
-    var blob = serialize(chart.node());
-    saveAs(blob, get_property(fmData, 'Name').value + ".svg");
-    //chart.selectAll("#collapseIcon").attr("visibility", "visible");
-    newData = filterData(ALL_DATA);
-    redrawLabel(newData);
-});
+d3.select('#saveSVG').on('click', () => handleSave('#saveSVG', serialize, ".svg", "image/svg+xml"));
 
-d3.select('#savePDF').on('click', async function () {
+
+/**
+ * Set-up the save PDF button.
+ */
+d3.select('#savePDF').on('click', async () => {
     const chart = d3.select(".chart");
     const svgElement = chart.node();
-    const originalWidth = svgElement.getAttribute("width");
-    const originalHeight = svgElement.getAttribute("height");
+    const originalHeight = adjustSVGSize(svgElement);
 
     try {
-        chart.selectAll("#collapseIcon").attr("visibility", "hidden");
-
         const bbox = svgElement.getBBox();
-        svgElement.setAttribute("width", bbox.width);
-        svgElement.setAttribute("height", bbox.height);
-
         const blob = await rasterize(svgElement);
-
-        const imgData = await new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = () => reject(new Error("Error reading the blob"));
-            reader.readAsDataURL(blob);
-        });
+        const imgData = await readBlobAsDataURL(blob);
 
         const pdf = new jspdf.jsPDF({
             orientation: (bbox.width > bbox.height) ? 'landscape' : 'portrait',
@@ -61,13 +36,11 @@ d3.select('#savePDF').on('click', async function () {
     } catch (error) {
         console.error("An error occurred while saving the PDF:", error);
     } finally {
-        svgElement.setAttribute("width", originalWidth);
-        svgElement.setAttribute("height", originalHeight);
+        restoreSVGSize(svgElement, originalHeight);
         newData = filterData(ALL_DATA);
         redrawLabel(newData);
     }
 });
-
 
 
 /**
@@ -164,3 +137,45 @@ function context2d(width, height, dpi) {
     context.scale(dpi, dpi);
     return context;
 }
+
+const adjustSVGSize = (svgElement) => {
+    const originalHeight = svgElement.getAttribute("height");
+
+    d3.select(".chart").selectAll("#collapseIcon").attr("visibility", "hidden");
+
+    const bbox = svgElement.getBBox();
+    svgElement.setAttribute("height", bbox.height);
+    
+
+    return originalHeight;
+};
+
+const restoreSVGSize = (svgElement, originalHeight) => {
+    svgElement.setAttribute("height", originalHeight);
+};
+
+const readBlobAsDataURL = (blob) => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(new Error("Error reading the blob"));
+        reader.readAsDataURL(blob);
+    });
+};
+
+const handleSave = async (selector, serializeFunction, extension, mimeType) => {
+    const chart = d3.select(".chart");
+    const svgElement = chart.node();
+    const originalHeight = adjustSVGSize(svgElement);
+
+    try {
+        const blob = await serializeFunction(svgElement);
+        saveAs(blob, get_property(fmData, 'Name').value + extension);
+    } catch (error) {
+        console.error(`An error occurred while saving the ${extension.toUpperCase()}:`, error);
+    } finally {
+        restoreSVGSize(svgElement, originalHeight);
+        newData = filterData(ALL_DATA);
+        redrawLabel(newData);
+    }
+};
