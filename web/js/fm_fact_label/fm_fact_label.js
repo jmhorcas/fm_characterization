@@ -268,7 +268,7 @@ function showMetricModal(metric) {
    const modalTitle = document.getElementById('metricModalLabel');
    const modalBody = document.querySelector('#metricModal .modal-body');
 
-   modalTitle.innerHTML = `${metric.name} <br><small>${metric.description}</small>`;
+   modalTitle.innerHTML = `<b>${metric.name} </b><br><small>${metric.description}</small>`;
    modalBody.innerHTML = `${metric.value}`;
 
    const metricModal = new bootstrap.Modal(document.getElementById('metricModal'));
@@ -316,9 +316,9 @@ function updateProperties(data, id) {
                .attr("font-family", PROPERTY_FONT_FAMILY)
                .attr("font-size", PROPERTY_FONT_SIZE)
                .attr("font-weight", function (d) { return parseInt(d.level, 10) == 0 ? "bold" : "normal"; })
+               .attr("cursor", "pointer")
                .text(function (d) { return d.name; })
                .on('mouseover', function (event, d) {
-                  const [posX, posY] = d3.pointer(event, chart.node());
                   d3.select(this).transition()
                      .duration('50')
                      .attr('opacity', 0.85);
