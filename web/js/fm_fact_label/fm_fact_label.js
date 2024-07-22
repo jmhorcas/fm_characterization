@@ -222,6 +222,19 @@ function drawFMFactLabel(data) {
    collapseSubProperties(data);
 }
 
+function drawFMFactLabelDataset() {
+   var svg = d3.select("#diagram").append("svg")
+       .attr("width", 200)
+       .attr("height", 200);
+
+   svg.append("rect")
+       .attr("width", 100)
+       .attr("height", 100)
+       .attr("x", 50)
+       .attr("y", 50)
+       .style("fill", "red");
+}
+
 function addMetadata(element, key, value) {
    element.append("text")
       .text(key)

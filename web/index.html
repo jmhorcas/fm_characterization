@@ -59,156 +59,216 @@
                             <h1 class="h3 mb-0 text-gray-800">FM Characterization Fact Label</h1>
                         </div>
 
-                        <!-- Content Row -->
+                        <!-- Nav tabs -->
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link {% if data.active_tab == 'upload-single-tab' %}active{% endif %}" id="upload-single-tab" data-bs-toggle="tab" data-bs-target="#upload-single" type="button" role="tab" aria-controls="upload-single" aria-selected="true">Analyze a Feature Model</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link {% if data.active_tab == 'upload-zip-tab' %}active{% endif %}" id="upload-zip-tab" data-bs-toggle="tab" data-bs-target="#upload-zip" type="button" role="tab" aria-controls="upload-zip" aria-selected="false">Analyze Feature Model datasets</button>
+                            </li>
+                        </ul>
 
-                        <div class="row">
-
-                            <!-- Form component -->
-                            <div class="col-xl-6 col-lg-5">
-                                <div class="card shadow mb-4">
-                                    <!-- Card Header - Dropdown -->
-                                    <div
-                                        class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                        <h6 class="m-0 font-weight-bold text-primary">Upload your feature model</h6>
-                                    </div>
-                                    <!-- Card Body -->
-                                    <div class="card-body">
-                                        <!-- Form -->
-                                        <form action="{{url_for('index')}}" method='POST' enctype="multipart/form-data">
-                                            <div class="form-group row">
-                                                <label for="inputName" class="col-sm-2 col-form-label">Name</label>
-                                                <div class="col-sm">
-                                                <input type="text" class="form-control" id="inputName" name="inputName" placeholder="Feature model's name">
-                                                </div>
+                        <!-- Tab panes -->
+                        <div class="tab-content" id="myTabContent">
+                            <!-- Single upload tab -->
+                            <div class="tab-pane fade {% if data.active_tab == 'upload-single-tab' %}show active{% endif %}" id="upload-single" role="tabpanel" aria-labelledby="upload-single-tab">
+                                <div class="row mt-3">
+                                    <!-- Form component -->
+                                    <div class="col-xl-6 col-lg-5">
+                                        <div class="card shadow mb-4">
+                                            <!-- Card Header - Dropdown -->
+                                            <div
+                                                class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                                <h6 class="m-0 font-weight-bold text-primary">Upload your feature model</h6>
                                             </div>
-                                            <div class="form-group row">
-                                                <label for="inputDescription" class="col-sm-2 col-form-label">Description</label>
-                                                <div class="col-sm">
-                                                    <textarea class="form-control" id="inputDescription" name="inputDescription" rows="3" placeholder="Brief description of the feature model."></textarea>
-                                                </div>
-                                            </div>
-                                            <div class="form-group row">
-                                                <label for="inputAuthor" class="col-sm-2 col-form-label">Author</label>
-                                                <div class="col-sm">
-                                                <input type="text" class="form-control" id="inputAuthor" name="inputAuthor" placeholder="Author(s)">
-                                                </div>
-                                            </div>
-                                            <div class="form-group row">
-                                                <label for="inputYear" class="col-sm-2 col-form-label">Year</label>
-                                                <div class="col-sm">
-                                                <input type="number" class="form-control" id="inputYear" name="inputYear" placeholder="Year">
-                                                </div>
-                                            </div>
-                                            <div class="form-group row">
-                                                <label for="inputReference" class="col-sm-2 col-form-label">Reference</label>
-                                                <div class="col-sm">
-                                                <input type="text" class="form-control" id="inputReference" name="inputReference" placeholder="Main reference or DOI">
-                                                </div>
-                                            </div>
-                                            <div class="form-group row">
-                                                <label for="inputKeywords" class="col-sm-2 col-form-label">Keywords</label>
-                                                <div class="col-sm">
-                                                <input type="text" class="form-control" id="inputKeywords" name="inputKeywords" placeholder="Tags or keywords">
-                                                </div>
-                                            </div>
-                                            <div class="form-group row">
-                                                <label for="inputDomain" class="col-sm-2 col-form-label">Domain</label>
-                                                <div class="col-sm">
-                                                <input type="text" class="form-control" id="inputDomain" name="inputDomain" placeholder="Domain">
-                                                </div>
-                                            </div>
-                                            <div class="form-group row">
-                                                <label for="inputFM" class="col-sm-2 col-form-label">FM file</label>
-                                                <div class="col-sm">
-                                                    <input type="file" class="form-control-file" id="inputFM" name="inputFM">
-                                                    {% if data and data.file_error %}
-                                                    <div class="alert alert-danger" role="alert">
-                                                        {{ data.file_error }}
+                                            <!-- Card Body -->
+                                            <div class="card-body">
+                                                <!-- Form -->
+                                                <form action="{{url_for('index')}}" method='POST' enctype="multipart/form-data">
+                                                    <div class="form-group row">
+                                                        <label for="inputName" class="col-sm-2 col-form-label">Name</label>
+                                                        <div class="col-sm">
+                                                        <input type="text" class="form-control" id="inputName" name="inputName" placeholder="Feature model's name">
+                                                        </div>
                                                     </div>
-                                                    {% else %}
-                                                    Supported formats: UVL (.uvl), FeatureIDE (.xml, .fide)
-                                                    {% endif %}
-                                                    <select class="custom-select" id="inputExample" name="inputExample">
-                                                        <option value="">Or select an FM</option>
-                                                        {% for file in data.models %}
-                                                        <option value="{{ file }}">{{ file }}</option>
-                                                        {% endfor %}
-                                                    </select>
-                                                    {% if data and data.fm_example %}
-                                                        <a href="{{ data.fm_example }}" id="downloadButton" class="btn btn-primary" role="button" download>Download FM</a> 
-                                                    {% endif %}
+                                                    <div class="form-group row">
+                                                        <label for="inputDescription" class="col-sm-2 col-form-label">Description</label>
+                                                        <div class="col-sm">
+                                                            <textarea class="form-control" id="inputDescription" name="inputDescription" rows="3" placeholder="Brief description of the feature model."></textarea>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label for="inputAuthor" class="col-sm-2 col-form-label">Author</label>
+                                                        <div class="col-sm">
+                                                        <input type="text" class="form-control" id="inputAuthor" name="inputAuthor" placeholder="Author(s)">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label for="inputYear" class="col-sm-2 col-form-label">Year</label>
+                                                        <div class="col-sm">
+                                                        <input type="number" class="form-control" id="inputYear" name="inputYear" placeholder="Year">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label for="inputReference" class="col-sm-2 col-form-label">Reference</label>
+                                                        <div class="col-sm">
+                                                        <input type="text" class="form-control" id="inputReference" name="inputReference" placeholder="Main reference or DOI">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label for="inputKeywords" class="col-sm-2 col-form-label">Keywords</label>
+                                                        <div class="col-sm">
+                                                        <input type="text" class="form-control" id="inputKeywords" name="inputKeywords" placeholder="Tags or keywords">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label for="inputDomain" class="col-sm-2 col-form-label">Domain</label>
+                                                        <div class="col-sm">
+                                                        <input type="text" class="form-control" id="inputDomain" name="inputDomain" placeholder="Domain">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label for="inputFM" class="col-sm-2 col-form-label">FM file</label>
+                                                        <div class="col-sm">
+                                                            <input type="file" class="form-control-file" id="inputFM" name="inputFM">
+                                                            {% if data and data.file_error %}
+                                                            <div class="alert alert-danger" role="alert">
+                                                                {{ data.file_error }}
+                                                            </div>
+                                                            {% else %}
+                                                            Supported formats: UVL (.uvl), FeatureIDE (.xml, .fide)
+                                                            {% endif %}
+                                                            <select class="custom-select" id="inputExample" name="inputExample">
+                                                                <option value="">Or select an FM</option>
+                                                                {% for file in data.models %}
+                                                                <option value="{{ file }}">{{ file }}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                            {% if data and data.fm_example %}
+                                                                <a href="{{ data.fm_example }}" id="downloadButton" class="btn btn-primary" role="button" download>Download FM</a> 
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                    <button type="submit" id="submitButton" class="spinner-button btn btn-primary">Submit</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {% if data and data.fm_facts %}
+                                    <!-- FM Fact Label chart -->
+                                    <div class="col-xl-6 col-lg-7">
+                                        <div class="card shadow mb-4">
+                                            <!-- Card Header - Dropdown -->
+                                            <div
+                                                class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                                <h6 class="m-0 font-weight-bold text-primary">FM Fact Label</h6>
+                                                <div class="dropdown no-arrow">
+                                                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                                                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                                                        aria-labelledby="dropdownMenuLink">
+                                                        <div class="dropdown-header">Save as...</div>
+                                                        <a class="dropdown-item" id="saveSVG" href="#">SVG</a>
+                                                        <a class="dropdown-item" id="savePNG" href="#">PNG</a>
+                                                        <a class="dropdown-item" id="savePDF" href="#">PDF</a> 
+                                                        <div class="dropdown-divider"></div>
+                                                        <div class="dropdown-header">Export to...</div>
+                                                        <a class="dropdown-item" id="saveJSON" href="#">JSON</a>
+                                                        <a class="dropdown-item" id="saveTXT" href="#">Plain text</a>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <button type="submit" id="submitButton" class="spinner-button btn btn-primary">Submit</button>
-                                        </form>
+                                            <!-- Card Body -->
+                                            <div class="card-body">
+                                                <h6 class="h6">Label configuration:</h6>
+                                                <div class="mt-0 small">
+                                                    <!-- <div class="form-check form-switch row">
+                                                        <span class="me-2">
+                                                            <input class="form-check-input" type="checkbox" id="portraitOrientation">
+                                                            <label class="form-check-label" for="portraitOrientation">Portrait orientation</label>
+                                                        </span>
+                                                        <span class="me-2">
+                                                            <input class="form-check-input" type="checkbox" id="intermediateRules">
+                                                            <label class="form-check-label" for="intermediateRules">Intermediate rules</label>
+                                                        </span>
+                                                    </div> -->
+                                                    <div class="form-check form-switch">
+                                                        <span class="me-2">
+                                                                <input class="form-check-input" type="checkbox" id="collapseSubProperties" checked>
+                                                                <label class="form-check-label" for="collapseSubProperties">Collapse/Expand sub-properties</label>
+                                                        </span>
+                                                    </div>
+                                                    <div class="form-check form-switch">
+                                                        <span class="me-2">
+                                                                <input class="form-check-input" type="checkbox" id="collapseZeroValues">
+                                                                <label class="form-check-label" for="collapseZeroValues">Collapse/Expand sub-properties with zero values</label>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Card Body -->
+                                            <div class="card-body">
+                                                <svg class="chart" id="FMFactLabelChart"></svg>
+                                            </div>
+                                        </div>
                                     </div>
+                                    <!-- End of FM Fact Label chart-->
+                                    {% endif %}
+                                    
                                 </div>
                             </div>
+                            
 
-                            
-                            {% if data and data.fm_facts %}
-                            <!-- FM Fact Label chart -->
-                            <div class="col-xl-6 col-lg-7">
-                                <div class="card shadow mb-4">
-                                    <!-- Card Header - Dropdown -->
-                                    <div
-                                        class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                        <h6 class="m-0 font-weight-bold text-primary">FM Fact Label</h6>
-                                        <div class="dropdown no-arrow">
-                                            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                                            </a>
-                                            <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                                                aria-labelledby="dropdownMenuLink">
-                                                <div class="dropdown-header">Save as...</div>
-                                                <a class="dropdown-item" id="saveSVG" href="#">SVG</a>
-                                                <a class="dropdown-item" id="savePNG" href="#">PNG</a>
-                                                <a class="dropdown-item" id="savePDF" href="#">PDF</a> 
-                                                <div class="dropdown-divider"></div>
-                                                <div class="dropdown-header">Export to...</div>
-                                                <a class="dropdown-item" id="saveJSON" href="#">JSON</a>
-                                                <a class="dropdown-item" id="saveTXT" href="#">Plain text</a>
+                            <!-- ZIP upload tab -->
+                            <div class="tab-pane fade {% if data.active_tab == 'upload-zip-tab' %}show active{% endif %}" id="upload-zip" role="tabpanel" aria-labelledby="upload-zip-tab">
+                                <div class="row mt-3">
+                                    <div class="col-xl-6 col-lg-5">
+                                        <div class="card shadow mb-4">
+                                            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                                <h6 class="m-0 font-weight-bold text-primary">Upload ZIP of feature models</h6>
+                                            </div>
+                                            <div class="card-body">
+                                               <!-- ZIP Form component -->
+                                                <form action="{{url_for('upload_zip')}}" method='POST' enctype="multipart/form-data">
+                                                    <div class="form-group row">
+                                                        <label for="inputZip" class="col-sm-2 col-form-label">ZIP file</label>
+                                                        <div class="col-sm">
+                                                            <input type="file" class="form-control-file" id="inputZip" name="inputZip" accept=".zip">
+                                                            {% if data and data.zip_file_error %}
+                                                            <div class="alert alert-danger" role="alert">
+                                                                {{ data.zip_file_error }}
+                                                            </div>
+                                                            {% else %}
+                                                            Supported formats: ZIP containing UVL files.
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                    <button type="submit" id="submitZipButton" class="spinner-button btn btn-primary mt-3">Submit</button>
+                                                </form>
                                             </div>
                                         </div>
                                     </div>
-                                    <!-- Card Body -->
-                                    <div class="card-body">
-                                        <h6 class="h6">Label configuration:</h6>
-                                        <div class="mt-0 small">
-                                            <!-- <div class="form-check form-switch row">
-                                                <span class="me-2">
-                                                    <input class="form-check-input" type="checkbox" id="portraitOrientation">
-                                                    <label class="form-check-label" for="portraitOrientation">Portrait orientation</label>
-                                                </span>
-                                                <span class="me-2">
-                                                    <input class="form-check-input" type="checkbox" id="intermediateRules">
-                                                    <label class="form-check-label" for="intermediateRules">Intermediate rules</label>
-                                                </span>
-                                            </div> -->
-                                            <div class="form-check form-switch">
-                                                <span class="me-2">
-                                                        <input class="form-check-input" type="checkbox" id="collapseSubProperties" checked>
-                                                        <label class="form-check-label" for="collapseSubProperties">Collapse/Expand sub-properties</label>
-                                                </span>
+                                    {% if data and data.set_fm_facts %}
+                                    <!-- Data set chart -->
+                                    <div class="col-xl-6 col-lg-7">
+                                        <div class="card shadow mb-4">
+                                            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                                <h6 class="m-0 font-weight-bold text-primary">Fm Fact Label for Dataset</h6>
                                             </div>
-                                            <div class="form-check form-switch">
-                                                <span class="me-2">
-                                                        <input class="form-check-input" type="checkbox" id="collapseZeroValues">
-                                                        <label class="form-check-label" for="collapseZeroValues">Collapse/Expand sub-properties with zero values</label>
-                                                </span>
+                                            <!-- Card Body -->
+                                            <div class="card-body">
+                                                <div id="diagram"></div>
                                             </div>
                                         </div>
                                     </div>
-                                    <!-- Card Body -->
-                                    <div class="card-body">
-                                        <svg class="chart" id="FMFactLabelChart"></svg>
-                                    </div>
+                                    <!-- End of Data set chart -->
+                                    {% endif %}
                                 </div>
                             </div>
-                            <!-- End of FM Fact Label chart-->
-                            {% endif %}
-                            
                         </div>
                     </div>
                     <!-- /.container-fluid -->
@@ -253,6 +313,12 @@
             var fmFactsJSON = '{{ data.fm_facts | tojson | safe }}';
             var fmData = JSON.parse(fmFactsJSON);
             drawFMFactLabel(fmData);
+        </script>
+        {% endif %}
+
+        {% if data and data.set_fm_facts %}
+        <script type="text/javascript">
+            drawFMFactLabelDataset();
         </script>
         {% endif %}
 

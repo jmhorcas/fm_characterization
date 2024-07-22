@@ -1,4 +1,6 @@
 import os
+from zipfile import ZipFile
+import shutil
 from typing import Optional
 
 from flask import Flask, render_template, request
@@ -62,7 +64,7 @@ EXAMPLE_MODELS = {m[models_info.NAME]: m for m in models_info.MODELS}
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    data = {}
+    data = {'active_tab': 'upload-single-tab'}
     data['models'] = EXAMPLE_MODELS
 
     if request.method == 'GET':
@@ -152,6 +154,53 @@ def index():
             os.remove(filename)
 
         return render_template('index.html', data=data)
+    
+@app.route('/upload_zip', methods=['POST'])
+def upload_zip():
+    data = {
+        'active_tab': 'upload-zip-tab',
+        'models': EXAMPLE_MODELS
+    }
+
+    zip_file = request.files.get('inputZip')
+
+    if not zip_file or not zip_file.filename.lower().endswith('.zip'):
+        data['zip_file_error'] = 'Please upload a valid ZIP file.'
+        return render_template('index.html', data=data)
+
+    zip_filename = zip_file.filename
+    zip_file.save(zip_filename)
+
+    try:
+        with ZipFile(zip_filename, 'r') as zip_ref:
+            zip_ref.extractall('extracted_zip')
+            extracted_files = zip_ref.namelist()
+
+        found_uvl = False
+        for extracted_file in extracted_files:
+            if extracted_file.endswith('.uvl'):
+                uvl_path = os.path.join('extracted_zip', extracted_file)
+                fm = read_fm_file(uvl_path)
+                if fm:
+                    characterization = FMCharacterization(fm)
+                    data['set_fm_facts'] = characterization.to_json()
+                    found_uvl = True
+                    break
+
+        if not found_uvl:
+            data['zip_file_error'] = 'No valid UVL files found in the ZIP.'
+
+    except Exception as e:
+        data['zip_file_error'] = f'An error occurred while processing the ZIP file: {str(e)}'
+        print(e)
+
+    finally:
+        if os.path.exists(zip_filename):
+            os.remove(zip_filename)
+        if os.path.exists('extracted_zip'):
+            shutil.rmtree('extracted_zip')
+
+    return render_template('index.html', data=data)
 
 
 # if __name__ == '__main__':
