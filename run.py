@@ -61,6 +61,7 @@ def process_single_file(file_path: str) -> Optional[FMCharacterization]:
 
 def process_files(extracted_files: list, extract_dir: str) -> Optional[Dict[str, Any]]:
     metric_sums = {}
+    ratio_sums = {}
     model_count = 0
     dataset_characterization = None
 
@@ -74,25 +75,42 @@ def process_files(extracted_files: list, extract_dir: str) -> Optional[Dict[str,
                     model_count += 1
                     if dataset_characterization is None:
                         dataset_characterization = characterization
+                        # Initialize sums of metrics and ratios
                         metric_sums = {m.property.name: m.size for m in characterization.metrics.get_metrics() if m.size is not None}
+                        ratio_sums = {m.property.name: m.ratio for m in characterization.metrics.get_metrics() if m.ratio is not None}
                     else:
                         current_metrics = {m.property.name: m.size for m in characterization.metrics.get_metrics() if m.size is not None}
+                        current_ratios = {m.property.name: m.ratio for m in characterization.metrics.get_metrics() if m.ratio is not None}
+                        
+                        # Sum size metrics
                         for key, value in current_metrics.items():
                             metric_sums[key] = metric_sums.get(key, 0) + value
+                        
+                        # Sum ratio metrics
+                        for key, value in current_ratios.items():
+                            ratio_sums[key] = ratio_sums.get(key, 0) + value
             except Exception as e:
                 print(f"Error processing file {futures[future]}: {e}")
 
-    if model_count > 0 and metric_sums:
+    if model_count > 0 and (metric_sums or ratio_sums):
+        # Calculate average size metrics
         average_metrics = {key: value / model_count for key, value in metric_sums.items()}
+        
+        # Calculate average ratios
+        average_ratios = {key: value / model_count for key, value in ratio_sums.items()}
+        
         first_characterization_json = dataset_characterization.to_json()
 
         for metric in first_characterization_json['metrics']:
             if metric['name'] in average_metrics:
                 metric['size'] = average_metrics[metric['name']]
+            if metric['name'] in average_ratios:
+                metric['ratio'] = average_ratios[metric['name']]
 
         return first_characterization_json
 
     return None
+
 
 # This sets the basepath from FLASK_BASE_PATH env variable
 # basepath = os.environ.get("FLASK_BASE_PATH")
