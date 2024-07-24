@@ -549,13 +549,22 @@ function showMetricModal(metric) {
   const modalBody = document.querySelector("#metricModal .modal-body");
 
   modalTitle.innerHTML = `<b>${metric.name} </b><br><small>${metric.description}</small>`;
-  modalBody.innerHTML = `${metric.value}`;
 
-  const metricModal = new bootstrap.Modal(
-    document.getElementById("metricModal")
-  );
+  if (metric.stats) {
+    modalBody.innerHTML = `
+      <p><strong>Mean:</strong> ${metric.stats.mean !== null ? metric.stats.mean : 'N/A'}</p>
+      <p><strong>Median:</strong> ${metric.stats.median !== null ? metric.stats.median : 'N/A'}</p>
+      <p><strong>Min:</strong> ${metric.stats.min !== null ? metric.stats.min : 'N/A'}</p>
+      <p><strong>Max:</strong> ${metric.stats.max !== null ? metric.stats.max : 'N/A'}</p>
+    `;
+  } else {
+    modalBody.innerHTML = metric.value.join(', ');
+  } 
+  const metricModal = new bootstrap.Modal(document.getElementById("metricModal"));
   metricModal.show();
 }
+
+
 
 function updateProperties(data, id) {
   d3.select("#" + id)

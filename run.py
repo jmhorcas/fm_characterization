@@ -4,6 +4,7 @@ import shutil
 import tempfile
 from typing import Optional, Tuple, Dict, Any
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from statistics import mean, median
 
 from flask import Flask, render_template, request
 
@@ -60,8 +61,7 @@ def process_single_file(file_path: str) -> Optional[FMCharacterization]:
     return None
 
 def process_files(extracted_files: list, extract_dir: str) -> Optional[Dict[str, Any]]:
-    metric_sums = {}
-    ratio_sums = {}
+    metrics_data = {}
     model_count = 0
     dataset_characterization = None
 
@@ -75,42 +75,53 @@ def process_files(extracted_files: list, extract_dir: str) -> Optional[Dict[str,
                     model_count += 1
                     if dataset_characterization is None:
                         dataset_characterization = characterization
-                        # Initialize sums of metrics and ratios
-                        metric_sums = {m.property.name: m.size for m in characterization.metrics.get_metrics() if m.size is not None}
-                        ratio_sums = {m.property.name: m.ratio for m in characterization.metrics.get_metrics() if m.ratio is not None}
-                    else:
-                        current_metrics = {m.property.name: m.size for m in characterization.metrics.get_metrics() if m.size is not None}
-                        current_ratios = {m.property.name: m.ratio for m in characterization.metrics.get_metrics() if m.ratio is not None}
-                        
-                        # Sum size metrics
-                        for key, value in current_metrics.items():
-                            metric_sums[key] = metric_sums.get(key, 0) + value
-                        
-                        # Sum ratio metrics
-                        for key, value in current_ratios.items():
-                            ratio_sums[key] = ratio_sums.get(key, 0) + value
+                        # Initialize metrics data
+                        for m in characterization.metrics.get_metrics():
+                            metrics_data[m.property.name] = {'sizes': [], 'ratios': []}
+                    
+                    current_metrics = {m.property.name: m.size if m.size is not None else m.value for m in characterization.metrics.get_metrics()}
+                    current_ratios = {m.property.name: m.ratio for m in characterization.metrics.get_metrics() if m.ratio is not None}
+                    
+                    # Store size metrics
+                    for key, value in current_metrics.items():
+                        metrics_data[key]['sizes'].append(value)
+                    
+                    # Store ratio metrics
+                    for key, value in current_ratios.items():
+                        metrics_data[key]['ratios'].append(value)
             except Exception as e:
                 print(f"Error processing file {futures[future]}: {e}")
 
-    if model_count > 0 and (metric_sums or ratio_sums):
-        # Calculate average size metrics
-        average_metrics = {key: value / model_count for key, value in metric_sums.items()}
+    if model_count > 0 and metrics_data:
+        summary_metrics = {}
         
-        # Calculate average ratios
-        average_ratios = {key: value / model_count for key, value in ratio_sums.items()}
+        for metric, values in metrics_data.items():
+            summary_metrics[metric] = {
+                'size': {
+                    'mean': mean(values['sizes']) if values['sizes'] else None
+                },
+                'ratio': {
+                    'mean': mean(values['ratios']) if values['ratios'] else None
+                },
+                'stats': {
+                    'mean': mean(values['sizes']) if values['sizes'] else None,
+                    'median': median(values['sizes']) if values['sizes'] else None,
+                    'min': min(values['sizes']) if values['sizes'] else None,
+                    'max': max(values['sizes']) if values['sizes'] else None
+                }
+            }
         
         first_characterization_json = dataset_characterization.to_json()
 
         for metric in first_characterization_json['metrics']:
-            if metric['name'] in average_metrics:
-                metric['size'] = average_metrics[metric['name']]
-            if metric['name'] in average_ratios:
-                metric['ratio'] = average_ratios[metric['name']]
+            if metric['name'] in summary_metrics:
+                metric['size'] = summary_metrics[metric['name']]['size']['mean']
+                metric['ratio'] = summary_metrics[metric['name']]['ratio']['mean']
+                metric['stats'] = summary_metrics[metric['name']]['stats']
 
         return first_characterization_json
 
     return None
-
 
 # This sets the basepath from FLASK_BASE_PATH env variable
 # basepath = os.environ.get("FLASK_BASE_PATH")
