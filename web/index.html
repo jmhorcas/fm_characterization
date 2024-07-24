@@ -252,7 +252,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    {% if data and data.set_fm_facts %}
+                                    {% if data and data.fm_dataset_facts %}
                                     <!-- Data set chart -->
                                     <div class="col-xl-6 col-lg-7">
                                         <div class="card shadow mb-4">
@@ -261,7 +261,7 @@
                                             </div>
                                             <!-- Card Body -->
                                             <div class="card-body">
-                                                <div id="diagram"></div>
+                                                <svg class="chart" id="FMFactLabelDataSetChart"></svg>
                                             </div>
                                         </div>
                                     </div>
@@ -316,9 +316,16 @@
         </script>
         {% endif %}
 
-        {% if data and data.set_fm_facts %}
+        {% if data and data.fm_dataset_facts %}
         <script type="text/javascript">
-            drawFMFactLabelDataset();
+            var fmDatasetFactsJSON = '{{ data.fm_dataset_facts | tojson | safe }}';
+            var fmDatasetCharacterizationStr = `{{ data.fm_dataset_characterization_str | safe }}`;
+            var fmDatasetCharacterizationJSONStr = `{{ data.fm_dataset_characterization_json_str | safe }}`;
+            var fmDataSetData = JSON.parse(fmDatasetFactsJSON);
+            drawFMFactLabelDataset({
+                zipFilename: '{{ data.zip_filename }}',
+                data: fmDataSetData
+            });
         </script>
         {% endif %}
 
