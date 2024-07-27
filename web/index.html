@@ -322,10 +322,7 @@
             var fmDatasetCharacterizationStr = `{{ data.fm_dataset_characterization_str | safe }}`;
             var fmDatasetCharacterizationJSONStr = `{{ data.fm_dataset_characterization_json_str | safe }}`;
             var fmDataSetData = JSON.parse(fmDatasetFactsJSON);
-            drawFMFactLabelDataset({
-                zipFilename: '{{ data.zip_filename }}',
-                data: fmDataSetData
-            });
+            drawFMFactLabelDataset(fmDataSetData);
         </script>
         {% endif %}
 

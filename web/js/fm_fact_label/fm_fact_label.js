@@ -310,7 +310,7 @@ function drawFMFactLabel(data) {
   collapseSubProperties(data);
 }
 
-function drawFMFactLabelDataset({ zipFilename, data }) {
+function drawFMFactLabelDataset(data) {
   console.log(data);
   chart = d3.select("#FMFactLabelDataSetChart"); // The svg
 
@@ -359,6 +359,9 @@ function drawFMFactLabelDataset({ zipFilename, data }) {
 
   ALL_DATA = data;
   // Initialize visible properties
+  for (let p of data.metadata) {
+    VISIBLE_PROPERTIES[p.name] = true;
+  }
   for (let p of data.metrics) {
     VISIBLE_PROPERTIES[p.name] = true;
   }
@@ -401,14 +404,18 @@ function drawFMFactLabelDataset({ zipFilename, data }) {
   x = d3.scaleLinear().domain([0, maxWidth]).range([0, maxWidth]);
 
   // Title
-  var titleSize = textSize(data.zipFilename, TITLE_FONT_FAMILY, TITLE_FONT_SIZE);
+  var titleSize = textSize(
+    get_property(data, "Name").value,
+    TITLE_FONT_FAMILY,
+    TITLE_FONT_SIZE
+  );
   var yTitle = TOP_MARGING;
   var title = chart
     .append("g")
     .attr("transform", "translate(0," + yTitle + ")");
   title
     .append("text")
-    .text(zipFilename)
+    .text(get_property(data, "Name").value)
     .attr("x", function (d) {
       return x(maxWidth / 2);
     })
@@ -552,19 +559,27 @@ function showMetricModal(metric) {
 
   if (metric.stats) {
     modalBody.innerHTML = `
-      <p><strong>Mean:</strong> ${metric.stats.mean !== null ? metric.stats.mean : 'N/A'}</p>
-      <p><strong>Median:</strong> ${metric.stats.median !== null ? metric.stats.median : 'N/A'}</p>
-      <p><strong>Min:</strong> ${metric.stats.min !== null ? metric.stats.min : 'N/A'}</p>
-      <p><strong>Max:</strong> ${metric.stats.max !== null ? metric.stats.max : 'N/A'}</p>
+      <p><strong>Mean:</strong> ${
+        metric.stats.mean !== null ? metric.stats.mean : "N/A"
+      }</p>
+      <p><strong>Median:</strong> ${
+        metric.stats.median !== null ? metric.stats.median : "N/A"
+      }</p>
+      <p><strong>Min:</strong> ${
+        metric.stats.min !== null ? metric.stats.min : "N/A"
+      }</p>
+      <p><strong>Max:</strong> ${
+        metric.stats.max !== null ? metric.stats.max : "N/A"
+      }</p>
     `;
   } else {
-    modalBody.innerHTML = metric.value.join(', ');
-  } 
-  const metricModal = new bootstrap.Modal(document.getElementById("metricModal"));
+    modalBody.innerHTML = metric.value.join(", ");
+  }
+  const metricModal = new bootstrap.Modal(
+    document.getElementById("metricModal")
+  );
   metricModal.show();
 }
-
-
 
 function updateProperties(data, id) {
   d3.select("#" + id)

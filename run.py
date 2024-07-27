@@ -60,7 +60,7 @@ def process_single_file(file_path: str) -> Optional[FMCharacterization]:
         return FMCharacterization(fm)
     return None
 
-def process_files(extracted_files: list, extract_dir: str) -> Optional[Dict[str, Any]]:
+def process_files(extracted_files: list, extract_dir: str, zip_filename: str) -> Optional[Dict[str, Any]]:
     metrics_data = {}
     model_count = 0
     dataset_characterization = None
@@ -93,35 +93,28 @@ def process_files(extracted_files: list, extract_dir: str) -> Optional[Dict[str,
                 print(f"Error processing file {futures[future]}: {e}")
 
     if model_count > 0 and metrics_data:
-        summary_metrics = {}
-        
-        for metric, values in metrics_data.items():
-            summary_metrics[metric] = {
-                'size': {
-                    'mean': mean(values['sizes']) if values['sizes'] else None
-                },
-                'ratio': {
-                    'mean': mean(values['ratios']) if values['ratios'] else None
-                },
-                'stats': {
-                    'mean': mean(values['sizes']) if values['sizes'] else None,
-                    'median': median(values['sizes']) if values['sizes'] else None,
-                    'min': min(values['sizes']) if values['sizes'] else None,
-                    'max': max(values['sizes']) if values['sizes'] else None
+        dataset_characterization_json = dataset_characterization.to_json()
+
+        dataset_characterization_json['metadata'][0]['value'] = zip_filename
+
+        for metric in dataset_characterization_json['metrics']:
+            name = metric['name']
+            if name in metrics_data:
+                sizes = metrics_data[name]['sizes']
+                ratios = metrics_data[name]['ratios']
+                
+                metric['size'] = mean(sizes) if sizes else None
+                metric['ratio'] = mean(ratios) if ratios else None
+                metric['stats'] = {
+                    'mean': mean(sizes) if sizes else None,
+                    'median': median(sizes) if sizes else None,
+                    'min': min(sizes) if sizes else None,
+                    'max': max(sizes) if sizes else None
                 }
-            }
+            
         
-        first_characterization_json = dataset_characterization.to_json()
+        return dataset_characterization_json
 
-        for metric in first_characterization_json['metrics']:
-            if metric['name'] in summary_metrics:
-                metric['size'] = summary_metrics[metric['name']]['size']['mean']
-                metric['ratio'] = summary_metrics[metric['name']]['ratio']['mean']
-                metric['stats'] = summary_metrics[metric['name']]['stats']
-
-        return first_characterization_json
-
-    return None
 
 # This sets the basepath from FLASK_BASE_PATH env variable
 # basepath = os.environ.get("FLASK_BASE_PATH")
@@ -248,7 +241,6 @@ def upload_zip():
         return render_template('index.html', data=data)
 
     original_filename = os.path.splitext(zip_file.filename)[0]
-    data['zip_filename'] = original_filename
 
     with tempfile.NamedTemporaryFile(delete=False, suffix='.zip') as tmp_zip_file:
         zip_filename = tmp_zip_file.name
@@ -259,7 +251,7 @@ def upload_zip():
     try:
         extract_dir, extracted_files = extract_zip(zip_filename)
 
-        first_characterization_json = process_files(extracted_files, extract_dir)
+        first_characterization_json = process_files(extracted_files, extract_dir, original_filename)
 
         if first_characterization_json:
             data['fm_dataset_facts'] = first_characterization_json
