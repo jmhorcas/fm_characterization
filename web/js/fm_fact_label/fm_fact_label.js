@@ -44,9 +44,9 @@ var IMPORTS = [
   "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css",
 ];
 
-function drawFMFactLabel(data) {
+function drawFMFactLabel(data, chartId) {
   console.log(data);
-  chart = d3.select("#FMFactLabelChart"); // The svg
+  chart = d3.select(chartId); // The svg
 
   // chart.append('defs')
   //    .append('style')
@@ -168,100 +168,99 @@ function drawFMFactLabel(data) {
     .attr("font-size", TITLE_FONT_SIZE)
     .attr("font-weight", "bold");
 
-  // Description
-  var yDescription = yTitle + titleSize.height + 1;
-  var indentationDescription = textSize(
-    "-".repeat(PROPERTY_INDENTATION),
-    DESCRIPTION_FONT_FAMILY,
-    DESCRIPTION_FONT_SIZE
-  ).width;
-  var description = chart
-    .append("g")
-    .attr("transform", "translate(0," + yDescription + ")");
-  description
-    .append("text")
-    .text(get_property(data, "Description").value)
-    .attr("x", function (d) {
-      return x(indentationDescription);
-    })
-    //.attr("y", BAR_HEIGHT / 2)
-    .attr("font-family", DESCRIPTION_FONT_FAMILY)
-    .attr("font-size", DESCRIPTION_FONT_SIZE)
-    .call(wrap, maxWidth - indentationDescription);
-  var descriptionSize = description.node().getBBox();
-
-  // Keywords
-  var keywordHeight = yDescription + descriptionSize.height + 1;
-  if (get_property(data, "Tags").value === null) {
-    var keywordsSize = descriptionSize;
-  } else {
-    var keywords = chart
+    // Description
+    var yDescription = yTitle + titleSize.height + 1;
+    var indentationDescription = textSize(
+      "-".repeat(PROPERTY_INDENTATION),
+      DESCRIPTION_FONT_FAMILY,
+      DESCRIPTION_FONT_SIZE
+    ).width;
+    var description = chart
       .append("g")
-      .attr("transform", "translate(0," + keywordHeight + ")");
-    addMetadata(keywords, "Tags:", get_property(data, "Tags").value);
-    var keywordsSize = keywords.node().getBBox();
-  }
-
-  // Author
-  var authorHeight = keywordHeight + keywordsSize.height;
-  if (get_property(data, "Author").value === null) {
-    var authorSize = { width: 0, height: 0 };
-  } else {
-    var author = chart
-      .append("g")
-      .attr("transform", "translate(0," + authorHeight + ")");
-    addMetadata(author, "Author:", get_property(data, "Author").value);
-    var authorSize = author.node().getBBox();
-  }
-
-  // Year
-  var yearHeight = authorHeight + authorSize.height;
-  if (get_property(data, "Year").value === null) {
-    var yearSize = { width: 0, height: 0 };
-  } else {
-    var year = chart
-      .append("g")
-      .attr("transform", "translate(0," + yearHeight + ")");
-    addMetadata(year, "Year:", get_property(data, "Year").value);
-    var yearSize = year.node().getBBox();
-  }
-
-  // Domain
-  var domainHeight = yearHeight + yearSize.height;
-  if (get_property(data, "Domain").value === null) {
-    var domainSize = { width: 0, height: 0 };
-  } else {
-    var domain = chart
-      .append("g")
-      .attr("transform", "translate(0," + domainHeight + ")");
-    addMetadata(domain, "Domain:", get_property(data, "Domain").value);
-    var domainSize = domain.node().getBBox();
-  }
-
-  // Reference
-  if (!get_property(data, "Reference").value == "") {
-    var reference = chart
-      .append("g")
-      .attr(
-        "transform",
-        "translate(0," +
-          (domainHeight + domainSize.height - MAIN_RULE_HEIGHT - 10) +
-          ")"
-      );
-    reference
-      .append("a")
-      .attr("id", "hrefIcon")
-      .attr("href", get_property(data, "Reference").value)
+      .attr("transform", "translate(0," + yDescription + ")");
+    description
       .append("text")
-      .attr("text-anchor", "end")
-      .attr("x", maxWidth - 5)
-      .attr("dy", ".35em")
-      .attr("y", PROPERTY_HEIGHT / 2)
-      .attr("font-family", "FontAwesome")
-      .attr("font-size", "12pt")
-      .text(HREF_ICON)
-      .attr("cursor", "pointer");
-  }
+      .text(get_property(data, "Description").value)
+      .attr("x", function (d) {
+        return x(indentationDescription);
+      })
+      .attr("font-family", DESCRIPTION_FONT_FAMILY)
+      .attr("font-size", DESCRIPTION_FONT_SIZE)
+      .call(wrap, maxWidth - indentationDescription);
+    var descriptionSize = description.node().getBBox();
+  
+    // Keywords
+    var keywordHeight = yDescription + descriptionSize.height + 1;
+    if (get_property(data, "Tags").value === null) {
+      var keywordsSize = descriptionSize;
+    } else {
+      var keywords = chart
+        .append("g")
+        .attr("transform", "translate(0," + keywordHeight + ")");
+      addMetadata(keywords, "Tags:", get_property(data, "Tags").value);
+      var keywordsSize = keywords.node().getBBox();
+    }
+  
+    // Author
+    var authorHeight = keywordHeight + keywordsSize.height;
+    if (get_property(data, "Author").value === null) {
+      var authorSize = { width: 0, height: 0 };
+    } else {
+      var author = chart
+        .append("g")
+        .attr("transform", "translate(0," + authorHeight + ")");
+      addMetadata(author, "Author:", get_property(data, "Author").value);
+      var authorSize = author.node().getBBox();
+    }
+  
+    // Year
+    var yearHeight = authorHeight + authorSize.height;
+    if (get_property(data, "Year").value === null) {
+      var yearSize = { width: 0, height: 0 };
+    } else {
+      var year = chart
+        .append("g")
+        .attr("transform", "translate(0," + yearHeight + ")");
+      addMetadata(year, "Year:", get_property(data, "Year").value);
+      var yearSize = year.node().getBBox();
+    }
+  
+    // Domain
+    var domainHeight = yearHeight + yearSize.height;
+    if (get_property(data, "Domain").value === null) {
+      var domainSize = { width: 0, height: 0 };
+    } else {
+      var domain = chart
+        .append("g")
+        .attr("transform", "translate(0," + domainHeight + ")");
+      addMetadata(domain, "Domain:", get_property(data, "Domain").value);
+      var domainSize = domain.node().getBBox();
+    }
+  
+    // Reference
+    if (!get_property(data, "Reference").value == "") {
+      var reference = chart
+        .append("g")
+        .attr(
+          "transform",
+          "translate(0," +
+            (domainHeight + domainSize.height - MAIN_RULE_HEIGHT - 10) +
+            ")"
+        );
+      reference
+        .append("a")
+        .attr("id", "hrefIcon")
+        .attr("href", get_property(data, "Reference").value)
+        .append("text")
+        .attr("text-anchor", "end")
+        .attr("x", maxWidth - 5)
+        .attr("dy", ".35em")
+        .attr("y", PROPERTY_HEIGHT / 2)
+        .attr("font-family", "FontAwesome")
+        .attr("font-size", "12pt")
+        .text(HREF_ICON)
+        .attr("cursor", "pointer");
+    }
 
   // Middle rule 1
   yRule1 = domainHeight + domainSize.height;
@@ -310,166 +309,6 @@ function drawFMFactLabel(data) {
   collapseSubProperties(data);
 }
 
-function drawFMFactLabelDataset(data) {
-  console.log(data);
-  chart = d3.select("#FMFactLabelDataSetChart"); // The svg
-
-  chart
-    .selectAll("defs")
-    .data(IMPORTS, (d) => d)
-    .join("style")
-    .attr("type", "text/css")
-    .text(function (d) {
-      return "@import url('" + d + "');";
-    });
-
-  // Create a div for mouse hover effect
-  tooltip = d3
-    .select("body")
-    .append("div")
-    .attr("class", "tooltip")
-    .style("opacity", 0)
-    .style("position", "absolute")
-    .style("text-align", "left")
-    .style("padding", "0.1rem")
-    .style("background", "#FFFFFF")
-    .style("color", "#313639")
-    .style("border", "1px solid #313639")
-    .style("border-radius", "8px")
-    .style("pointer-events", "none")
-    .style("font-size", "0.8rem");
-
-  // Create a div to show the content detail on mouse click
-  contentDetail = d3
-    .select("body")
-    .append("div")
-    .attr("class", "contentDetail")
-    .style("opacity", 0)
-    .style("position", "absolute")
-    .style("text-align", "left")
-    .style("padding", "0.1rem")
-    .style("background", "#FFFFFF")
-    .style("color", "#313639")
-    .style("border", "1px solid #313639")
-    .style("border-radius", "8px")
-    .style("font-size", "0.8rem")
-    .on("mouseout", function (event, d) {
-      d3.select(this).transition().duration("50").style("opacity", 0);
-    });
-
-  ALL_DATA = data;
-  // Initialize visible properties
-  for (let p of data.metadata) {
-    VISIBLE_PROPERTIES[p.name] = true;
-  }
-  for (let p of data.metrics) {
-    VISIBLE_PROPERTIES[p.name] = true;
-  }
-  for (let p of data.analysis) {
-    VISIBLE_PROPERTIES[p.name] = true;
-  }
-
-  PROPERTY_HEIGHT = textSize(
-    "Any text",
-    PROPERTY_FONT_FAMILY,
-    PROPERTY_FONT_SIZE,
-    "bold"
-  ).height;
-  maxIndentationWidth = Math.max(
-    calculateMaxIndentationWidth(data.metrics),
-    calculateMaxIndentationWidth(data.analysis)
-  );
-  maxNameWidth = Math.max(
-    calculateMaxNameWidth(data.metrics),
-    calculateMaxNameWidth(data.analysis)
-  );
-  maxValueWidth = Math.max(
-    calculateMaxValueWidth(data.metrics),
-    calculateMaxValueWidth(data.analysis)
-  );
-  maxRatioWidth = Math.max(
-    calculateMaxRatioWidth(data.metrics),
-    calculateMaxRatioWidth(data.analysis)
-  );
-  maxWidth =
-    maxIndentationWidth +
-    maxNameWidth +
-    PROPERTIES_VALUES_SPACE +
-    maxValueWidth +
-    PROPERTIES_RATIO_SPACE +
-    maxRatioWidth +
-    LEFT_MARGING;
-  chart.attr("width", maxWidth);
-
-  x = d3.scaleLinear().domain([0, maxWidth]).range([0, maxWidth]);
-
-  // Title
-  var titleSize = textSize(
-    get_property(data, "Name").value,
-    TITLE_FONT_FAMILY,
-    TITLE_FONT_SIZE
-  );
-  var yTitle = TOP_MARGING;
-  var title = chart
-    .append("g")
-    .attr("transform", "translate(0," + yTitle + ")");
-  title
-    .append("text")
-    .text(get_property(data, "Name").value)
-    .attr("x", function (d) {
-      return x(maxWidth / 2);
-    })
-    .attr("text-anchor", "middle")
-    .attr("dominant-baseline", "central")
-    .attr("font-family", TITLE_FONT_FAMILY)
-    .attr("font-size", TITLE_FONT_SIZE)
-    .attr("font-weight", "bold");
-
-  // Middle rule 1
-  yRule1 = yTitle + titleSize.height + MAIN_RULE_HEIGHT;
-  chart.append("g").attr("id", "rule1");
-  drawRule("rule1", yRule1);
-
-  // Metrics
-  yMetrics = yRule1 + MAIN_RULE_HEIGHT;
-  chart
-    .append("g")
-    .attr("id", "metrics")
-    .attr("transform", "translate(0," + yMetrics + ")");
-  updateProperties(data.metrics, "metrics");
-
-  // Middle rule 2
-  var yRule2 = yMetrics + PROPERTY_HEIGHT * data.metrics.length;
-  chart.append("g").attr("id", "rule2");
-  drawRule("rule2", yRule2);
-
-  // Analysis
-  var yAnalysis = yRule2 + MAIN_RULE_HEIGHT;
-  chart
-    .append("g")
-    .attr("id", "analysis")
-    .attr("transform", "translate(0," + yAnalysis + ")");
-  updateProperties(data.analysis, "analysis");
-
-  // Border of the label
-  var maxHeight =
-    yAnalysis +
-    MARGING_BETWEEN_PROPERTIES +
-    PROPERTY_HEIGHT * data.analysis.length;
-  chart.append("rect").attr("id", "border");
-  drawBorders(maxWidth, maxHeight);
-
-  chart.attr("height", maxHeight);
-
-  // Set the configuration options
-  d3.select("#collapseZeroValues").on("change", function () {
-    collapseZeroValues(data);
-  });
-  d3.select("#collapseSubProperties").on("change", function () {
-    collapseSubProperties(data);
-  });
-  collapseSubProperties(data);
-}
 
 function drawRule(id, yPosition) {
   d3.select("#" + id)
