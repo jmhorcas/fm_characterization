@@ -1,23 +1,16 @@
 import os
-from zipfile import ZipFile
 import shutil
 import tempfile
-from typing import Optional, Tuple, Dict, Any
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from statistics import mean, median
+from zipfile import ZipFile
+from typing import Tuple
 
 from flask import Flask, render_template, request
 
-from flamapy.metamodels.fm_metamodel.models import FeatureModel
-from flamapy.metamodels.fm_metamodel.transformations import UVLReader, FeatureIDEReader
-
-from fm_characterization import FMCharacterization
-from fm_characterization import models_info
-
+from fm_characterization import FMCharacterization, models_info
+from fm_characterization.process_files import process_files
 
 STATIC_DIR = 'web'
 EXAMPLE_MODELS_DIR = 'fm_models'
-
 
 app = Flask(__name__,
             static_url_path='',
@@ -25,96 +18,12 @@ app = Flask(__name__,
             template_folder=STATIC_DIR)
 
 
-def read_fm_file(filename: str) -> Optional[FeatureModel]:
-    try:
-        if filename.endswith(".uvl"):
-            return UVLReader(filename).transform()
-        elif filename.endswith(".xml") or filename.endswith(".fide"):
-            return FeatureIDEReader(filename).transform()
-    except Exception as e:
-        print(e)
-        pass
-    try:
-        return UVLReader(filename).transform()
-    except Exception as e:
-        print(e)
-        pass
-    try:
-        return FeatureIDEReader(filename).transform()
-    except Exception as e:
-        print(e)
-        pass
-    return None
-
 def extract_zip(zip_path: str) -> Tuple[str, list]:
     extract_dir = tempfile.mkdtemp()
     with ZipFile(zip_path, 'r') as zip_ref:
         zip_ref.extractall(extract_dir)
         extracted_files = zip_ref.namelist()
     return extract_dir, extracted_files
-
-
-def process_single_file(file_path: str) -> Optional[FMCharacterization]:
-    fm = read_fm_file(file_path)
-    if fm:
-        return FMCharacterization(fm)
-    return None
-
-def process_files(extracted_files: list, extract_dir: str, zip_filename: str) -> Optional[Dict[str, Any]]:
-    metrics_data = {}
-    model_count = 0
-    dataset_characterization = None
-
-    with ThreadPoolExecutor() as executor:
-        futures = {executor.submit(process_single_file, os.path.join(extract_dir, file)): file for file in extracted_files if file.endswith('.uvl')}
-        
-        for future in as_completed(futures):
-            try:
-                characterization = future.result()
-                if characterization:
-                    model_count += 1
-                    if dataset_characterization is None:
-                        dataset_characterization = characterization
-                        # Initialize metrics data
-                        for m in characterization.metrics.get_metrics():
-                            metrics_data[m.property.name] = {'sizes': [], 'ratios': []}
-                    
-                    current_metrics = {m.property.name: m.size if m.size is not None else m.value for m in characterization.metrics.get_metrics()}
-                    current_ratios = {m.property.name: m.ratio for m in characterization.metrics.get_metrics() if m.ratio is not None}
-                    
-                    # Store size metrics
-                    for key, value in current_metrics.items():
-                        metrics_data[key]['sizes'].append(value)
-                    
-                    # Store ratio metrics
-                    for key, value in current_ratios.items():
-                        metrics_data[key]['ratios'].append(value)
-            except Exception as e:
-                print(f"Error processing file {futures[future]}: {e}")
-
-    if model_count > 0 and metrics_data:
-        dataset_characterization_json = dataset_characterization.to_json()
-
-        dataset_characterization_json['metadata'][0]['value'] = zip_filename
-
-        for metric in dataset_characterization_json['metrics']:
-            name = metric['name']
-            if name in metrics_data:
-                sizes = metrics_data[name]['sizes']
-                ratios = metrics_data[name]['ratios']
-                
-                metric['size'] = mean(sizes) if sizes else None
-                metric['ratio'] = mean(ratios) if ratios else None
-                metric['stats'] = {
-                    'mean': mean(sizes) if sizes else None,
-                    'median': median(sizes) if sizes else None,
-                    'min': min(sizes) if sizes else None,
-                    'max': max(sizes) if sizes else None
-                }
-            
-        
-        return dataset_characterization_json
-
 
 # This sets the basepath from FLASK_BASE_PATH env variable
 # basepath = os.environ.get("FLASK_BASE_PATH")
@@ -226,7 +135,7 @@ def index():
             os.remove(filename)
 
         return render_template('index.html', data=data)
-    
+
 @app.route('/upload_zip', methods=['POST'])
 def upload_zip():
     data = {
@@ -251,12 +160,12 @@ def upload_zip():
     try:
         extract_dir, extracted_files = extract_zip(zip_filename)
 
-        first_characterization_json = process_files(extracted_files, extract_dir, original_filename)
+        dataset_characterization_json = process_files(extracted_files, extract_dir, original_filename)
 
-        if first_characterization_json:
-            data['fm_dataset_facts'] = first_characterization_json
-            data['fm_dataset_characterization_json_str'] = first_characterization_json
-            data['fm_dataset_characterization_str'] = str(first_characterization_json)
+        if dataset_characterization_json:
+            data['fm_dataset_facts'] = dataset_characterization_json
+            data['fm_dataset_characterization_json_str'] = dataset_characterization_json
+            data['fm_dataset_characterization_str'] = str(dataset_characterization_json)
         else:
             data['zip_file_error'] = 'No valid UVL files found in the ZIP.'
 
