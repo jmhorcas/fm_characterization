@@ -11283,3 +11283,7 @@ body.sidebar-toggled footer.sticky-footer {
 .modal-body {
   word-wrap: break-word;
 }
+
+.container-fluid {
+  min-height: calc(100vh - 2rem); 
+}
