@@ -1014,3 +1014,28 @@ function drawSecondaryRule(propertyName) {
 //       return indentationWidth + nameWidth + valueWidth + ratioWidth;
 //    })) + PROPERTIES_VALUES_SPACE + PROPERTIES_RATIO_SPACE + LEFT_MARGING;
 // };
+
+// Drag and Drop Functionality
+document.addEventListener("DOMContentLoaded", function() {
+  const dropZone = document.getElementById('dropZone');
+  const inputZip = document.getElementById('inputZip');
+
+  dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.classList.add('bg-light');
+  });
+
+  dropZone.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('bg-light');
+  });
+
+  dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('bg-light');
+      const files = e.dataTransfer.files;
+      if (files.length) {
+          inputZip.files = files;  
+      }
+  });
+});

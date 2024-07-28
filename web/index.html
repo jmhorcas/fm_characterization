@@ -238,6 +238,9 @@
                                                         <label for="inputZip" class="col-sm-2 col-form-label">ZIP file</label>
                                                         <div class="col-sm">
                                                             <input type="file" class="form-control-file" id="inputZip" name="inputZip" accept=".zip">
+                                                            <div id="dropZone" class="border border-primary p-3 mt-3 text-center">
+                                                                Drag & Drop your ZIP file here
+                                                            </div>
                                                             {% if data and data.zip_file_error %}
                                                             <div class="alert alert-danger" role="alert">
                                                                 {{ data.zip_file_error }}
@@ -246,7 +249,7 @@
                                                             Supported formats: ZIP containing UVL files.
                                                             {% endif %}
                                                         </div>
-                                                    </div>
+                                                    </div>                                                    
                                                     <button type="submit" id="submitZipButton" class="spinner-button btn btn-primary mt-3">Submit</button>
                                                 </form>
                                             </div>
