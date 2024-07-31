@@ -138,34 +138,27 @@ def index():
 
 @app.route('/upload_zip', methods=['POST'])
 def upload_zip():
-    data = {
-        'active_tab': 'upload-zip-tab',
-        'models': EXAMPLE_MODELS
-    }
+    data = {'active_tab': 'upload-zip-tab', 'models': EXAMPLE_MODELS}
 
     zip_file = request.files.get('inputZip')
-
     if not zip_file or not zip_file.filename.lower().endswith('.zip'):
         data['zip_file_error'] = 'Please upload a valid ZIP file.'
         return render_template('index.html', data=data)
 
     original_filename = os.path.splitext(zip_file.filename)[0]
 
-    with tempfile.NamedTemporaryFile(delete=False, suffix='.zip') as tmp_zip_file:
-        zip_filename = tmp_zip_file.name
-        zip_file.save(zip_filename)
-
-    extract_dir = None
-
     try:
-        extract_dir, extracted_files = extract_zip(zip_filename)
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.zip') as tmp_zip_file:
+            zip_file.save(tmp_zip_file.name)
+            extract_dir, extracted_files = extract_zip(tmp_zip_file.name)
 
         dataset_characterization_json = process_files(extracted_files, extract_dir, original_filename)
-
         if dataset_characterization_json:
-            data['fm_dataset_facts'] = dataset_characterization_json
-            data['fm_dataset_characterization_json_str'] = dataset_characterization_json
-            data['fm_dataset_characterization_str'] = str(dataset_characterization_json)
+            data.update({
+                'fm_dataset_facts': dataset_characterization_json,
+                'fm_dataset_characterization_json_str': dataset_characterization_json,
+                'fm_dataset_characterization_str': str(dataset_characterization_json)
+            })
         else:
             data['zip_file_error'] = 'No valid UVL files found in the ZIP.'
 
@@ -174,16 +167,21 @@ def upload_zip():
         print(e)
 
     finally:
-        try:
-            os.remove(zip_filename)
-        except OSError as e:
-            print(f"Error removing temporary zip file: {e}")
-
-        if extract_dir and os.path.exists(extract_dir):
-            shutil.rmtree(extract_dir)
+        cleanup_files([tmp_zip_file.name, extract_dir])
 
     return render_template('index.html', data=data)
 
+
+def cleanup_files(paths):
+    for path in paths:
+        try:
+            if os.path.isdir(path):
+                shutil.rmtree(path)
+            elif os.path.isfile(path):
+                os.remove(path)
+        except OSError as e:
+            print(f"Error removing temporary file or directory: {e}")
+            
 # if __name__ == '__main__':
 #     app.debug = True
 #     app.run(host='0.0.0.0', port=5555)
