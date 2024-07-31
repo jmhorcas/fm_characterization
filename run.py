@@ -7,7 +7,7 @@ from typing import Tuple
 from flask import Flask, render_template, request
 
 from fm_characterization import FMCharacterization, models_info
-from fm_characterization.process_files import process_files
+from fm_characterization.process_files import process_files, read_fm_file
 
 STATIC_DIR = 'web'
 EXAMPLE_MODELS_DIR = 'fm_models'

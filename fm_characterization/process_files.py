@@ -9,6 +9,7 @@ from flamapy.metamodels.fm_metamodel.transformations import UVLReader, FeatureID
 from fm_characterization import FMCharacterization, FMProperties
 from .fm_utils import get_ratio_sizes
 
+
 def read_fm_file(filename: str) -> Optional[FeatureModel]:
     try:
         if filename.endswith(".uvl"):
@@ -16,19 +17,20 @@ def read_fm_file(filename: str) -> Optional[FeatureModel]:
         elif filename.endswith(".xml") or filename.endswith(".fide"):
             return FeatureIDEReader(filename).transform()
     except Exception as e:
-        print(e)
-        pass
+        print(f"Error reading file with specific handler: {e}")
+    
     try:
         return UVLReader(filename).transform()
     except Exception as e:
-        print(e)
-        pass
+        print(f"Error reading file with UVLReader: {e}")
+    
     try:
         return FeatureIDEReader(filename).transform()
     except Exception as e:
-        print(e)
-        pass
+        print(f"Error reading file with FeatureIDEReader: {e}")
+    
     return None
+
 
 def process_single_file(file_path: str) -> Optional[FMCharacterization]:
     fm = read_fm_file(file_path)
@@ -75,79 +77,91 @@ def process_files(extracted_files: list, extract_dir: str, zip_filename: str) ->
     model_count = 0
     dataset_characterization = None
 
-    with ThreadPoolExecutor() as executor:
-        futures = {executor.submit(process_single_file, os.path.join(extract_dir, file)): file for file in extracted_files if file.endswith('.uvl')}
-        
-        for future in as_completed(futures):
-            try:
-                characterization = future.result()
-                if characterization:
-                    model_count += 1
-                    if dataset_characterization is None:
-                        dataset_characterization = characterization
-                        # Initialize metrics data
-                        for m in characterization.metrics.get_metrics():
-                            metrics_data[m.property.name] = {'sizes': [], 'ratios': []}
-                    
-                    current_metrics = {m.property.name: m.size if m.size is not None else m.value for m in characterization.metrics.get_metrics()}
-                    current_ratios = {m.property.name: m.ratio for m in characterization.metrics.get_metrics() if m.ratio is not None}
-                    
-                    # Store size metrics
-                    for key, value in current_metrics.items():
-                        metrics_data[key]['sizes'].append(value)
-                    
-                    # Store ratio metrics
-                    for key, value in current_ratios.items():
-                        metrics_data[key]['ratios'].append(value)
-            except Exception as e:
-                print(f"Error processing file {futures[future]}: {e}")
+    futures = submit_file_processing_tasks(extracted_files, extract_dir)
+    for future, file in futures.items():
+        try:
+            characterization = future.result()
+            if characterization:
+                model_count += 1
+                dataset_characterization = initialize_characterization(dataset_characterization, characterization, metrics_data)
+                update_metrics_data(metrics_data, characterization)
+        except Exception as e:
+            print(f"Error processing file {file}: {e}")
 
     if model_count > 0 and metrics_data:
-        dataset_characterization_json = dataset_characterization.to_json()
-        dataset_characterization_json['metadata'][0]['value'] = zip_filename
-
-        # Calculate mean values for each metric
-        mean_values = {}
-        for name, data in metrics_data.items():
-            values = data['sizes']
-            if values:
-                mean_value = mean(values)
-                mean_values[name] = mean_value
-                metrics_data[name]['stats'] = {
-                    'mean': mean_value,
-                    'median': median(values),
-                    'min': min(values),
-                    'max': max(values)
-                }
-
-        metrics_with_ratios = get_metrics_with_ratios()
-
-        # Calculate and assign metrics and ratios
-        for metric in dataset_characterization_json['metrics']:
-            name = metric['name']
-            if name in metrics_data:
-                sizes = metrics_data[name]['sizes']
-                metric['size'] = mean(sizes) if sizes else None
-                metric['stats'] = {
-                    'mean': mean(sizes) if sizes else None,
-                    'median': median(sizes) if sizes else None,
-                    'min': min(sizes) if sizes else None,
-                    'max': max(sizes) if sizes else None
-                }
-
-                # Calculate specific ratios if defined in metrics_with_ratios
-                if name in metrics_with_ratios:
-                    ratio_info = metrics_with_ratios[name]
-                    if isinstance(ratio_info, tuple):
-                        denominator_name, precision = ratio_info
-                    else:
-                        denominator_name = ratio_info
-                        precision = 4  # Default precision
-                    try:
-                        metric['ratio'] = calculate_ratio(mean_values, name, denominator_name, precision)
-                    except KeyError as e:
-                        print(f"Error calculating ratio for {name}: {e}")
-
-        return dataset_characterization_json
+        return generate_dataset_characterization_json(dataset_characterization, metrics_data, zip_filename)
 
     return None
+
+def submit_file_processing_tasks(extracted_files: list, extract_dir: str):
+    with ThreadPoolExecutor() as executor:
+        return {executor.submit(process_single_file, os.path.join(extract_dir, file)): file for file in extracted_files if file.endswith('.uvl')}
+
+def initialize_characterization(current_characterization, new_characterization, metrics_data):
+    if current_characterization is None:
+        current_characterization = new_characterization
+        for m in new_characterization.metrics.get_metrics():
+            metrics_data[m.property.name] = {'sizes': [], 'ratios': []}
+    return current_characterization
+
+def update_metrics_data(metrics_data, characterization):
+    current_metrics = {m.property.name: m.size if m.size is not None else m.value for m in characterization.metrics.get_metrics()}
+    current_ratios = {m.property.name: m.ratio for m in characterization.metrics.get_metrics() if m.ratio is not None}
+    
+    for key, value in current_metrics.items():
+        metrics_data[key]['sizes'].append(value)
+    
+    for key, value in current_ratios.items():
+        metrics_data[key]['ratios'].append(value)
+
+def generate_dataset_characterization_json(dataset_characterization, metrics_data, zip_filename):
+    dataset_characterization_json = dataset_characterization.to_json()
+    dataset_characterization_json['metadata'][0]['value'] = zip_filename
+
+    mean_values = calculate_mean_values(metrics_data)
+    metrics_with_ratios = get_metrics_with_ratios()
+
+    for metric in dataset_characterization_json['metrics']:
+        name = metric['name']
+        if name in metrics_data:
+            assign_metric_stats(metric, metrics_data[name])
+
+            # Calculate specific ratios if defined in metrics_with_ratios
+            if name in metrics_with_ratios:
+                ratio_info = metrics_with_ratios[name]
+                if isinstance(ratio_info, tuple):
+                    denominator_name, precision = ratio_info
+                else:
+                    denominator_name = ratio_info
+                    precision = 4  # Default precision
+                try:
+                    metric['ratio'] = calculate_ratio(mean_values, name, denominator_name, precision)
+                except KeyError as e:
+                    print(f"Error calculating ratio for {name}: {e}")
+
+    return dataset_characterization_json
+
+def calculate_mean_values(metrics_data):
+    mean_values = {}
+    for name, data in metrics_data.items():
+        values = data['sizes']
+        if values:
+            stats = calculate_stats(values)
+            mean_values[name] = stats['mean']
+            metrics_data[name]['stats'] = stats
+    return mean_values
+
+def calculate_stats(values):
+    return {
+        'mean': mean(values),
+        'median': median(values),
+        'min': min(values),
+        'max': max(values)
+    }
+
+def assign_metric_stats(metric, data):
+    sizes = data['sizes']
+    if sizes:
+        stats = calculate_stats(sizes)
+        metric['size'] = stats['mean']
+        metric['stats'] = stats

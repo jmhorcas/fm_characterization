@@ -5787,6 +5787,7 @@ a.close.disabled {
   position: relative;
   flex: 1 1 auto;
   padding: 1rem;
+  word-wrap: break-word;
 }
 
 .modal-footer {
@@ -11280,9 +11281,6 @@ body.sidebar-toggled footer.sticky-footer {
   width: 100%;
 }
 
-.modal-body {
-  word-wrap: break-word;
-}
 
 .container-fluid {
   min-height: calc(100vh - 2rem); 
