@@ -78,6 +78,7 @@ def get_analysis_with_ratios() -> Dict[str, Any]:
         FMProperties.FALSE_OPTIONAL_FEATURES.value.name: FMProperties.FEATURES.value.name
     }
 
+
 def calculate_ratio(mean_values: Dict[str, float], numerator_name: str, denominator_name: str, precision: int = 4) -> Optional[float]:
     if numerator_name in mean_values and denominator_name in mean_values:
         return get_ratio_sizes(mean_values[numerator_name], mean_values[denominator_name], precision)
@@ -118,9 +119,9 @@ def initialize_characterization(current_characterization, new_characterization, 
     if current_characterization is None:
         current_characterization = new_characterization
         for m in new_characterization.metrics.get_metrics():
-            metrics_data[m.property.name] = {'sizes': [], 'ratios': []}
+            metrics_data[m.property.name] = {'sizes': []}
         for a in new_characterization.analysis.get_analysis():
-            analysis_data[a.property.name] = {'sizes': [], 'ratios': []}
+            analysis_data[a.property.name] = {'sizes': []}
     return current_characterization
 
 
@@ -131,22 +132,15 @@ def update_metrics_data(metrics_data, characterization):
     for key, value in current_metrics.items():
         metrics_data[key]['sizes'].append(value)
 
-    for key, value in current_ratios.items():
-        metrics_data[key]['ratios'].append(value)
-
 
 def update_analysis_data(analysis_data, characterization, valid_not_void_or):
     current_analysis = {a.property.name: a.size if a.size is not None else a.value for a in characterization.analysis.get_analysis()}
-    current_ratios = {a.property.name: a.ratio for a in characterization.analysis.get_analysis() if a.ratio is not None}
 
     for key, value in current_analysis.items():
-        if key == 'Valid (not void)':
+        if key == FMProperties.VALID.value.name:
             valid_not_void_or = valid_not_void_or or (value.lower() == 'yes')
         else:
             analysis_data[key]['sizes'].append(value)
-
-    for key, value in current_ratios.items():
-        analysis_data[key]['ratios'].append(value)
 
     return valid_not_void_or
 
@@ -172,7 +166,7 @@ def generate_dataset_characterization_json(dataset_characterization, metrics_dat
 
     for analysis in dataset_characterization_json.get('analysis', []):
         name = analysis['name']
-        if name == 'Valid (not void)':
+        if name == FMProperties.VALID.value.name:
             analysis['value'] = 'Yes' if valid_not_void_or else 'No'
         elif name in analysis_data:
             assign_metric_stats(analysis, analysis_data[name])
@@ -198,6 +192,7 @@ def calculate_mean_values(data):
 
 def calculate_stats(values, name):
     clean_values = []
+    has_le = False
     if name == FMProperties.CONFIGURATIONS.value.name:
          for v in values:
             if isinstance(v, str) and '≤' in v:
