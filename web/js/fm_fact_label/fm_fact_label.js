@@ -221,7 +221,7 @@ function drawFMFactLabel(data, chartId) {
     if (get_property(data, "Year").value === null) {
       yearSize = { width: 0, height: 0 };
     } else {
-      var year = chart
+      let year = chart
         .append("g")
         .attr("transform", "translate(0," + yearHeight + ")");
       addMetadata(year, "Year:", get_property(data, "Year").value);
@@ -234,7 +234,7 @@ function drawFMFactLabel(data, chartId) {
     if (get_property(data, "Domain").value === null) {
       domainSize = { width: 0, height: 0 };
     } else {
-      var domain = chart
+      let domain = chart
         .append("g")
         .attr("transform", "translate(0," + domainHeight + ")");
       addMetadata(domain, "Domain:", get_property(data, "Domain").value);
@@ -431,7 +431,7 @@ function updateProperties(data, id) {
     .join(
       function (enter) {
         // Indentation
-        var property = enter
+        let property = enter
           .append("g")
           .attr("id", function (d) {
             return d.name;
@@ -453,7 +453,7 @@ function updateProperties(data, id) {
           .attr("height", PROPERTY_HEIGHT)
           .attr("fill", "white");
 
-        var collapseIcon = property
+        let collapseIcon = property
           .append("text")
           .attr("id", "collapseIcon")
           .attr("x", function (d) {
@@ -480,7 +480,7 @@ function updateProperties(data, id) {
               : collapseProperty(ALL_DATA, d);
           });
 
-        var collapseIconWidth =
+        let collapseIconWidth =
           collapseIcon.node() === null
             ? 0
             : collapseIcon.node().getBBox().width;
@@ -594,25 +594,6 @@ function updateProperties(data, id) {
   drawSecondaryRules(data);
 }
 
-function drawRule(id, yPosition) {
-  d3.select("#" + id)
-    .attr("transform", "translate(0," + yPosition + ")")
-    .append("rect")
-    .attr("height", MAIN_RULE_HEIGHT)
-    .attr("width", maxWidth);
-}
-
-function drawBorders(width, height) {
-  d3.select("#border")
-    .attr("x", 0)
-    .attr("y", 0)
-    .attr("width", width)
-    .attr("height", height)
-    .style("stroke", "black")
-    .style("fill", "none")
-    .style("stroke-width", "3pt");
-}
-
 /**
  *
  * @param {any} d A FM property.
@@ -696,7 +677,7 @@ function wrap(text, width) {
       x = text.attr("x"), //<-- include the x!
       y = text.attr("y"),
       dy = text.attr("dy") ? text.attr("dy") : 0; //<-- null check
-    tspan = text
+    let tspan = text
       .text(null)
       .append("tspan")
       .attr("x", x)
@@ -733,14 +714,14 @@ function wrap(text, width) {
  * @returns Object including width and height.
  */
 function textSize(text, fontFamily, fontSize, fontWeight = "normal") {
-  var container = d3.select("body").append("svg");
+  let container = d3.select("body").append("svg");
   container
     .append("text")
     .text(text)
     .attr("font-family", fontFamily)
     .attr("font-size", fontSize)
     .attr("font-weight", fontWeight);
-  var size = container.node().getBBox();
+  let size = container.node().getBBox();
   container.remove();
   return { width: size.width, height: size.height };
 }
@@ -784,9 +765,8 @@ function hasChildrenProperties(property) {
 }
 
 function calculateMaxLevel(data) {
-  return Math.max.apply(
-    Math,
-    data.map(function (d) {
+  return Math.max(
+    ...data.map(function (d) {
       return parseInt(d.level, 10);
     })
   );
@@ -798,9 +778,8 @@ function calculateMaxLevel(data) {
  * @returns Maximum width for a property's name in the dataset.
  */
 function calculateMaxNameWidth(data) {
-  return Math.max.apply(
-    Math,
-    data.map(function (d) {
+  return Math.max(
+    ...data.map(function (d) {
       return textSize(d.name, PROPERTY_FONT_FAMILY, PROPERTY_FONT_SIZE).width;
     })
   );
@@ -812,9 +791,8 @@ function calculateMaxNameWidth(data) {
  * @returns Maximum width for a property's value in the dataset.
  */
 function calculateMaxValueWidth(data) {
-  return Math.max.apply(
-    Math,
-    data.map(function (d) {
+  return Math.max(
+    ...data.map(function (d) {
       return textSize(
         String(get_value(d)),
         VALUES_FONT_FAMILY,
@@ -830,9 +808,8 @@ function calculateMaxValueWidth(data) {
  * @returns Maximum width for a property's ratio in the dataset.
  */
 function calculateMaxRatioWidth(data) {
-  return Math.max.apply(
-    Math,
-    data.map(function (d) {
+  return Math.max(
+    ...data.map(function (d) {
       return textSize(
         String(get_ratio(d)),
         VALUES_FONT_FAMILY,
@@ -848,9 +825,8 @@ function calculateMaxRatioWidth(data) {
  * @returns Maximum width for a property's indentation in the dataset.
  */
 function calculateMaxIndentationWidth(data) {
-  return Math.max.apply(
-    Math,
-    data.map(function (d) {
+  return Math.max(
+    ...data.map(function (d) {
       return textSize(
         "-".repeat(1 + PROPERTY_INDENTATION * parseInt(d.level, 10)),
         PROPERTY_FONT_FAMILY,
@@ -859,6 +835,7 @@ function calculateMaxIndentationWidth(data) {
     })
   );
 }
+
 
 function filterData(data) {
   metrics = data.metrics;

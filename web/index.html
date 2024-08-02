@@ -61,13 +61,13 @@
 
                         <!-- Nav tabs -->
                         <ul class="nav nav-tabs" id="myTab" role="tablist">
-                            <li class="nav-item">
-                                <button class="nav-link {% if data.active_tab == 'upload-single-tab' %}active{% endif %}" id="upload-single-tab" data-bs-toggle="tab" data-bs-target="#upload-single" type="button" aria-controls="upload-single" aria-selected="true">Analyze a Feature Model</button>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link {% if data.active_tab == 'upload-single-tab' %}active{% endif %}" id="upload-single-tab" data-bs-toggle="tab" href="#upload-single" role="tab" aria-controls="upload-single" aria-selected="{% if data.active_tab == 'upload-single-tab' %}true{% else %}false{% endif %}">Analyze a Feature Model</a>
                             </li>
-                            <li class="nav-item">
-                                <button class="nav-link {% if data.active_tab == 'upload-zip-tab' %}active{% endif %}" id="upload-zip-tab" data-bs-toggle="tab" data-bs-target="#upload-zip" type="button" aria-controls="upload-zip" aria-selected="false">Analyze Feature Model datasets</button>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link {% if data.active_tab == 'upload-zip-tab' %}active{% endif %}" id="upload-zip-tab" data-bs-toggle="tab" href="#upload-zip" role="tab" aria-controls="upload-zip" aria-selected="{% if data.active_tab == 'upload-zip-tab' %}true{% else %}false{% endif %}">Analyze Feature Model datasets</a>
                             </li>
-                        </ul>
+                        </ul> 
                         
 
                         <!-- Tab panes -->
