@@ -79,17 +79,25 @@ def get_analysis_with_ratios() -> Dict[str, Any]:
     }
 
 
-def calculate_ratio(mean_values: Dict[str, float], numerator_name: str, denominator_name: str, precision: int = 4) -> Optional[float]:
-    if numerator_name in mean_values and denominator_name in mean_values:
-        return get_ratio_sizes(mean_values[numerator_name], mean_values[denominator_name], precision)
+def calculate_ratio(data: Dict[str, Dict], numerator_name: str, denominator_name: str, precision: int = 4, extra_data: Optional[Dict[str, Dict]] = None) -> Optional[float]:
+    numerator_stats = data.get(numerator_name, {}).get('stats', {})
+    
+    denominator_stats = data.get(denominator_name, {}).get('stats', {})
+    if extra_data and not denominator_stats:
+        denominator_stats = extra_data.get(denominator_name, {}).get('stats', {})
+
+    if 'mean' in numerator_stats and 'mean' in denominator_stats:
+        numerator_mean = numerator_stats['mean']
+        denominator_mean = denominator_stats['mean']
+        return get_ratio_sizes(numerator_mean, denominator_mean, precision)
+
     return None
 
 
+
 def process_files(extracted_files: list, extract_dir: str, zip_filename: str) -> Optional[Dict[str, Any]]:
-    metrics_data = {}
+    data = {}
     analysis_data = {}
-    valid_not_void_or = False
-    model_count = 0
     dataset_characterization = None
 
     futures = submit_file_processing_tasks(extracted_files, extract_dir)
@@ -97,15 +105,15 @@ def process_files(extracted_files: list, extract_dir: str, zip_filename: str) ->
         try:
             characterization = future.result()
             if characterization:
-                model_count += 1
-                dataset_characterization = initialize_characterization(dataset_characterization, characterization, metrics_data, analysis_data)
-                update_metrics_data(metrics_data, characterization)
-                valid_not_void_or = update_analysis_data(analysis_data, characterization, valid_not_void_or)
+                if not dataset_characterization:
+                    dataset_characterization = initialize_characterization(dataset_characterization, characterization, data, analysis_data)
+                update_data(data, characterization)
+                update_analysis_data(analysis_data, characterization)
         except Exception as e:
             print(f"Error processing file {file}: {e}")
 
-    if model_count > 0 and (metrics_data or analysis_data):
-        return generate_dataset_characterization_json(dataset_characterization, metrics_data, analysis_data, valid_not_void_or, zip_filename)
+    if dataset_characterization and (data or analysis_data):
+        return generate_dataset_characterization_json(dataset_characterization, data, analysis_data, zip_filename)
 
     return None
 
@@ -115,42 +123,37 @@ def submit_file_processing_tasks(extracted_files: list, extract_dir: str):
         return {executor.submit(process_single_file, os.path.join(extract_dir, file)): file for file in extracted_files if file.endswith('.uvl')}
 
 
-def initialize_characterization(current_characterization, new_characterization, metrics_data, analysis_data):
+def initialize_characterization(current_characterization, new_characterization, data, analysis_data):
     if current_characterization is None:
         current_characterization = new_characterization
         for m in new_characterization.metrics.get_metrics():
-            metrics_data[m.property.name] = {'sizes': []}
+            data[m.property.name] = {'values': []}
         for a in new_characterization.analysis.get_analysis():
-            analysis_data[a.property.name] = {'sizes': []}
+            analysis_data[a.property.name] = {'values': []}
     return current_characterization
 
 
-def update_metrics_data(metrics_data, characterization):
+def update_data(data, characterization):
     current_metrics = {m.property.name: m.size if m.size is not None else m.value for m in characterization.metrics.get_metrics()}
-    current_ratios = {m.property.name: m.ratio for m in characterization.metrics.get_metrics() if m.ratio is not None}
 
     for key, value in current_metrics.items():
-        metrics_data[key]['sizes'].append(value)
+        data[key]['values'].append(value)
 
 
-def update_analysis_data(analysis_data, characterization, valid_not_void_or):
+def update_analysis_data(analysis_data, characterization):
     current_analysis = {a.property.name: a.size if a.size is not None else a.value for a in characterization.analysis.get_analysis()}
 
     for key, value in current_analysis.items():
-        if key == FMProperties.VALID.value.name:
-            valid_not_void_or = valid_not_void_or or (value.lower() == 'yes')
-        else:
-            analysis_data[key]['sizes'].append(value)
-
-    return valid_not_void_or
+        analysis_data[key]['values'].append(value)
 
 
-def generate_dataset_characterization_json(dataset_characterization, metrics_data, analysis_data, valid_not_void_or, zip_filename):
+
+def generate_dataset_characterization_json(dataset_characterization, metrics_data, analysis_data, zip_filename):
     dataset_characterization_json = dataset_characterization.to_json()
     dataset_characterization_json['metadata'][0]['value'] = zip_filename
 
-    mean_values_metrics = calculate_mean_values(metrics_data)
-    mean_values_analysis = calculate_mean_values(analysis_data)
+    calculate_mean_values(metrics_data)
+    calculate_mean_values(analysis_data)
     metrics_with_ratios = get_metrics_with_ratios()
     analysis_with_ratios = get_analysis_with_ratios()
 
@@ -162,72 +165,79 @@ def generate_dataset_characterization_json(dataset_characterization, metrics_dat
             if name in metrics_with_ratios:
                 ratio_info = metrics_with_ratios[name]
                 denominator_name, precision = ratio_info if isinstance(ratio_info, tuple) else (ratio_info, 4)
-                metric['ratio'] = calculate_ratio(mean_values_metrics, name, denominator_name, precision)
+                metric['ratio'] = calculate_ratio(metrics_data, name, denominator_name, precision)
 
-    for analysis in dataset_characterization_json.get('analysis', []):
+    for analysis in dataset_characterization_json['analysis']:
         name = analysis['name']
-        if name == FMProperties.VALID.value.name:
-            analysis['value'] = 'Yes' if valid_not_void_or else 'No'
-        elif name in analysis_data:
+        if name in analysis_data:
             assign_metric_stats(analysis, analysis_data[name])
 
             if name in analysis_with_ratios:
                 ratio_info = analysis_with_ratios[name]
                 denominator_name, precision = ratio_info if isinstance(ratio_info, tuple) else (ratio_info, 4)
-                analysis['ratio'] = calculate_ratio(mean_values_analysis, name, denominator_name, precision)
+                analysis['ratio'] = calculate_ratio(analysis_data, name, denominator_name, precision, metrics_data)
 
     return dataset_characterization_json
 
 
 def calculate_mean_values(data):
-    mean_values = {}
     for name, data in data.items():
-        values = data['sizes']
+        values = data['values']
         if values:
             stats = calculate_stats(values, name)
-            mean_values[name] = stats['mean']
             data['stats'] = stats
-    return mean_values
 
 
 def calculate_stats(values, name):
     clean_values = []
     has_le = False
+
     if name == FMProperties.CONFIGURATIONS.value.name:
-         for v in values:
+        for v in values:
             if isinstance(v, str) and '≤' in v:
                 has_le = True
                 clean_values.append(float(v.replace('≤', '').strip()))
             else:
                 clean_values.append(float(v))
+    elif name == FMProperties.VALID.value.name:
+        clean_values = [v.lower() == 'yes' for v in values]
     else:
         clean_values = [float(v) for v in values]
 
-    mean_val = mean(clean_values)
-    median_val = median(clean_values)
-    min_val = min(clean_values)
-    max_val = max(clean_values)
-
-    if has_le:
+    if name == FMProperties.VALID.value.name:
         stats = {
-            'mean': f'≤ {mean_val}',
-            'median': f'≤ {median_val}',
-            'min': f'≤ {min_val}',
-            'max': f'≤ {max_val}',
+            'mean': 'Yes' if any(clean_values) else 'No',
+            'median': None,
+            'min': None,
+            'max': None,
         }
     else:
-        stats = {
-            'mean': mean_val,
-            'median': median_val,
-            'min': min_val,
-            'max': max_val,
-        }
+        mean_val = mean(clean_values) if clean_values else None
+        median_val = median(clean_values) if clean_values else None
+        min_val = min(clean_values) if clean_values else None
+        max_val = max(clean_values) if clean_values else None
+
+        if has_le:
+            stats = {
+                'mean': f'≤ {mean_val}',
+                'median': f'≤ {median_val}',
+                'min': f'≤ {min_val}',
+                'max': f'≤ {max_val}',
+            }
+        else:
+            stats = {
+                'mean': mean_val,
+                'median': median_val,
+                'min': min_val,
+                'max': max_val,
+            }
+
     return stats
 
 
 def assign_metric_stats(metric, data):
-    sizes = data['sizes']
-    if sizes:
-        stats = calculate_stats(sizes, metric['name'])
+    values = data['values']
+    if values:
+        stats = calculate_stats(values, metric['name'])
         metric['size'] = stats['mean']
         metric['stats'] = stats

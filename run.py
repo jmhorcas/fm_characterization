@@ -145,14 +145,14 @@ def upload_zip():
         data['zip_file_error'] = 'Please upload a valid ZIP file.'
         return render_template('index.html', data=data)
 
-    original_filename = os.path.splitext(zip_file.filename)[0]
+    zip_name = os.path.splitext(zip_file.filename)[0]
 
     try:
         with tempfile.NamedTemporaryFile(delete=False, suffix='.zip') as tmp_zip_file:
             zip_file.save(tmp_zip_file.name)
             extract_dir, extracted_files = extract_zip(tmp_zip_file.name)
 
-        dataset_characterization_json = process_files(extracted_files, extract_dir, original_filename)
+        dataset_characterization_json = process_files(extracted_files, extract_dir, zip_name)
         if dataset_characterization_json:
             data.update({
                 'fm_dataset_facts': dataset_characterization_json,
