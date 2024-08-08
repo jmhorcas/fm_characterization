@@ -1,7 +1,8 @@
 import os
+import numpy as np
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from statistics import mean, median
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, Tuple
 
 from flamapy.metamodels.fm_metamodel.models import FeatureModel
 from flamapy.metamodels.fm_metamodel.transformations import UVLReader, FeatureIDEReader
@@ -95,8 +96,9 @@ def calculate_ratio(data: Dict[str, Dict], numerator_name: str, denominator_name
 
 
 
-def process_files(extracted_files: list, extract_dir: str, zip_filename: str) -> Optional[Dict[str, Any]]:
-    data = {}
+
+def process_files(extracted_files: list, extract_dir: str, zip_filename: str) -> Tuple[Dict[str, Any], Dict[str, Any], Optional[Dict[str, Any]]]:
+    metrics_data = {}
     analysis_data = {}
     dataset_characterization = None
 
@@ -106,16 +108,17 @@ def process_files(extracted_files: list, extract_dir: str, zip_filename: str) ->
             characterization = future.result()
             if characterization:
                 if not dataset_characterization:
-                    dataset_characterization = initialize_characterization(dataset_characterization, characterization, data, analysis_data)
-                update_data(data, characterization)
+                    dataset_characterization = initialize_characterization(dataset_characterization, characterization, metrics_data, analysis_data)
+                update_data(metrics_data, characterization)
                 update_analysis_data(analysis_data, characterization)
         except Exception as e:
             print(f"Error processing file {file}: {e}")
 
-    if dataset_characterization and (data or analysis_data):
-        return generate_dataset_characterization_json(dataset_characterization, data, analysis_data, zip_filename)
+    dataset_characterization_json = None
+    if dataset_characterization and (metrics_data or analysis_data):
+        dataset_characterization_json = generate_dataset_characterization_json(dataset_characterization, metrics_data, analysis_data, zip_filename)
 
-    return None
+    return metrics_data, analysis_data, dataset_characterization_json
 
 
 def submit_file_processing_tasks(extracted_files: list, extract_dir: str):
@@ -241,3 +244,26 @@ def assign_metric_stats(metric, data):
         stats = calculate_stats(values, metric['name'])
         metric['size'] = stats['mean']
         metric['stats'] = stats
+
+
+def calculate_percentiles(values):
+    percentil_33 = np.percentile(values, 33)
+    percentil_66 = np.percentile(values, 66)
+    return {
+        'percentil_33': percentil_33,
+        'percentil_66': percentil_66
+    }
+    
+def classify_value(value, percentil_33, percentil_66):
+    try:
+        value = float(value)  
+    except ValueError:
+        raise ValueError(f"Value {value} cannot be converted to a float")
+
+    if value < percentil_33:
+        return "low"
+    elif value < percentil_66:
+        return "medium"
+    else:
+        return "high"
+

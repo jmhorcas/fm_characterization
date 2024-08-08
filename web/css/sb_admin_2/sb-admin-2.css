@@ -11283,5 +11283,19 @@ body.sidebar-toggled footer.sticky-footer {
 
 
 .container-fluid {
-  min-height: calc(100vh - 2rem); 
+  min-height: 100vh;
 }
+
+.low {
+  background-color: #FF595E;
+}
+
+.medium {
+  background-color: #FFCA3A;
+}
+
+.high {
+  background-color: #8AC926;
+}
+
+

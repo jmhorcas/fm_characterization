@@ -7,7 +7,7 @@ from typing import Tuple
 from flask import Flask, render_template, request
 
 from fm_characterization import FMCharacterization, models_info
-from fm_characterization.process_files import process_files, read_fm_file
+from fm_characterization.process_files import process_files, read_fm_file, calculate_percentiles, classify_value
 
 STATIC_DIR = 'web'
 EXAMPLE_MODELS_DIR = 'fm_models'
@@ -54,6 +54,7 @@ def index():
     if request.method == 'POST':
         fm_file = request.files['inputFM']
         fm_name = request.form['inputExample']
+        zip_file = request.files.get('inputZipThreshold')
         name = None
         description = None
         author = None
@@ -118,9 +119,65 @@ def index():
             characterization.metadata.tags = keywords
             characterization.metadata.reference = reference
             characterization.metadata.domains = domain
+            
+            if zip_file and zip_file.filename.endswith('.zip'):
+                with tempfile.NamedTemporaryFile(delete=False, suffix='.zip') as tmp_zip_file:
+                    zip_file.save(tmp_zip_file.name)
+                    extract_dir, extracted_files = extract_zip(tmp_zip_file.name)
+                    metrics_data, analysis_data, dataset_characterization_json = process_files(extracted_files, extract_dir, zip_file.filename)
+                    if dataset_characterization_json:
+                        thresholds = {}
+                        for metric in dataset_characterization_json['metrics']:
+                            name = metric['name']
+                            if name in metrics_data:
+                                values = metrics_data[name]['values']
+                            if values:
+                                thresholds[name] = calculate_percentiles(values)
+                        for analysis in dataset_characterization_json['analysis']:
+                            name = analysis['name']
+                            if name in analysis_data:
+                                values = analysis_data[name]['values']
+                                clean_values = []
+                                for v in values:
+                                    if isinstance(v, str) and '≤' in v:
+                                        clean_values.append(float(v.replace('≤', '').strip()))
+                                    elif isinstance(v, (int, float)):
+                                        clean_values.append(v)
+                                if clean_values:
+                                    thresholds[name] = calculate_percentiles(clean_values)
+                    shutil.rmtree(extract_dir)
 
             #json_characterization = interfaces.to_json(fm_characterization, FM_FACT_JSON_FILE)
             json_characterization = characterization.to_json()
+            if zip_file and zip_file.filename.endswith('.zip'):
+                for metric in json_characterization['metrics']:
+                    name = metric['name']
+                    if name in thresholds:
+                        percentil_33 = thresholds[name]['percentil_33']
+                        percentil_66 = thresholds[name]['percentil_66']
+                        value = None
+                        if metric['size'] is not None:
+                            value = metric['size']
+                        elif metric['value'] is not None:
+                            value = metric['value']
+                        if value is not None:
+                            metric['threshold'] = classify_value(value, percentil_33, percentil_66)
+                for analysis in json_characterization['analysis']:
+                    name = analysis['name']
+                    if name in thresholds:
+                        percentil_33 = thresholds[name]['percentil_33']
+                        percentil_66 = thresholds[name]['percentil_66']
+                        value = None
+                        if analysis['size'] is not None:
+                            value = analysis['size']
+                        elif analysis['value'] is not None:
+                            value = analysis['value']
+                        if value is not None:
+                            if isinstance(value, str) and '≤' in value:
+                                value = float(value.replace('≤', '').strip())
+                            analysis['threshold'] = classify_value(value, percentil_33, percentil_66)
+
+                
             json_str_characterization = characterization.to_json_str()
             str_characterization = str(characterization)
             data['fm_facts'] = json_characterization
@@ -152,7 +209,7 @@ def upload_zip():
             zip_file.save(tmp_zip_file.name)
             extract_dir, extracted_files = extract_zip(tmp_zip_file.name)
 
-        dataset_characterization_json = process_files(extracted_files, extract_dir, zip_name)
+        _, _, dataset_characterization_json = process_files(extracted_files, extract_dir, zip_name)
         if dataset_characterization_json:
             data.update({
                 'fm_dataset_facts': dataset_characterization_json,

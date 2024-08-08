@@ -438,7 +438,26 @@ function updateProperties(data, id) {
           })
           .attr("transform", function (d, i) {
             return "translate(0," + i * PROPERTY_HEIGHT + ")";
+          })
+          .attr("class", function (d) {
+            return d.threshold || "";
+          })
+          .each(function(d) {
+            d3.select(this)
+              .append("rect")
+              .attr("width", maxWidth)
+              .attr("height", PROPERTY_HEIGHT)
+              .attr("x", 0)
+              .attr("y", 0)
+              .attr("fill", function () {
+                if (d.threshold === "low") return "#FF595E";
+                if (d.threshold === "medium") return "#FFCA3A";
+                if (d.threshold === "high") return "#8AC926";
+                return "white";
+              })
+              .lower(); 
           });
+
         property
           .append("rect")
           .attr("id", "indentation")
