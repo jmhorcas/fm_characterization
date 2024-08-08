@@ -21,3 +21,8 @@ def get_ratio(collection1: Collection, collection2: Collection, precision: int =
     if not collection2:
         return 0.0
     return round(len(collection1) / len(collection2), precision)
+
+def get_ratio_sizes(size1: int, size2: int, precision: int = 4) -> float:
+    if size2 == 0:
+        return 0.0
+    return round(size1 / size2, precision)
