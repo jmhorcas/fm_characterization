@@ -44,6 +44,18 @@ var IMPORTS = [
   "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css",
 ];
 
+function initializeChartStyles(chart, imports) {
+  chart
+    .selectAll("defs")
+    .data(imports, (d) => d)
+    .join("style")
+    .attr("type", "text/css")
+    .text(function (d) {
+      return "@import url('" + d + "');";
+    });
+}
+
+
 function drawFMFactLabel(data, chartId) {
   console.log(data);
   chart = d3.select(chartId); // The svg
@@ -52,14 +64,7 @@ function drawFMFactLabel(data, chartId) {
   //    .append('style')
   //    .attr('type', 'text/css')
   //    .text("@import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@900');");
-  chart
-    .selectAll("defs")
-    .data(IMPORTS, (d) => d)
-    .join("style")
-    .attr("type", "text/css")
-    .text(function (d) {
-      return "@import url('" + d + "');";
-    });
+  initializeChartStyles(chart, IMPORTS);
 
   // Create a div for mouse hover effect
   tooltip = d3
@@ -168,103 +173,103 @@ function drawFMFactLabel(data, chartId) {
     .attr("font-size", TITLE_FONT_SIZE)
     .attr("font-weight", "bold");
 
-    // Description
-    var yDescription = yTitle + titleSize.height + 1;
-    const indentationDescription = textSize(
-      "-".repeat(PROPERTY_INDENTATION),
-      DESCRIPTION_FONT_FAMILY,
-      DESCRIPTION_FONT_SIZE
-    ).width;
-    let description = chart
+  // Description
+  var yDescription = yTitle + titleSize.height + 1;
+  const indentationDescription = textSize(
+    "-".repeat(PROPERTY_INDENTATION),
+    DESCRIPTION_FONT_FAMILY,
+    DESCRIPTION_FONT_SIZE
+  ).width;
+  let description = chart
+    .append("g")
+    .attr("transform", "translate(0," + yDescription + ")");
+  description
+    .append("text")
+    .text(get_property(data, "Description").value)
+    .attr("x", function (d) {
+      return x(indentationDescription);
+    })
+    .attr("font-family", DESCRIPTION_FONT_FAMILY)
+    .attr("font-size", DESCRIPTION_FONT_SIZE)
+    .call(wrap, maxWidth - indentationDescription);
+  var descriptionSize = description.node().getBBox();
+
+  // Keywords
+  var keywordHeight = yDescription + descriptionSize.height + 1;
+  let keywordsSize;
+  if (get_property(data, "Tags").value === null) {
+    keywordsSize = descriptionSize;
+  } else {
+    let keywords = chart
       .append("g")
-      .attr("transform", "translate(0," + yDescription + ")");
-    description
+      .attr("transform", "translate(0," + keywordHeight + ")");
+    addMetadata(keywords, "Tags:", get_property(data, "Tags").value);
+    keywordsSize = keywords.node().getBBox();
+  }
+
+  // Author
+  var authorHeight = keywordHeight + keywordsSize.height;
+  let authorSize;
+  if (get_property(data, "Author").value === null) {
+    authorSize = { width: 0, height: 0 };
+  } else {
+    let author = chart
+      .append("g")
+      .attr("transform", "translate(0," + authorHeight + ")");
+    addMetadata(author, "Author:", get_property(data, "Author").value);
+    authorSize = author.node().getBBox();
+  }
+
+  // Year
+  var yearHeight = authorHeight + authorSize.height;
+  let yearSize;
+  if (get_property(data, "Year").value === null) {
+    yearSize = { width: 0, height: 0 };
+  } else {
+    let year = chart
+      .append("g")
+      .attr("transform", "translate(0," + yearHeight + ")");
+    addMetadata(year, "Year:", get_property(data, "Year").value);
+    yearSize = year.node().getBBox();
+  }
+
+  // Domain
+  var domainHeight = yearHeight + yearSize.height;
+  let domainSize;
+  if (get_property(data, "Domain").value === null) {
+    domainSize = { width: 0, height: 0 };
+  } else {
+    let domain = chart
+      .append("g")
+      .attr("transform", "translate(0," + domainHeight + ")");
+    addMetadata(domain, "Domain:", get_property(data, "Domain").value);
+    domainSize = domain.node().getBBox();
+  }
+
+  // Reference
+  if (!get_property(data, "Reference").value == "") {
+    let reference = chart
+      .append("g")
+      .attr(
+        "transform",
+        "translate(0," +
+          (domainHeight + domainSize.height - MAIN_RULE_HEIGHT - 10) +
+          ")"
+      );
+    reference
+      .append("a")
+      .attr("id", "hrefIcon")
+      .attr("href", get_property(data, "Reference").value)
       .append("text")
-      .text(get_property(data, "Description").value)
-      .attr("x", function (d) {
-        return x(indentationDescription);
-      })
-      .attr("font-family", DESCRIPTION_FONT_FAMILY)
-      .attr("font-size", DESCRIPTION_FONT_SIZE)
-      .call(wrap, maxWidth - indentationDescription);
-    var descriptionSize = description.node().getBBox();
-  
-    // Keywords
-    var keywordHeight = yDescription + descriptionSize.height + 1;
-    let keywordsSize;
-    if (get_property(data, "Tags").value === null) {
-      keywordsSize = descriptionSize;
-    } else {
-      let keywords = chart
-        .append("g")
-        .attr("transform", "translate(0," + keywordHeight + ")");
-      addMetadata(keywords, "Tags:", get_property(data, "Tags").value);
-      keywordsSize = keywords.node().getBBox();
-    }
-  
-    // Author
-    var authorHeight = keywordHeight + keywordsSize.height;
-    let authorSize;
-    if (get_property(data, "Author").value === null) {
-      authorSize = { width: 0, height: 0 };
-    } else {
-      let author = chart
-        .append("g")
-        .attr("transform", "translate(0," + authorHeight + ")");
-      addMetadata(author, "Author:", get_property(data, "Author").value);
-      authorSize = author.node().getBBox();
-    }
-  
-    // Year
-    var yearHeight = authorHeight + authorSize.height;
-    let yearSize;
-    if (get_property(data, "Year").value === null) {
-      yearSize = { width: 0, height: 0 };
-    } else {
-      let year = chart
-        .append("g")
-        .attr("transform", "translate(0," + yearHeight + ")");
-      addMetadata(year, "Year:", get_property(data, "Year").value);
-      yearSize = year.node().getBBox();
-    }
-  
-    // Domain
-    var domainHeight = yearHeight + yearSize.height;
-    let domainSize;
-    if (get_property(data, "Domain").value === null) {
-      domainSize = { width: 0, height: 0 };
-    } else {
-      let domain = chart
-        .append("g")
-        .attr("transform", "translate(0," + domainHeight + ")");
-      addMetadata(domain, "Domain:", get_property(data, "Domain").value);
-      domainSize = domain.node().getBBox();
-    }
-  
-    // Reference
-    if (!get_property(data, "Reference").value == "") {
-      let reference = chart
-        .append("g")
-        .attr(
-          "transform",
-          "translate(0," +
-            (domainHeight + domainSize.height - MAIN_RULE_HEIGHT - 10) +
-            ")"
-        );
-      reference
-        .append("a")
-        .attr("id", "hrefIcon")
-        .attr("href", get_property(data, "Reference").value)
-        .append("text")
-        .attr("text-anchor", "end")
-        .attr("x", maxWidth - 5)
-        .attr("dy", ".35em")
-        .attr("y", PROPERTY_HEIGHT / 2)
-        .attr("font-family", "FontAwesome")
-        .attr("font-size", "12pt")
-        .text(HREF_ICON)
-        .attr("cursor", "pointer");
-    }
+      .attr("text-anchor", "end")
+      .attr("x", maxWidth - 5)
+      .attr("dy", ".35em")
+      .attr("y", PROPERTY_HEIGHT / 2)
+      .attr("font-family", "FontAwesome")
+      .attr("font-size", "12pt")
+      .text(HREF_ICON)
+      .attr("cursor", "pointer");
+  }
 
   // Middle rule 1
   yRule1 = domainHeight + domainSize.height;
@@ -311,6 +316,273 @@ function drawFMFactLabel(data, chartId) {
   });
   //d3.selectAll("#collapse").on("click", function (d) { collapseProperty(data, d); });
   collapseSubProperties(data);
+}
+
+function drawFMFactLabelLandscape(data, chartId) {
+  const chart = d3.select(chartId);
+
+  const MARGINS = {
+    top: 10,
+    left: 5,
+    right: 5,
+    bottom: 10,
+  };
+  const PADDING = 15;
+  const PROPERTIES_VALUES_SPACE = 10;
+  const PROPERTIES_RATIO_SPACE = 10;
+  const METRICS_IN_FIRST_COLUMN = 10;
+  const METRICS_PER_COLUMN = 19;
+
+  initializeChartStyles(chart, IMPORTS);
+
+  let svgWidth = parseFloat(chart.style("width"));
+
+  const PROPERTY_HEIGHT = textSize("Any text", PROPERTY_FONT_FAMILY, PROPERTY_FONT_SIZE, "bold").height;
+
+  const maxIndentationWidth = Math.max(
+    calculateMaxIndentationWidth(data.metrics),
+    calculateMaxIndentationWidth(data.analysis)
+  );
+  const maxNameWidth = Math.max(
+    calculateMaxNameWidth(data.metrics),
+    calculateMaxNameWidth(data.analysis)
+  );
+  const maxValueWidth = Math.max(
+    calculateMaxValueWidth(data.metrics),
+    calculateMaxValueWidth(data.analysis)
+  );
+  const maxRatioWidth = Math.max(
+    calculateMaxRatioWidth(data.metrics),
+    calculateMaxRatioWidth(data.analysis)
+  );
+  const maxWidth =
+    maxIndentationWidth +
+    maxNameWidth +
+    PROPERTIES_VALUES_SPACE +
+    maxValueWidth +
+    PROPERTIES_RATIO_SPACE +
+    maxRatioWidth +
+    MARGINS.left;
+
+  const ratioPadding = 20;
+  const minColumnWidth = maxWidth + ratioPadding;
+
+  const columnWidth = Math.max(
+    (svgWidth - 2 * MARGINS.left) / 3.5,
+    minColumnWidth
+  );
+
+  let currentColumn = 0;
+  let currentRow = 0;
+  let currentY = MARGINS.top + PADDING - 10;
+  let columnHeights = Array(3).fill(currentY);
+
+  const xTitle = MARGINS.left + PADDING;
+  currentY = MARGINS.top + PADDING + 5;
+  const titleGroup = chart.append("g").attr("transform", `translate(${xTitle}, ${currentY + 15})`);
+  
+  currentY += addTextElement(titleGroup, get_property(data, "Name").value, TITLE_FONT_FAMILY, TITLE_FONT_SIZE, "bold", 0, 0)
+    .node()
+    .getBBox()
+    .height;
+
+  const descriptionGroup = chart.append("g").attr("transform", `translate(${xTitle}, ${currentY})`);
+  const descriptionText = descriptionGroup.append("text")
+    .text(get_property(data, "Description").value)
+    .attr("x", 0)
+    .attr("font-family", DESCRIPTION_FONT_FAMILY)
+    .attr("font-size", DESCRIPTION_FONT_SIZE)
+    .call(wrap, columnWidth - 2 * PADDING);
+
+  currentY += descriptionText.node().getBBox().height + 5;
+  columnHeights[currentColumn] = currentY;
+
+  const fields = [
+    { label: "Tags", value: get_property(data, "Tags").value },
+    { label: "Author", value: get_property(data, "Author").value },
+    { label: "Year", value: get_property(data, "Year").value },
+    { label: "Domain", value: get_property(data, "Domain").value },
+  ];
+
+  fields.forEach((field) => {
+    const group = chart.append("g").attr("transform", `translate(${xTitle}, ${currentY})`);
+    const labelWidth = addTextElement(group, `${field.label}:`, DESCRIPTION_FONT_FAMILY, DESCRIPTION_FONT_SIZE, "bold", 0, 0)
+      .node()
+      .getBBox()
+      .width;
+    
+    const valueX = labelWidth + 5;
+    const valueText = group.append("text")
+      .attr("x", valueX)
+      .attr("font-family", DESCRIPTION_FONT_FAMILY)
+      .attr("font-size", DESCRIPTION_FONT_SIZE)
+      .text(field.value)
+      .call(wrap, columnWidth - valueX - PADDING);
+
+    currentY += valueText.node().getBBox().height + 5;
+    columnHeights[currentColumn] = currentY;
+  });
+
+  if (get_property(data, "Reference").value !== "") {
+    const referenceOffset = PROPERTY_HEIGHT / 2 + PADDING;
+    const referenceGroup = chart.append("g")
+      .attr("transform", `translate(${xTitle - PADDING}, ${currentY - referenceOffset})`);
+
+    referenceGroup.append("a")
+      .attr("id", "hrefIcon")
+      .attr("href", get_property(data, "Reference").value)
+      .append("text")
+      .attr("text-anchor", "end")
+      .attr("x", columnWidth - PADDING)
+      .attr("dy", ".35em")
+      .attr("y", PROPERTY_HEIGHT / 2)
+      .attr("font-family", "FontAwesome")
+      .attr("font-size", "12pt")
+      .text(HREF_ICON)
+      .attr("cursor", "pointer");
+
+    columnHeights[currentColumn] = currentY;
+  }
+
+  chart.append("line")
+    .attr("x1", xTitle - PADDING)
+    .attr("y1", currentY)
+    .attr("x2", xTitle + columnWidth - PADDING)
+    .attr("y2", currentY)
+    .attr("stroke", "black")
+    .attr("stroke-width", 2);
+
+  currentY += 10;
+  columnHeights[currentColumn] = currentY;
+
+  function drawProperties(properties, groupId) {
+    const group = chart.append("g").attr("id", groupId);
+
+    properties.forEach((property) => {
+      if (currentColumn === 0 && currentRow >= METRICS_IN_FIRST_COLUMN) {
+        currentColumn++;
+        currentRow = 0;
+        currentY = MARGINS.top + PADDING - 10;
+      } else if (currentRow >= METRICS_PER_COLUMN) {
+        currentColumn++;
+        currentRow = 0;
+        currentY = MARGINS.top + PADDING - 10;
+      }
+
+      const xMetric = MARGINS.left + currentColumn * columnWidth + PADDING - 10;
+      const propertyGroup = group.append("g")
+        .attr("transform", `translate(${xMetric}, ${currentY})`)
+        .attr("id", property.name)
+        .attr("class", property.threshold || "");
+
+      propertyGroup.append("rect")
+        .attr("width", maxWidth)
+        .attr("height", PROPERTY_HEIGHT)
+        .attr("fill", () => getColorByThreshold(property.threshold))
+        .lower();
+
+      propertyGroup.append("rect")
+        .attr("id", "indentation")
+        .attr("x", 0)
+        .attr("width", get_indentation(property))
+        .attr("height", PROPERTY_HEIGHT)
+        .attr("fill", "white");
+
+      propertyGroup.append("text")
+        .attr("id", "propertyName")
+        .attr("x", get_indentation(property) + PROPERTY_INDENTATION)
+        .attr("y", PROPERTY_HEIGHT / 2)
+        .attr("dy", ".35em")
+        .attr("font-family", PROPERTY_FONT_FAMILY)
+        .attr("font-size", PROPERTY_FONT_SIZE)
+        .attr("font-weight", parseInt(property.level, 10) === 0 ? "bold" : "normal")
+        .text(property.name);
+
+      propertyGroup.append("text")
+        .attr("id", "value")
+        .attr("text-anchor", "end")
+        .attr("x", maxIndentationWidth + maxNameWidth + PROPERTIES_VALUES_SPACE + maxValueWidth)
+        .attr("y", PROPERTY_HEIGHT / 2)
+        .attr("dy", ".35em")
+        .attr("font-family", PROPERTY_FONT_FAMILY)
+        .attr("font-size", VALUES_FONT_SIZE)
+        .attr("font-weight", "bold")
+        .text(get_value(property));
+
+      propertyGroup.append("text")
+        .attr("id", "ratio")
+        .attr("text-anchor", "end")
+        .attr("x", maxWidth)
+        .attr("y", PROPERTY_HEIGHT / 2)
+        .attr("dy", ".35em")
+        .attr("font-family", PROPERTY_FONT_FAMILY)
+        .attr("font-size", VALUES_FONT_SIZE)
+        .attr("font-weight", "bold")
+        .text(get_ratio(property));
+
+      currentY += PROPERTY_HEIGHT;
+      columnHeights[currentColumn] = currentY;
+      currentRow++;
+    });
+  }
+
+  drawProperties(data.metrics, "metrics");
+  currentY += 5;
+
+  chart.append("line")
+    .attr("x1", MARGINS.left + currentColumn * columnWidth)
+    .attr("y1", currentY)
+    .attr("x2", MARGINS.left + (currentColumn + 1) * columnWidth)
+    .attr("y2", currentY)
+    .attr("stroke", "black")
+    .attr("stroke-width", 2);
+
+  columnHeights[currentColumn] = currentY;
+
+  const yRule2 = currentY;
+  chart.append("g").attr("id", "rule2");
+
+  currentY = yRule2 + MAIN_RULE_HEIGHT;
+  columnHeights[currentColumn] = currentY;
+  drawProperties(data.analysis, "analysis");
+
+  const totalHeight = Math.max(...columnHeights) + MARGINS.top;
+  const totalWidth = currentColumn * columnWidth + maxWidth + 2 * MARGINS.left + PADDING;
+
+  chart.append("rect")
+    .attr("id", "border")
+    .attr("x", MARGINS.left)
+    .attr("y", MARGINS.top - 10)
+    .attr("width", totalWidth - MARGINS.left)
+    .attr("height", totalHeight + 10)
+    .style("stroke", "black")
+    .style("fill", "none")
+    .style("stroke-width", "3pt");
+
+  for (let i = 1; i <= currentColumn; i++) {
+    const xLine = MARGINS.left + i * columnWidth;
+    chart.append("line")
+      .attr("x1", xLine)
+      .attr("y1", MARGINS.top - 10)
+      .attr("x2", xLine)
+      .attr("y2", totalHeight + 10)
+      .attr("stroke", "black")
+      .attr("stroke-width", 2);
+  }
+
+  chart.attr("width", totalWidth + 5).attr("height", totalHeight + 15);
+
+}
+
+function addTextElement(group, text, fontFamily, fontSize, fontWeight, x, y) {
+  return group
+    .append("text")
+    .text(text)
+    .attr("x", x)
+    .attr("y", y)
+    .attr("font-family", fontFamily)
+    .attr("font-size", fontSize)
+    .attr("font-weight", fontWeight);
 }
 
 
@@ -430,33 +702,31 @@ function updateProperties(data, id) {
     .data(data, (d) => d)
     .join(
       function (enter) {
-        // Indentation
-        let property = enter
-          .append("g")
-          .attr("id", function (d) {
-            return d.name;
-          })
-          .attr("transform", function (d, i) {
-            return "translate(0," + i * PROPERTY_HEIGHT + ")";
-          })
-          .attr("class", function (d) {
-            return d.threshold || "";
-          })
-          .each(function(d) {
-            d3.select(this)
-              .append("rect")
-              .attr("width", maxWidth)
-              .attr("height", PROPERTY_HEIGHT)
-              .attr("x", 0)
-              .attr("y", 0)
-              .attr("fill", function () {
-                if (d.threshold === "low") return "#FF595E";
-                if (d.threshold === "medium") return "#FFCA3A";
-                if (d.threshold === "high") return "#8AC926";
-                return "white";
-              })
-              .lower(); 
-          });
+       // Indentation
+let property = enter
+.append("g")
+.attr("id", function (d) {
+  return d.name;
+})
+.attr("transform", function (d, i) {
+  return "translate(0," + i * PROPERTY_HEIGHT + ")";
+})
+.attr("class", function (d) {
+  return d.threshold || "";
+})
+.each(function (d) {
+  d3.select(this)
+    .append("rect")
+    .attr("width", maxWidth)
+    .attr("height", PROPERTY_HEIGHT)
+    .attr("x", 0)
+    .attr("y", 0)
+    .attr("fill", function (d) {
+      return getColorByThreshold(d.threshold);
+    })
+    .lower();
+});
+
 
         property
           .append("rect")
@@ -855,7 +1125,6 @@ function calculateMaxIndentationWidth(data) {
   );
 }
 
-
 function filterData(data) {
   metrics = data.metrics;
   analysis = data.analysis;
@@ -1016,26 +1285,39 @@ function drawSecondaryRule(propertyName) {
 // };
 
 // Drag and Drop Functionality
-document.addEventListener("DOMContentLoaded", function() {
-  const dropZone = document.getElementById('dropZone');
-  const inputZip = document.getElementById('inputZip');
+document.addEventListener("DOMContentLoaded", function () {
+  const dropZone = document.getElementById("dropZone");
+  const inputZip = document.getElementById("inputZip");
 
-  dropZone.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      dropZone.classList.add('bg-light');
+  dropZone.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    dropZone.classList.add("bg-light");
   });
 
-  dropZone.addEventListener('dragleave', (e) => {
-      e.preventDefault();
-      dropZone.classList.remove('bg-light');
+  dropZone.addEventListener("dragleave", (e) => {
+    e.preventDefault();
+    dropZone.classList.remove("bg-light");
   });
 
-  dropZone.addEventListener('drop', (e) => {
-      e.preventDefault();
-      dropZone.classList.remove('bg-light');
-      const files = e.dataTransfer.files;
-      if (files.length) {
-          inputZip.files = files;  
-      }
+  dropZone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    dropZone.classList.remove("bg-light");
+    const files = e.dataTransfer.files;
+    if (files.length) {
+      inputZip.files = files;
+    }
   });
 });
+
+function getColorByThreshold(threshold) {
+  switch (threshold) {
+    case "low":
+      return "#FF595E";
+    case "medium":
+      return "#FFCA3A";
+    case "high":
+      return "#8AC926";
+    default:
+      return "white";
+  }
+}

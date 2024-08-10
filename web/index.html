@@ -228,8 +228,43 @@
                                     <!-- End of FM Fact Label chart-->
                                     {% endif %}
                                     
+                                    <!-- Landscape Chart -->
+                                    <div class="col-12">
+                                        <div class="card shadow mb-4">
+                                            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                                <h6 class="m-0 font-weight-bold text-primary">FM Fact Label (Landscape)</h6>
+                                                <div class="dropdown no-arrow">
+                                                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLinkLandscape"
+                                                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                                                        aria-labelledby="dropdownMenuLinkLandscape">
+                                                        <div class="dropdown-header">Save as...</div>
+                                                        <a class="dropdown-item" id="saveSVGLandscape" href="#">SVG</a>
+                                                        <a class="dropdown-item" id="savePNGLandscape" href="#">PNG</a>
+                                                        <a class="dropdown-item" id="savePDFLandscape" href="#">PDF</a> 
+                                                        <div class="dropdown-divider"></div>
+                                                        <div class="dropdown-header">Export to...</div>
+                                                        <a class="dropdown-item" id="saveJSONLandscape" href="#">JSON</a>
+                                                        <a class="dropdown-item" id="saveTXTLandscape" href="#">Plain text</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Card Body -->
+                                            <div class="card-body">
+                                                <svg class="chart" id="FMFactLabelChartLandscape">
+                                                    <!-- SVG content -->
+                                                </svg>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <!-- End of Landscape Chart -->
                                 </div>
                             </div>
+
+                            
                             
 
                             <!-- ZIP upload tab -->
@@ -362,6 +397,7 @@
             var fmFactsJSON = '{{ data.fm_facts | tojson | safe }}';
             var fmData = JSON.parse(fmFactsJSON);
             drawFMFactLabel(fmData, "#FMFactLabelChart");
+            drawFMFactLabelLandscape(fmData, "#FMFactLabelChartLandscape");
         </script>
         {% endif %}
 
