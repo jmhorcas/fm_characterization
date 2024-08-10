@@ -429,7 +429,7 @@ function drawFMFactLabelLandscape(data, chartId) {
       .attr("transform", `translate(${xTitle - PADDING}, ${currentY - referenceOffset})`);
 
     referenceGroup.append("a")
-      .attr("id", "hrefIcon")
+      .attr("id", "hrefIconLandscape")
       .attr("href", get_property(data, "Reference").value)
       .append("text")
       .attr("text-anchor", "end")
@@ -456,7 +456,7 @@ function drawFMFactLabelLandscape(data, chartId) {
   columnHeights[currentColumn] = currentY;
 
   function drawProperties(properties, groupId) {
-    const group = chart.append("g").attr("id", groupId);
+    const group = chart.append("g").attr("id", groupId + "Landscape");
 
     properties.forEach((property) => {
       if (currentColumn === 0 && currentRow >= METRICS_IN_FIRST_COLUMN) {
@@ -472,7 +472,7 @@ function drawFMFactLabelLandscape(data, chartId) {
       const xMetric = MARGINS.left + currentColumn * columnWidth + PADDING - 10;
       const propertyGroup = group.append("g")
         .attr("transform", `translate(${xMetric}, ${currentY})`)
-        .attr("id", property.name)
+        .attr("id", property.name + "Landscape")
         .attr("class", property.threshold || "");
 
       propertyGroup.append("rect")
@@ -482,14 +482,14 @@ function drawFMFactLabelLandscape(data, chartId) {
         .lower();
 
       propertyGroup.append("rect")
-        .attr("id", "indentation")
+        .attr("id", "indentationLandscape")
         .attr("x", 0)
         .attr("width", get_indentation(property))
         .attr("height", PROPERTY_HEIGHT)
         .attr("fill", "white");
 
       propertyGroup.append("text")
-        .attr("id", "propertyName")
+        .attr("id", "propertyNameLandscape")
         .attr("x", get_indentation(property) + PROPERTY_INDENTATION)
         .attr("y", PROPERTY_HEIGHT / 2)
         .attr("dy", ".35em")
@@ -499,7 +499,7 @@ function drawFMFactLabelLandscape(data, chartId) {
         .text(property.name);
 
       propertyGroup.append("text")
-        .attr("id", "value")
+        .attr("id", "valueLandscape")
         .attr("text-anchor", "end")
         .attr("x", maxIndentationWidth + maxNameWidth + PROPERTIES_VALUES_SPACE + maxValueWidth)
         .attr("y", PROPERTY_HEIGHT / 2)
@@ -510,7 +510,7 @@ function drawFMFactLabelLandscape(data, chartId) {
         .text(get_value(property));
 
       propertyGroup.append("text")
-        .attr("id", "ratio")
+        .attr("id", "ratioLandscape")
         .attr("text-anchor", "end")
         .attr("x", maxWidth)
         .attr("y", PROPERTY_HEIGHT / 2)
@@ -540,7 +540,7 @@ function drawFMFactLabelLandscape(data, chartId) {
   columnHeights[currentColumn] = currentY;
 
   const yRule2 = currentY;
-  chart.append("g").attr("id", "rule2");
+  chart.append("g").attr("id", "rule2Landscape");
 
   currentY = yRule2 + MAIN_RULE_HEIGHT;
   columnHeights[currentColumn] = currentY;
@@ -550,7 +550,7 @@ function drawFMFactLabelLandscape(data, chartId) {
   const totalWidth = currentColumn * columnWidth + maxWidth + 2 * MARGINS.left + PADDING;
 
   chart.append("rect")
-    .attr("id", "border")
+    .attr("id", "borderLandscape")
     .attr("x", MARGINS.left)
     .attr("y", MARGINS.top - 10)
     .attr("width", totalWidth - MARGINS.left)
@@ -1155,7 +1155,7 @@ function redrawLabel(data) {
   updateProperties(data.analysis, "analysis");
   height += MARGING_BETWEEN_PROPERTIES + PROPERTY_HEIGHT * data.analysis.length;
   drawBorders(maxWidth, height);
-  d3.select("chart").attr("height", height);
+  d3.select("#FMFactLabelChart").attr("height", height);
 }
 /**
  * Set-up the collapse zero values option.
