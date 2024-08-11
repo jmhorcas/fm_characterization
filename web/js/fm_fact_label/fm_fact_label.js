@@ -486,7 +486,7 @@ function drawFMFactLabelLandscape(data, chartId) {
         .attr("x", 0)
         .attr("width", get_indentation(property))
         .attr("height", PROPERTY_HEIGHT)
-        .attr("fill", "white");
+        .attr("fill", "none");
 
       propertyGroup.append("text")
         .attr("id", "propertyNameLandscape")
@@ -740,7 +740,7 @@ let property = enter
             return get_indentation(d);
           })
           .attr("height", PROPERTY_HEIGHT)
-          .attr("fill", "white");
+          .attr("fill", "none");
 
         let collapseIcon = property
           .append("text")
@@ -1318,6 +1318,6 @@ function getColorByThreshold(threshold) {
     case "high":
       return "#8AC926";
     default:
-      return "white";
+      return "none";
   }
 }
