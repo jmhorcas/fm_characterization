@@ -1,95 +1,68 @@
 // import { get_property } from './fm_fact_label.js';
 
-/**
- * Set-up the save PNG button.
- */
-d3.select('#saveSVG').on('click', function(event) {
-    event.preventDefault();
-    const svgElement = d3.select("#FMFactLabelChart").node();
-    handleSave(serializeToSVG, ".svg", svgElement);
-});
+const setupSaveButton = (buttonId, chartSelector, serializeFunction, extension) => {
+    d3.select(buttonId).on('click', async function(event) {
+        event.preventDefault();
+        var chart = d3.select(chartSelector);
+        chart.selectAll("#collapseIcon").attr("visibility", "hidden");
+        const svgElement = chart.node();
+        const originalHeight = adjustSVGSize(svgElement);
 
-d3.select('#saveSVGLandscape').on('click', function(event) {
-    event.preventDefault();
-    const svgElement = d3.select("#FMFactLabelChartLandscape").node();
-    handleSave(serializeToSVG, ".svg", svgElement);
-});
+        try {
+            const blob = await serializeFunction(svgElement);
+            const data = typeof fmData !== 'undefined' ? fmData : fmDataSetData;
+            const name = get_property(data, 'Name').value;
+            saveAs(blob, name + extension);
+        } catch (error) {
+            console.error(`An error occurred while saving the ${extension.toUpperCase()}:`, error);
+        } finally {
+            restoreSVGSize(svgElement, originalHeight);
+            newData = filterData(ALL_DATA);
+            redrawLabel(newData);
+        }
+    });
+};
 
-/**
- * Set-up the save SVG button.
- */
-d3.select('#savePNG').on('click', function(event) {
-    event.preventDefault();
-    const svgElement = d3.select("#FMFactLabelChart").node();
-    handleSave(rasterize, ".png", svgElement);
-});
+setupSaveButton('#saveSVG', '#FMFactLabelChart', serializeToSVG, '.svg');
+setupSaveButton('#saveSVGLandscape', '#FMFactLabelChartLandscape', serializeToSVG, '.svg');
+setupSaveButton('#savePNG', '#FMFactLabelChart', rasterize, '.png');
+setupSaveButton('#savePNGLandscape', '#FMFactLabelChartLandscape', rasterize, '.png');
 
-d3.select('#savePNGLandscape').on('click', function(event) {
-    event.preventDefault();
-    const svgElement = d3.select("#FMFactLabelChartLandscape").node();
-    handleSave(rasterize, ".png", svgElement);
-});
+const setupPDFSaveButton = (buttonId, chartSelector) => {
+    d3.select(buttonId).on('click', async function(event) {
+        event.preventDefault();
+        var chart = d3.select(chartSelector);
+        chart.selectAll("#collapseIcon").attr("visibility", "hidden");
+        const svgElement = chart.node();
+        const originalHeight = adjustSVGSize(svgElement);
 
-/**
- * Set-up the save PDF button.
- */
-d3.select('#savePDF').on('click', async function(event) {
-    event.preventDefault();
-    const svgElement = d3.select("#FMFactLabelChart").node();
-    const originalHeight = adjustSVGSize(svgElement);
-    
-    try {
-        const bbox = svgElement.getBBox();
-        const blob = await rasterize(svgElement);
-        const imgData = await readBlobAsDataURL(blob);
-        const data = typeof fmData !== 'undefined' ? fmData : fmDataSetData;
-        const name = get_property(data, 'Name').value;
+        try {
+            const bbox = svgElement.getBBox();
+            const blob = await rasterize(svgElement);
+            const imgData = await readBlobAsDataURL(blob);
+            const data = typeof fmData !== 'undefined' ? fmData : fmDataSetData;
+            const name = get_property(data, 'Name').value;
 
-        const pdf = new jspdf.jsPDF({
-            orientation: (bbox.width > bbox.height) ? 'landscape' : 'portrait',
-            unit: 'pt',
-            format: [bbox.width, bbox.height]
-        });
+            const pdf = new jspdf.jsPDF({
+                orientation: (bbox.width > bbox.height) ? 'landscape' : 'portrait',
+                unit: 'pt',
+                format: [bbox.width, bbox.height]
+            });
 
-        pdf.addImage(imgData, 'PNG', 0, 0, bbox.width, bbox.height);
-        pdf.save(name + ".pdf");
-    } catch (error) {
-        console.error("An error occurred while saving the PDF:", error);
-    } finally {
-        restoreSVGSize(svgElement, originalHeight);
-        newData = filterData(ALL_DATA);
-        redrawLabel(newData);
-    }
-});
+            pdf.addImage(imgData, 'PNG', 0, 0, bbox.width, bbox.height);
+            pdf.save(name + ".pdf");
+        } catch (error) {
+            console.error("An error occurred while saving the PDF:", error);
+        } finally {
+            restoreSVGSize(svgElement, originalHeight);
+            newData = filterData(ALL_DATA);
+            redrawLabel(newData);
+        }
+    });
+};
 
-d3.select('#savePDFLandscape').on('click', async function(event) {
-    event.preventDefault();
-    const svgElement = d3.select("#FMFactLabelChartLandscape").node();
-    const originalHeight = adjustSVGSize(svgElement);
-    
-    try {
-        const bbox = svgElement.getBBox();
-        const blob = await rasterize(svgElement);
-        const imgData = await readBlobAsDataURL(blob);
-        const data = typeof fmData !== 'undefined' ? fmData : fmDataSetData;
-        const name = get_property(data, 'Name').value;
-
-        const pdf = new jspdf.jsPDF({
-            orientation: (bbox.width > bbox.height) ? 'landscape' : 'portrait',
-            unit: 'pt',
-            format: [bbox.width, bbox.height]
-        });
-
-        pdf.addImage(imgData, 'PNG', 0, 0, bbox.width, bbox.height);
-        pdf.save(name + ".pdf");
-    } catch (error) {
-        console.error("An error occurred while saving the PDF:", error);
-    } finally {
-        restoreSVGSize(svgElement, originalHeight);
-        newData = filterData(ALL_DATA);
-        redrawLabel(newData);
-    }
-});
+setupPDFSaveButton('#savePDF', '#FMFactLabelChart');
+setupPDFSaveButton('#savePDFLandscape', '#FMFactLabelChartLandscape');
 
 /**
  * Set-up the save TXT button.
