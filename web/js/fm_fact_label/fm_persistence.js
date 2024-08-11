@@ -3,26 +3,74 @@
 /**
  * Set-up the save PNG button.
  */
-d3.select('#savePNG').on('click', () => handleSave(rasterize, ".png", "image/png"));
+d3.select('#saveSVG').on('click', function(event) {
+    event.preventDefault();
+    const svgElement = d3.select("#FMFactLabelChart").node();
+    handleSave(serializeToSVG, ".svg", svgElement);
+});
+
+d3.select('#saveSVGLandscape').on('click', function(event) {
+    event.preventDefault();
+    const svgElement = d3.select("#FMFactLabelChartLandscape").node();
+    handleSave(serializeToSVG, ".svg", svgElement);
+});
 
 /**
  * Set-up the save SVG button.
  */
-d3.select('#saveSVG').on('click', () => handleSave(serializeToSVG, ".svg", "image/svg+xml"));
+d3.select('#savePNG').on('click', function(event) {
+    event.preventDefault();
+    const svgElement = d3.select("#FMFactLabelChart").node();
+    handleSave(rasterize, ".png", svgElement);
+});
+
+d3.select('#savePNGLandscape').on('click', function(event) {
+    event.preventDefault();
+    const svgElement = d3.select("#FMFactLabelChartLandscape").node();
+    handleSave(rasterize, ".png", svgElement);
+});
 
 /**
  * Set-up the save PDF button.
  */
-d3.select('#savePDF').on('click', async () => {
-    const chart = d3.select(".chart");
-    const svgElement = chart.node();
+d3.select('#savePDF').on('click', async function(event) {
+    event.preventDefault();
+    const svgElement = d3.select("#FMFactLabelChart").node();
     const originalHeight = adjustSVGSize(svgElement);
-
+    
     try {
         const bbox = svgElement.getBBox();
         const blob = await rasterize(svgElement);
         const imgData = await readBlobAsDataURL(blob);
+        const data = typeof fmData !== 'undefined' ? fmData : fmDataSetData;
+        const name = get_property(data, 'Name').value;
 
+        const pdf = new jspdf.jsPDF({
+            orientation: (bbox.width > bbox.height) ? 'landscape' : 'portrait',
+            unit: 'pt',
+            format: [bbox.width, bbox.height]
+        });
+
+        pdf.addImage(imgData, 'PNG', 0, 0, bbox.width, bbox.height);
+        pdf.save(name + ".pdf");
+    } catch (error) {
+        console.error("An error occurred while saving the PDF:", error);
+    } finally {
+        restoreSVGSize(svgElement, originalHeight);
+        newData = filterData(ALL_DATA);
+        redrawLabel(newData);
+    }
+});
+
+d3.select('#savePDFLandscape').on('click', async function(event) {
+    event.preventDefault();
+    const svgElement = d3.select("#FMFactLabelChartLandscape").node();
+    const originalHeight = adjustSVGSize(svgElement);
+    
+    try {
+        const bbox = svgElement.getBBox();
+        const blob = await rasterize(svgElement);
+        const imgData = await readBlobAsDataURL(blob);
         const data = typeof fmData !== 'undefined' ? fmData : fmDataSetData;
         const name = get_property(data, 'Name').value;
 
@@ -159,9 +207,7 @@ const readBlobAsDataURL = (blob) => {
     });
 };
 
-const handleSave = async (serializeFunction, extension) => {
-    const chart = d3.select(".chart");
-    const svgElement = chart.node();
+const handleSave = async (serializeFunction, extension, svgElement) => {
     const originalHeight = adjustSVGSize(svgElement);
 
     try {
