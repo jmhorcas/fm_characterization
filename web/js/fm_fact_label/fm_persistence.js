@@ -25,8 +25,13 @@ const setupSaveButton = (buttonId, chartSelector, serializeFunction, extension) 
 
 setupSaveButton('#saveSVG', '#FMFactLabelChart', serializeToSVG, '.svg');
 setupSaveButton('#saveSVGLandscape', '#FMFactLabelChartLandscape', serializeToSVG, '.svg');
+setupSaveButton('#saveSVGDataSet', '#FMFactLabelDataSetChart', serializeToSVG, '.svg');
+setupSaveButton('#saveSVGDataSetLandscape', '#FMFactLabelDataSetChartLandscape', serializeToSVG, '.svg');
+
 setupSaveButton('#savePNG', '#FMFactLabelChart', rasterize, '.png');
 setupSaveButton('#savePNGLandscape', '#FMFactLabelChartLandscape', rasterize, '.png');
+setupSaveButton('#savePNGDataSet', '#FMFactLabelDataSetChart', rasterize, '.png');
+setupSaveButton('#savePNGDataSetLandscape', '#FMFactLabelDataSetChartLandscape', rasterize, '.png');
 
 const setupPDFSaveButton = (buttonId, chartSelector) => {
     d3.select(buttonId).on('click', async function(event) {
@@ -63,6 +68,8 @@ const setupPDFSaveButton = (buttonId, chartSelector) => {
 
 setupPDFSaveButton('#savePDF', '#FMFactLabelChart');
 setupPDFSaveButton('#savePDFLandscape', '#FMFactLabelChartLandscape');
+setupPDFSaveButton('#savePDFDataSet', '#FMFactLabelDataSetChart');
+setupPDFSaveButton('#savePDFDataSetLandscape', '#FMFactLabelDataSetChartLandscape');
 
 /**
  * Set-up the save TXT button.
