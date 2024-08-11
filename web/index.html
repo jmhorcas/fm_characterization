@@ -173,7 +173,7 @@
                                             </div>
                                         </div>
                                          <!-- Landscape Chart -->
-                                         <div class="card shadow mb-4">
+                                         <div class="card shadow mb-4 landscape-hidden" id="landscape-chart">
                                             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                                                 <h6 class="m-0 font-weight-bold text-primary">FM Fact Label (Landscape)</h6>
                                                 <div class="dropdown no-arrow">
@@ -207,24 +207,27 @@
                                             <!-- Card Header - Dropdown -->
                                             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                                                 <h6 class="m-0 font-weight-bold text-primary">FM Fact Label</h6>
-                                                <div class="dropdown no-arrow">
-                                                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                                                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                        <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                                                    </a>
-                                                    <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                                                        aria-labelledby="dropdownMenuLink">
-                                                        <div class="dropdown-header">Save as...</div>
-                                                        <a class="dropdown-item" id="saveSVG" href="#">SVG</a>
-                                                        <a class="dropdown-item" id="savePNG" href="#">PNG</a>
-                                                        <a class="dropdown-item" id="savePDF" href="#">PDF</a>
-                                                        <div class="dropdown-divider"></div>
-                                                        <div class="dropdown-header">Export to...</div>
-                                                        <a class="dropdown-item" id="saveJSON" href="#">JSON</a>
-                                                        <a class="dropdown-item" id="saveTXT" href="#">Plain text</a>
+                                                <div class="ml-auto d-flex align-items-center">
+                                                    <i id="toggle-chart" class="fas fa-list-alt" title="Show landscape chart" aria-hidden="true"></i>
+                                                    <span class="sr-only">Show/hide landscape chart</span>
+                                                    <div class="dropdown no-arrow">
+                                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400" aria-hidden="true"></i>
+                                                        </a>
+                                                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+                                                            <div class="dropdown-header">Save as...</div>
+                                                            <a class="dropdown-item" id="saveSVG" href="#">SVG</a>
+                                                            <a class="dropdown-item" id="savePNG" href="#">PNG</a>
+                                                            <a class="dropdown-item" id="savePDF" href="#">PDF</a>
+                                                            <div class="dropdown-divider"></div>
+                                                            <div class="dropdown-header">Export to...</div>
+                                                            <a class="dropdown-item" id="saveJSON" href="#">JSON</a>
+                                                            <a class="dropdown-item" id="saveTXT" href="#">Plain text</a>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
+                                            
                                             <!-- Card Body -->
                                             <div class="card-body">
                                                 <h6 class="h6">Label configuration:</h6>
@@ -275,7 +278,7 @@
                             <!-- ZIP upload tab -->
                             <div class="tab-pane fade {% if data.active_tab == 'upload-zip-tab' %}show active{% endif %}" id="upload-zip" role="tabpanel" aria-labelledby="upload-zip-tab">
                                 <div class="row mt-3">
-                                    <div class="col-xl-6 col-lg-5">
+                                    <div class="col-xl-8 col-lg-5">
                                         <div class="card shadow mb-4">
                                             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                                                 <h6 class="m-0 font-weight-bold text-primary">Upload ZIP of feature models</h6>
@@ -303,30 +306,58 @@
                                                 </form>
                                             </div>
                                         </div>
-                                    </div>
-                                    {% if data and data.fm_dataset_facts %}
-                                    <!-- Data set chart -->
-                                    <div class="col-xl-6 col-lg-7">
-                                        <div class="card shadow mb-4">
-                                            <!-- Card Header - Dropdown -->
-                                            <div
-                                                class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                                <h6 class="m-0 font-weight-bold text-primary">Fm Fact Label for Dataset</h6>
+
+                                         <!-- Landscape Chart -->
+                                         <div class="card shadow mb-4 landscape-hidden" id="landscape-dataset-chart">
+                                            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                                <h6 class="m-0 font-weight-bold text-primary">FM Fact Label for Dataset (Landscape)</h6>
                                                 <div class="dropdown no-arrow">
-                                                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                                                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLinkLandscape"
                                                         data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                         <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
                                                     </a>
                                                     <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                                                        aria-labelledby="dropdownMenuLink">
+                                                        aria-labelledby="dropdownMenuLinkLandscape">
                                                         <div class="dropdown-header">Save as...</div>
-                                                        <a class="dropdown-item" id="saveSVG" href="#">SVG</a>
-                                                        <a class="dropdown-item" id="savePNG" href="#">PNG</a>
-                                                        <a class="dropdown-item" id="savePDF" href="#">PDF</a> 
-                                                        <div class="dropdown-divider"></div>
-                                                        <div class="dropdown-header">Export to...</div>
-                                                        <a class="dropdown-item" id="saveJSON" href="#">JSON</a>
-                                                        <a class="dropdown-item" id="saveTXT" href="#">Plain text</a>
+                                                        <a class="dropdown-item" id="saveSVGLandscape" href="#">SVG</a>
+                                                        <a class="dropdown-item" id="savePNGLandscape" href="#">PNG</a>
+                                                        <a class="dropdown-item" id="savePDFLandscape" href="#">PDF</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Card Body -->
+                                            <div class="card-body">
+                                                <svg class="chart" id="FMFactLabelDataSetChartLandscape">
+                                                    <!-- SVG content -->
+                                                </svg>
+                                            </div>
+                            
+                                        </div>
+                                    </div>
+                                    {% if data and data.fm_dataset_facts %}
+                                    <!-- Data set chart -->
+                                    <div class="col-xl-4 col-lg-7">
+                                        <div class="card shadow mb-4">
+                                            <!-- Card Header - Dropdown -->
+                                            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                                <h6 class="m-0 font-weight-bold text-primary">FM Fact Label for DataSet</h6>
+                                                <div class="ml-auto d-flex align-items-center">
+                                                    <i id="toggle-chart-data-set" class="fas fa-list-alt" title="Show landscape chart" aria-hidden="true"></i>
+                                                    <span class="sr-only">Show/hide landscape chart</span>
+                                                    <div class="dropdown no-arrow">
+                                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400" aria-hidden="true"></i>
+                                                        </a>
+                                                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+                                                            <div class="dropdown-header">Save as...</div>
+                                                            <a class="dropdown-item" id="saveSVGDataSet" href="#">SVG</a>
+                                                            <a class="dropdown-item" id="savePNGDataSet" href="#">PNG</a>
+                                                            <a class="dropdown-item" id="savePDFDataSet" href="#">PDF</a>
+                                                            <div class="dropdown-divider"></div>
+                                                            <div class="dropdown-header">Export to...</div>
+                                                            <a class="dropdown-item" id="saveJSON" href="#">JSON</a>
+                                                            <a class="dropdown-item" id="saveTXT" href="#">Plain text</a>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -413,6 +444,7 @@
             var fmDatasetCharacterizationJSONStr = `{{ data.fm_dataset_characterization_json_str | safe }}`;
             var fmDataSetData = JSON.parse(fmDatasetFactsJSON);
             drawFMFactLabel(fmDataSetData, "#FMFactLabelDataSetChart");
+            drawFMFactLabelLandscape(fmDataSetData, "#FMFactLabelDataSetChartLandscape");
         </script>
         {% endif %}
 
@@ -431,6 +463,42 @@
         
         <!-- FM fact label persistence script -->
         <script src="js/fm_fact_label/fm_persistence.js"></script>
+
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $('#toggle-chart').on('click', function() {
+                    var chart = $('#landscape-chart');
+                    if (chart.hasClass('landscape-hidden')) {
+                        chart.removeClass('landscape-hidden').addClass('landscape-visible');
+                        $(this).attr('title', 'Hide landscape chart');
+                        $('html, body').animate({
+                            scrollTop: chart.offset().top
+                        }, 'slow');
+                    } else {
+                        chart.removeClass('landscape-visible').addClass('landscape-hidden');
+                        $(this).attr('title', 'Show landscape chart');
+                    }
+                });
+            });
+        </script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $('#toggle-chart-data-set').on('click', function() {
+                    var chart = $('#landscape-dataset-chart');
+                    if (chart.hasClass('landscape-hidden')) {
+                        chart.removeClass('landscape-hidden').addClass('landscape-visible');
+                        $(this).attr('title', 'Hide landscape chart');
+                        $('html, body').animate({
+                            scrollTop: chart.offset().top
+                        }, 'slow');
+                    } else {
+                        chart.removeClass('landscape-visible').addClass('landscape-hidden');
+                        $(this).attr('title', 'Show landscape chart');
+                    }
+                });
+            });
+        </script>      
+
 
         
     <!-- Modal -->

@@ -1156,6 +1156,7 @@ function redrawLabel(data) {
   height += MARGING_BETWEEN_PROPERTIES + PROPERTY_HEIGHT * data.analysis.length;
   drawBorders(maxWidth, height);
   d3.select("#FMFactLabelChart").attr("height", height);
+  d3.select("#FMFactLabelDataSetChart").attr("height", height);
 }
 /**
  * Set-up the collapse zero values option.

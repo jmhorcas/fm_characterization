@@ -11288,3 +11288,42 @@ body.sidebar-toggled footer.sticky-footer {
 }
 
 
+.landscape-hidden {
+  visibility: hidden;
+  position: absolute; 
+  top: -9999px;
+  left: -9999px;
+}
+
+
+.landscape-visible {
+  visibility: visible;
+  position: relative;
+  top: 0;
+  left: 0;
+}
+
+#toggle-chart {
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+#toggle-chart-data-set {
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.dropdown-toggle {
+  display: flex;
+  align-items: center;
+}
+
+#toggle-chart:hover {
+  color: #007bff; 
+}
+
+#toggle-chart-data-set:hover {
+  color: #007bff; 
+}
+
+

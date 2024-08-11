@@ -180,25 +180,3 @@ const readBlobAsDataURL = (blob) => {
     });
 };
 
-const handleSave = async (serializeFunction, extension, svgElement) => {
-    const originalHeight = adjustSVGSize(svgElement);
-
-    try {
-        const blob = await serializeFunction(svgElement);
-
-        const data = typeof fmData !== 'undefined' ? fmData : fmDataSetData;
-        const name = get_property(data, 'Name').value;
-
-        if (typeof extension !== 'string') {
-            throw new TypeError('Extension must be a string');
-        }
-
-        saveAs(blob, name + extension);
-    } catch (error) {
-        console.error(`An error occurred while saving the ${extension.toUpperCase()}:`, error);
-    } finally {
-        restoreSVGSize(svgElement, originalHeight);
-        newData = filterData(ALL_DATA);
-        redrawLabel(newData);
-    }
-};
