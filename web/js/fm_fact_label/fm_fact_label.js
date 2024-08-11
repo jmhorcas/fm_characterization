@@ -330,8 +330,8 @@ function drawFMFactLabelLandscape(data, chartId) {
   const PADDING = 15;
   const PROPERTIES_VALUES_SPACE = 10;
   const PROPERTIES_RATIO_SPACE = 10;
-  const METRICS_IN_FIRST_COLUMN = 10;
-  const METRICS_PER_COLUMN = 19;
+  let metricsInFirstColumn = 10;
+  let metricsPerColumn = 19;
 
   initializeChartStyles(chart, IMPORTS);
 
@@ -404,26 +404,39 @@ function drawFMFactLabelLandscape(data, chartId) {
     { label: "Domain", value: get_property(data, "Domain").value },
   ];
 
+  let emptyFields = 0; 
+
   fields.forEach((field) => {
-    const group = chart.append("g").attr("transform", `translate(${xTitle}, ${currentY})`);
-    const labelWidth = addTextElement(group, `${field.label}:`, DESCRIPTION_FONT_FAMILY, DESCRIPTION_FONT_SIZE, "bold", 0, 0)
-      .node()
-      .getBBox()
-      .width;
-    
-    const valueX = labelWidth + 5;
-    const valueText = group.append("text")
-      .attr("x", valueX)
-      .attr("font-family", DESCRIPTION_FONT_FAMILY)
-      .attr("font-size", DESCRIPTION_FONT_SIZE)
-      .text(field.value)
-      .call(wrap, columnWidth - valueX - PADDING);
+    console.log(field.value)
+    if (field.value !== null && field.value !== "") {
+      const group = chart.append("g").attr("transform", `translate(${xTitle}, ${currentY})`);
+      const labelWidth = addTextElement(group, `${field.label}:`, DESCRIPTION_FONT_FAMILY, DESCRIPTION_FONT_SIZE, "bold", 0, 0)
+        .node()
+        .getBBox()
+        .width;
 
-    currentY += valueText.node().getBBox().height + 5;
-    columnHeights[currentColumn] = currentY;
-  });
+      const valueX = labelWidth + 5;
+      const valueText = group.append("text")
+        .attr("x", valueX)
+        .attr("font-family", DESCRIPTION_FONT_FAMILY)
+        .attr("font-size", DESCRIPTION_FONT_SIZE)
+        .text(field.value)
+        .call(wrap, columnWidth - valueX - PADDING);
 
-  if (get_property(data, "Reference").value !== "") {
+      currentY += valueText.node().getBBox().height + 5;
+      columnHeights[currentColumn] = currentY;
+    } else {
+      emptyFields++; 
+    }
+  }); 
+  
+  if(emptyFields > 1) {
+    metricsInFirstColumn += emptyFields-1;
+    metricsPerColumn -= (emptyFields-3)
+  }
+
+
+  if (get_property(data, "Reference").value != null && get_property(data, "Reference").value !== "") {
     const referenceOffset = PROPERTY_HEIGHT / 2 + PADDING;
     const referenceGroup = chart.append("g")
       .attr("transform", `translate(${xTitle - PADDING}, ${currentY - referenceOffset})`);
@@ -443,6 +456,7 @@ function drawFMFactLabelLandscape(data, chartId) {
 
     columnHeights[currentColumn] = currentY;
   }
+ 
 
   chart.append("line")
     .attr("x1", xTitle - PADDING)
@@ -459,11 +473,11 @@ function drawFMFactLabelLandscape(data, chartId) {
     const group = chart.append("g").attr("id", groupId + "Landscape");
 
     properties.forEach((property) => {
-      if (currentColumn === 0 && currentRow >= METRICS_IN_FIRST_COLUMN) {
+      if (currentColumn === 0 && currentRow >= metricsInFirstColumn) {
         currentColumn++;
         currentRow = 0;
         currentY = MARGINS.top + PADDING - 10;
-      } else if (currentRow >= METRICS_PER_COLUMN) {
+      } else if (currentRow >= metricsPerColumn) {
         currentColumn++;
         currentRow = 0;
         currentY = MARGINS.top + PADDING - 10;
