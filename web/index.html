@@ -165,9 +165,9 @@
                                                             <input type="file" class="form-control-file" id="inputZipThreshold" name="inputZipThreshold" accept=".zip">
                                                             <small>Optional: Upload a ZIP file containing UVL files to calculate thresholds</small>
                                                     
-                                                            {% if data and data.zip_file_error %}
+                                                            {% if data and data.zip_threshold_error %}
                                                             <div class="alert alert-danger" role="alert">
-                                                                {{ data.zip_file_error }}
+                                                                {{ data.zip_threshold_error }}
                                                             </div>
                                                             {% endif %}
                                                         </div>

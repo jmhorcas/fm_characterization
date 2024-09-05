@@ -121,39 +121,45 @@ def index():
             characterization.metadata.domains = domain
             
             if zip_file and zip_file.filename.endswith('.zip'):
-                with tempfile.NamedTemporaryFile(delete=False, suffix='.zip') as tmp_zip_file:
-                    zip_file.save(tmp_zip_file.name)
-                    extract_dir, extracted_files = extract_zip(tmp_zip_file.name)
-                    
-                    uvl_files = [f for f in extracted_files if f.endswith('.uvl')]
-                    if not uvl_files:
-                        data['zip_file_error'] = 'No valid UVL files found in the ZIP.'
+                extract_dir = None
+                try:
+                    with tempfile.NamedTemporaryFile(delete=False, suffix='.zip') as tmp_zip_file:
+                        zip_file.save(tmp_zip_file.name)
+                        extract_dir, extracted_files = extract_zip(tmp_zip_file.name)
+                        
+                        uvl_files = [f for f in extracted_files if f.endswith('.uvl')]
+                        if not uvl_files:
+                            data['zip_threshold_error'] = 'No valid UVL files found in the Threshold ZIP.'
+                            shutil.rmtree(extract_dir)
+                            return render_template('index.html', data=data)
+                        
+                        metrics_data, analysis_data, dataset_characterization_json = process_files(uvl_files, extract_dir, zip_file.filename)
+                        if dataset_characterization_json:
+                            thresholds = {}
+                            for metric in dataset_characterization_json['metrics']:
+                                name = metric['name']
+                                if name in metrics_data:
+                                    values = metrics_data[name]['values']
+                                if values:
+                                    thresholds[name] = calculate_percentiles(values)
+                            for analysis in dataset_characterization_json['analysis']:
+                                name = analysis['name']
+                                if name in analysis_data:
+                                    values = analysis_data[name]['values']
+                                    clean_values = []
+                                    for v in values:
+                                        if isinstance(v, str) and '≤' in v:
+                                            clean_values.append(float(v.replace('≤', '').strip()))
+                                        elif isinstance(v, (int, float)):
+                                            clean_values.append(v)
+                                    if clean_values:
+                                        thresholds[name] = calculate_percentiles(clean_values)
                         shutil.rmtree(extract_dir)
-                        return render_template('index.html', data=data)
-                    
-                    metrics_data, analysis_data, dataset_characterization_json = process_files(uvl_files, extract_dir, zip_file.filename)
-                    if dataset_characterization_json:
-                        thresholds = {}
-                        for metric in dataset_characterization_json['metrics']:
-                            name = metric['name']
-                            if name in metrics_data:
-                                values = metrics_data[name]['values']
-                            if values:
-                                thresholds[name] = calculate_percentiles(values)
-                        for analysis in dataset_characterization_json['analysis']:
-                            name = analysis['name']
-                            if name in analysis_data:
-                                values = analysis_data[name]['values']
-                                clean_values = []
-                                for v in values:
-                                    if isinstance(v, str) and '≤' in v:
-                                        clean_values.append(float(v.replace('≤', '').strip()))
-                                    elif isinstance(v, (int, float)):
-                                        clean_values.append(v)
-                                if clean_values:
-                                    thresholds[name] = calculate_percentiles(clean_values)
-                    shutil.rmtree(extract_dir)
-
+                finally:
+                    if extract_dir and os.path.exists(extract_dir):
+                        shutil.rmtree(extract_dir)
+                    if os.path.exists(tmp_zip_file.name):
+                        os.remove(tmp_zip_file.name)
 
             #json_characterization = interfaces.to_json(fm_characterization, FM_FACT_JSON_FILE)
             json_characterization = characterization.to_json()
@@ -195,7 +201,10 @@ def index():
             data = None
             print(e)
             raise e
-
+        finally:
+            if os.path.exists(filename) and filename == fm_file.filename:
+                os.remove(filename)
+        
         if os.path.exists(filename) and filename == fm_file.filename:
             os.remove(filename)
 
