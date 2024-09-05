@@ -162,9 +162,14 @@
                                                     <div class="form-group row mt-3">
                                                         <label for="inputZipThreshold" class="col-sm-2 col-form-label">Threshold</label>
                                                         <div class="col-sm">
-                                                            <input type="file" class="form-control-file" id="inputZipThreshold"
-                                                                name="inputZipThreshold" accept=".zip">
+                                                            <input type="file" class="form-control-file" id="inputZipThreshold" name="inputZipThreshold" accept=".zip">
                                                             <small>Optional: Upload a ZIP file containing UVL files to calculate thresholds</small>
+                                                    
+                                                            {% if data and data.zip_file_error %}
+                                                            <div class="alert alert-danger" role="alert">
+                                                                {{ data.zip_file_error }}
+                                                            </div>
+                                                            {% endif %}
                                                         </div>
                                                     </div>
                             

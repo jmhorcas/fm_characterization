@@ -124,7 +124,14 @@ def index():
                 with tempfile.NamedTemporaryFile(delete=False, suffix='.zip') as tmp_zip_file:
                     zip_file.save(tmp_zip_file.name)
                     extract_dir, extracted_files = extract_zip(tmp_zip_file.name)
-                    metrics_data, analysis_data, dataset_characterization_json = process_files(extracted_files, extract_dir, zip_file.filename)
+                    
+                    uvl_files = [f for f in extracted_files if f.endswith('.uvl')]
+                    if not uvl_files:
+                        data['zip_file_error'] = 'No valid UVL files found in the ZIP.'
+                        shutil.rmtree(extract_dir)
+                        return render_template('index.html', data=data)
+                    
+                    metrics_data, analysis_data, dataset_characterization_json = process_files(uvl_files, extract_dir, zip_file.filename)
                     if dataset_characterization_json:
                         thresholds = {}
                         for metric in dataset_characterization_json['metrics']:
@@ -146,6 +153,7 @@ def index():
                                 if clean_values:
                                     thresholds[name] = calculate_percentiles(clean_values)
                     shutil.rmtree(extract_dir)
+
 
             #json_characterization = interfaces.to_json(fm_characterization, FM_FACT_JSON_FILE)
             json_characterization = characterization.to_json()
