@@ -1,5 +1,20 @@
 import 'cypress-file-upload';
 
+
+function fillFormAndSubmit({ name, description, author, year, reference, keywords, domain, fmFile, zipFile }) {
+  if (name) cy.get("#inputName").type(name);
+  if (description) cy.get("#inputDescription").type(description);
+  if (author) cy.get("#inputAuthor").type(author);
+  if (year) cy.get("#inputYear").type(year);
+  if (reference) cy.get("#inputReference").type(reference);
+  if (keywords) cy.get("#inputKeywords").type(keywords);
+  if (domain) cy.get("#inputDomain").type(domain);
+  if (fmFile) cy.get("#inputFM").attachFile(fmFile);
+  if (zipFile) cy.get("#inputZipThreshold").attachFile(zipFile);
+  cy.get("#submitButton").click();
+}
+
+
 function selectPizzasModelAndUploadZip() {
   cy.visit("/");
   cy.get("#inputExample").select("Pizzas");
@@ -8,38 +23,48 @@ function selectPizzasModelAndUploadZip() {
   cy.get("#submitButton").click();
 }
 
-describe("Feature Model Analysis", () => {
 
+function uploadDatasetAndProceed() {
+  cy.visit("/");
+  cy.get("#upload-zip-tab").click();
+  cy.get("#inputZip").attachFile("Modelos.zip");
+  cy.get("#submitZipButton").click();
+}
+
+describe("Analyze a Feature Model", () => {
+  
   before(() => {
     cy.task('clearDownloads');
   });
 
   it("Uploads and verifies feature model analysis", () => {
     cy.visit("/");
-    cy.get("#inputName").type("Pizzas");
-    cy.get("#inputDescription").type("This feature model is about pizzas!");
-    cy.get("#inputAuthor").type("Angela");
-    cy.get("#inputYear").type("2024");
-    cy.get("#inputReference").type("https://fmfactlabel.adabyron.uma.es/");
-    cy.get("#inputKeywords").type("Carbonara, eggs, parmesan");
-    cy.get("#inputDomain").type("Italian food");
-    cy.get("#inputFM").attachFile("Pizzas.uvl");
-    cy.get("#inputZipThreshold").attachFile("Modelos.zip");
-    cy.get("#submitButton").click();
+    fillFormAndSubmit({
+      name: "Pizzas",
+      description: "This feature model is about pizzas!",
+      author: "Angela",
+      year: "2024",
+      reference: "https://fmfactlabel.adabyron.uma.es/",
+      keywords: "Pizza, Italian, Food",
+      domain: "Italian food",
+      fmFile: "Pizzas.uvl",
+      zipFile: "Modelos.zip"
+    });
     cy.get('svg#FMFactLabelChart').should('exist');
   });
 
   it("Shows error when unsupported file type is uploaded", () => {
     cy.visit("/");
-    cy.get("#inputName").type("Pizzas");
-    cy.get("#inputDescription").type("This feature model is about pizzas!");
-    cy.get("#inputAuthor").type("Angela");
-    cy.get("#inputYear").type("2024");
-    cy.get("#inputReference").type("https://fmfactlabel.adabyron.uma.es/");
-    cy.get("#inputKeywords").type("Carbonara, eggs, parmesan");
-    cy.get("#inputDomain").type("Italian food");
-    cy.get("#inputFM").attachFile("Texto.txt"); 
-    cy.get("#submitButton").click();
+    fillFormAndSubmit({
+      name: "Pizzas",
+      description: "This feature model is about pizzas!",
+      author: "Angela",
+      year: "2024",
+      reference: "https://fmfactlabel.adabyron.uma.es/",
+      keywords: "Pizza, Italian, Food",
+      domain: "Italian food",
+      fmFile: "Texto.txt" 
+    });
     cy.get('.alert.alert-danger').should('exist')
       .and('contain', 'Feature model format not supported.');
   });
@@ -50,6 +75,23 @@ describe("Feature Model Analysis", () => {
     cy.get('.alert.alert-danger').should('exist')
       .and('contain', 'Please upload a feature model or select one from the examples.');
     cy.get('svg#FMFactLabelChart').should('not.exist');
+  });
+
+  it("Shows error when uploading ZIP without UVL files in Threshold", () => {
+    cy.visit("/");
+    fillFormAndSubmit({
+      name: "Pizzas",
+      description: "This feature model is about pizzas!",
+      author: "Angela",
+      year: "2024",
+      reference: "https://fmfactlabel.adabyron.uma.es/",
+      keywords: "Pizza, Italian, Food",
+      domain: "Italian food",
+      fmFile: "Pizzas.uvl",
+      zipFile: "Texto.zip" 
+    });
+    cy.get('.alert.alert-danger').should('exist')
+      .and('contain', 'No valid UVL files found in the Threshold ZIP.');
   });
 
   it("Handles interactions with the feature model", () => {
@@ -67,83 +109,140 @@ describe("Feature Model Analysis", () => {
   context("File Download Verification", () => {
 
     beforeEach(() => {
-      cy.task('clearDownloads');
+      cy.task('clearDownloads'); 
+      selectPizzasModelAndUploadZip(); 
     });
 
     it("Downloads SVG file", () => {
-      selectPizzasModelAndUploadZip();
       cy.get("#dropdownMenuLink").click();
       cy.get("#saveSVG").click();
-      cy.wait(1000);
       cy.readFile('cypress/downloads/Pizzas.svg').should('exist');
     });
 
     it("Downloads PNG file", () => {
-      selectPizzasModelAndUploadZip();
       cy.get("#dropdownMenuLink").click();
       cy.get("#savePNG").click();
-      cy.wait(1000);
       cy.readFile('cypress/downloads/Pizzas.png').should('exist');
     });
 
     it("Downloads PDF file", () => {
-      selectPizzasModelAndUploadZip();
       cy.get("#dropdownMenuLink").click();
       cy.get("#savePDF").click();
-      cy.wait(1000);
       cy.readFile('cypress/downloads/Pizzas.pdf').should('exist');
     });
 
     it("Exports model to JSON", () => {
-      selectPizzasModelAndUploadZip();
       cy.get("#dropdownMenuLink").click();
       cy.get("#saveJSON").click();
-      cy.wait(1000);
       cy.readFile('cypress/downloads/Pizzas.json').should('exist');
     });
 
     it("Exports model to TXT", () => {
-      selectPizzasModelAndUploadZip();
       cy.get("#dropdownMenuLink").click();
       cy.get("#saveTXT").click();
-      cy.wait(1000);
       cy.readFile('cypress/downloads/Pizzas.txt').should('exist');
     });
 
     it("Downloads Landscape SVG file", () => {
-      selectPizzasModelAndUploadZip();
       cy.get("#toggle-chart").click();
       cy.get("#dropdownMenuLinkLandscape").click();
       cy.get("#saveSVGLandscape").click();
-      cy.wait(1000);
       cy.readFile('cypress/downloads/Pizzas.svg').should('exist');
     });
 
     it("Downloads Landscape PNG file", () => {
-      selectPizzasModelAndUploadZip();
       cy.get("#toggle-chart").click();
       cy.get("#dropdownMenuLinkLandscape").click();
       cy.get("#savePNGLandscape").click();
-      cy.wait(1000);
       cy.readFile('cypress/downloads/Pizzas.png').should('exist');
     });
 
     it("Downloads Landscape PDF file", () => {
-      selectPizzasModelAndUploadZip();
       cy.get("#toggle-chart").click();
       cy.get("#dropdownMenuLinkLandscape").click();
       cy.get("#savePDFLandscape").click();
-      cy.wait(1000);
       cy.readFile('cypress/downloads/Pizzas.pdf').should('exist');
     });
   });
 });
 
-describe("Feature Model Dataset Upload", () => {
+describe("Analyze Feature Model Dataset", () => {
+
   it("Uploads ZIP file successfully", () => {
+    uploadDatasetAndProceed();
+    cy.get('.alert.alert-danger').should('not.exist');
+  });
+
+  it("Shows error when ZIP without UVL files is uploaded", () => {
     cy.visit("/");
     cy.get("#upload-zip-tab").click();
-    cy.get("#inputZip").attachFile("Modelos.zip");
+    cy.get("#inputZip").attachFile("Texto.zip");  
     cy.get("#submitZipButton").click();
+    cy.get('.alert.alert-danger').should('exist')
+      .and('contain', 'No valid UVL files found in the ZIP.');
+  });
+
+  it("Handles collapse/expand and chart interactions", () => {
+    uploadDatasetAndProceed();
+    cy.get('svg#FMFactLabelDataSetChart').should('exist');
+    cy.get("#collapseSubProperties").click();
+    cy.get("#collapseSubProperties").click();
+    cy.get("#collapseZeroValues").click();
+    cy.get("#collapseZeroValues").click();
+    cy.get("#toggle-chart-data-set").click();
+    cy.get('svg#FMFactLabelDataSetChartLandscape').should('exist');
+    cy.get("#toggle-chart-data-set").click();
+  });
+
+  context("File Download Verification", () => {
+
+    beforeEach(() => {
+      cy.task('clearDownloads');
+    });
+
+    it("Downloads SVG file", () => {
+      uploadDatasetAndProceed();
+      cy.get("#dropdownMenuLinkDataSet").click();
+      cy.get("#saveSVGDataSet").click();
+      cy.readFile('cypress/downloads/Modelos.svg').should('exist');
+    });
+
+    it("Downloads PNG file", () => {
+      uploadDatasetAndProceed();
+      cy.get("#dropdownMenuLinkDataSet").click();
+      cy.get("#savePNGDataSet").click();
+      cy.readFile('cypress/downloads/Modelos.png').should('exist');
+    });
+
+    it("Downloads PDF file", () => {
+      uploadDatasetAndProceed();
+      cy.get("#dropdownMenuLinkDataSet").click();
+      cy.get("#savePDFDataSet").click();
+      cy.readFile('cypress/downloads/Modelos.pdf').should('exist');
+    });
+
+    it("Downloads Landscape SVG file", () => {
+      uploadDatasetAndProceed();
+      cy.get("#toggle-chart-data-set").click();
+      cy.get("#dropdownMenuLinkDataSetLandscape").click();
+      cy.get("#saveSVGDataSetLandscape").click();
+      cy.readFile('cypress/downloads/Modelos.svg').should('exist');
+    });
+
+    it("Downloads Landscape PNG file", () => {
+      uploadDatasetAndProceed();
+      cy.get("#toggle-chart-data-set").click();
+      cy.get("#dropdownMenuLinkDataSetLandscape").click();
+      cy.get("#savePNGDataSetLandscape").click();
+      cy.readFile('cypress/downloads/Modelos.png').should('exist');
+    });
+
+    it("Downloads Landscape PDF file", () => {
+      uploadDatasetAndProceed();
+      cy.get("#toggle-chart-data-set").click();
+      cy.get("#dropdownMenuLinkDataSetLandscape").click();
+      cy.get("#savePDFDataSetLandscape").click();
+      cy.readFile('cypress/downloads/Modelos.pdf').should('exist');
+    });
   });
 });
