@@ -19,15 +19,6 @@ module.exports = defineConfig({
             });
           }
           return null;
-        },
-        
-        // Task to check the number of files in the downloads folder
-        checkDownloadsFolder() {
-          const downloadsFolder = config.downloadsFolder;
-          if (fs.existsSync(downloadsFolder)) {
-            return fs.readdirSync(downloadsFolder).length; 
-          }
-          return 0;
         }
       });
     },
