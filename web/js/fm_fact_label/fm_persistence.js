@@ -3,7 +3,7 @@
 const setupSaveButton = (buttonId, chartSelector, serializeFunction, extension) => {
     d3.select(buttonId).on('click', async function(event) {
         event.preventDefault();
-        var chart = d3.select(chartSelector);
+        let chart = d3.select(chartSelector);
         chart.selectAll("#collapseIcon").attr("visibility", "hidden");
         const svgElement = chart.node();
         const originalHeight = adjustSVGSize(svgElement);
@@ -36,7 +36,7 @@ setupSaveButton('#savePNGDataSetLandscape', '#FMFactLabelDataSetChartLandscape',
 const setupPDFSaveButton = (buttonId, chartSelector) => {
     d3.select(buttonId).on('click', async function(event) {
         event.preventDefault();
-        var chart = d3.select(chartSelector);
+        let chart = d3.select(chartSelector);
         chart.selectAll("#collapseIcon").attr("visibility", "hidden");
         const svgElement = chart.node();
         const originalHeight = adjustSVGSize(svgElement);
