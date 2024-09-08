@@ -60,28 +60,33 @@
                         </div>
 
                         <!-- Nav tabs -->
-                        <ul class="nav nav-tabs" id="myTab">
-                            <li class="nav-item">
-                                <a class="nav-link {% if data.active_tab == 'upload-single-tab' %}active{% endif %}" 
-                                   id="upload-single-tab" 
-                                   data-bs-toggle="tab" 
-                                   href="#upload-single" 
-                                   aria-controls="upload-single" 
-                                   aria-selected="{% if data.active_tab == 'upload-single-tab' %}true{% else %}false{% endif %}">
-                                   Analyze a Feature Model
-                                </a>
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link {% if data.active_tab == 'upload-single-tab' %}active{% endif %}" 
+                                        id="upload-single-tab" 
+                                        data-bs-toggle="tab" 
+                                        data-bs-target="#upload-single" 
+                                        type="button" 
+                                        role="tab" 
+                                        aria-controls="upload-single" 
+                                        aria-selected="{% if data.active_tab == 'upload-single-tab' %}true{% else %}false{% endif %}">
+                                    Analyze a Feature Model
+                                </button>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link {% if data.active_tab == 'upload-zip-tab' %}active{% endif %}" 
-                                   id="upload-zip-tab" 
-                                   data-bs-toggle="tab" 
-                                   href="#upload-zip" 
-                                   aria-controls="upload-zip" 
-                                   aria-selected="{% if data.active_tab == 'upload-zip-tab' %}true{% else %}false{% endif %}">
-                                   Analyze Feature Model datasets
-                                </a>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link {% if data.active_tab == 'upload-zip-tab' %}active{% endif %}" 
+                                        id="upload-zip-tab" 
+                                        data-bs-toggle="tab" 
+                                        data-bs-target="#upload-zip" 
+                                        type="button" 
+                                        role="tab" 
+                                        aria-controls="upload-zip" 
+                                        aria-selected="{% if data.active_tab == 'upload-zip-tab' %}true{% else %}false{% endif %}">
+                                    Analyze Feature Model datasets
+                                </button>
                             </li>
                         </ul>
+
                         
                         
 

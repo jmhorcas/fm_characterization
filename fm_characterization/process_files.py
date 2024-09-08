@@ -157,30 +157,27 @@ def generate_dataset_characterization_json(dataset_characterization, metrics_dat
 
     calculate_mean_values(metrics_data)
     calculate_mean_values(analysis_data)
+
     metrics_with_ratios = get_metrics_with_ratios()
     analysis_with_ratios = get_analysis_with_ratios()
 
-    for metric in dataset_characterization_json['metrics']:
-        name = metric['name']
-        if name in metrics_data:
-            assign_metric_stats(metric, metrics_data[name])
+    def process_stats(data, ratios, json_section):
+        for item in json_section:
+            name = item['name']
+            if name in data:
+                assign_metric_stats(item, data[name])
 
-            if name in metrics_with_ratios:
-                ratio_info = metrics_with_ratios[name]
-                denominator_name, precision = ratio_info if isinstance(ratio_info, tuple) else (ratio_info, 4)
-                metric['ratio'] = calculate_ratio(metrics_data, name, denominator_name, precision)
+                if name in ratios:
+                    ratio_info = ratios[name]
+                    denominator_name, precision = ratio_info if isinstance(ratio_info, tuple) else (ratio_info, 4)
+                    item['ratio'] = calculate_ratio(data, name, denominator_name, precision)
 
-    for analysis in dataset_characterization_json['analysis']:
-        name = analysis['name']
-        if name in analysis_data:
-            assign_metric_stats(analysis, analysis_data[name])
 
-            if name in analysis_with_ratios:
-                ratio_info = analysis_with_ratios[name]
-                denominator_name, precision = ratio_info if isinstance(ratio_info, tuple) else (ratio_info, 4)
-                analysis['ratio'] = calculate_ratio(analysis_data, name, denominator_name, precision, metrics_data)
+    process_stats(metrics_data, metrics_with_ratios, dataset_characterization_json['metrics'])
+    process_stats(analysis_data, analysis_with_ratios, dataset_characterization_json['analysis'])
 
     return dataset_characterization_json
+
 
 
 def calculate_mean_values(data):
@@ -191,52 +188,58 @@ def calculate_mean_values(data):
             data['stats'] = stats
 
 
-def calculate_stats(values, name):
+def clean_values_based_on_name(values, name):
+    if name == FMProperties.CONFIGURATIONS.value.name:
+        return clean_configuration_values(values)
+    elif name == FMProperties.VALID.value.name:
+        return [v.lower() == 'yes' for v in values]
+    else:
+        return [float(v) for v in values]
+
+def clean_configuration_values(values):
     clean_values = []
     has_le = False
+    for v in values:
+        if isinstance(v, str) and '≤' in v:
+            has_le = True
+            clean_values.append(float(v.replace('≤', '').strip()))
+        else:
+            clean_values.append(float(v))
+    return clean_values, has_le
 
+def calculate_stats(values, name):
     if name == FMProperties.CONFIGURATIONS.value.name:
-        for v in values:
-            if isinstance(v, str) and '≤' in v:
-                has_le = True
-                clean_values.append(float(v.replace('≤', '').strip()))
-            else:
-                clean_values.append(float(v))
-    elif name == FMProperties.VALID.value.name:
-        clean_values = [v.lower() == 'yes' for v in values]
+        clean_values, has_le = clean_configuration_values(values)
     else:
-        clean_values = [float(v) for v in values]
+        clean_values = clean_values_based_on_name(values, name)
+        has_le = False
+
 
     if name == FMProperties.VALID.value.name:
-        stats = {
-            'mean': 'Yes' if any(clean_values) else 'No',
-            'median': None,
-            'min': None,
-            'max': None,
+        return {'mean': 'Yes' if any(clean_values) else 'No', 'median': None, 'min': None, 'max': None}
+
+    mean_val = mean(clean_values) if clean_values else None
+    median_val = median(clean_values) if clean_values else None
+    min_val = min(clean_values) if clean_values else None
+    max_val = max(clean_values) if clean_values else None
+
+
+    return format_stats(mean_val, median_val, min_val, max_val, has_le)
+
+def format_stats(mean_val, median_val, min_val, max_val, has_le):
+    if has_le:
+        return {
+            'mean': f'≤ {mean_val}',
+            'median': f'≤ {median_val}',
+            'min': f'≤ {min_val}',
+            'max': f'≤ {max_val}',
         }
-    else:
-        mean_val = mean(clean_values) if clean_values else None
-        median_val = median(clean_values) if clean_values else None
-        min_val = min(clean_values) if clean_values else None
-        max_val = max(clean_values) if clean_values else None
-
-        if has_le:
-            stats = {
-                'mean': f'≤ {mean_val}',
-                'median': f'≤ {median_val}',
-                'min': f'≤ {min_val}',
-                'max': f'≤ {max_val}',
-            }
-        else:
-            stats = {
-                'mean': mean_val,
-                'median': median_val,
-                'min': min_val,
-                'max': max_val,
-            }
-
-    return stats
-
+    return {
+        'mean': mean_val,
+        'median': median_val,
+        'min': min_val,
+        'max': max_val,
+    }
 
 def assign_metric_stats(metric, data):
     values = data['values']
