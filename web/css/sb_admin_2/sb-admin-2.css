@@ -2996,6 +2996,8 @@ input[type="button"].btn-block {
 
 .dropdown-toggle {
   white-space: nowrap;
+  display: flex;
+  align-items: center;
 }
 
 .dropdown-toggle::after {
@@ -11313,10 +11315,6 @@ body.sidebar-toggled footer.sticky-footer {
   cursor: pointer;
 }
 
-.dropdown-toggle {
-  display: flex;
-  align-items: center;
-}
 
 #toggle-chart:hover {
   color: #007bff; 
@@ -11326,4 +11324,17 @@ body.sidebar-toggled footer.sticky-footer {
   color: #007bff; 
 }
 
+
+.svg-container {
+  width: 100%;         
+  overflow: auto;
+}
+
+.btn-icon {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
+}
 

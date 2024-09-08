@@ -151,12 +151,12 @@ function drawFMFactLabel(data, chartId) {
   x = d3.scaleLinear().domain([0, maxWidth]).range([0, maxWidth]);
 
   // Title
-  var titleSize = textSize(
+  let titleSize = textSize(
     get_property(data, "Name").value,
     TITLE_FONT_FAMILY,
     TITLE_FONT_SIZE
   );
-  var yTitle = TOP_MARGING;
+  let yTitle = TOP_MARGING;
   let title = chart
     .append("g")
     .attr("transform", "translate(0," + yTitle + ")");
@@ -174,7 +174,7 @@ function drawFMFactLabel(data, chartId) {
     .attr("font-weight", "bold");
 
   // Description
-  var yDescription = yTitle + titleSize.height + 1;
+  let yDescription = yTitle + titleSize.height + 1;
   const indentationDescription = textSize(
     "-".repeat(PROPERTY_INDENTATION),
     DESCRIPTION_FONT_FAMILY,
@@ -192,10 +192,10 @@ function drawFMFactLabel(data, chartId) {
     .attr("font-family", DESCRIPTION_FONT_FAMILY)
     .attr("font-size", DESCRIPTION_FONT_SIZE)
     .call(wrap, maxWidth - indentationDescription);
-  var descriptionSize = description.node().getBBox();
+    let descriptionSize = description.node().getBBox();
 
   // Keywords
-  var keywordHeight = yDescription + descriptionSize.height + 1;
+  let keywordHeight = yDescription + descriptionSize.height + 1;
   let keywordsSize;
   if (get_property(data, "Tags").value === null) {
     keywordsSize = descriptionSize;
@@ -208,7 +208,7 @@ function drawFMFactLabel(data, chartId) {
   }
 
   // Author
-  var authorHeight = keywordHeight + keywordsSize.height;
+  let authorHeight = keywordHeight + keywordsSize.height;
   let authorSize;
   if (get_property(data, "Author").value === null) {
     authorSize = { width: 0, height: 0 };
@@ -221,7 +221,7 @@ function drawFMFactLabel(data, chartId) {
   }
 
   // Year
-  var yearHeight = authorHeight + authorSize.height;
+  let yearHeight = authorHeight + authorSize.height;
   let yearSize;
   if (get_property(data, "Year").value === null) {
     yearSize = { width: 0, height: 0 };
@@ -234,7 +234,7 @@ function drawFMFactLabel(data, chartId) {
   }
 
   // Domain
-  var domainHeight = yearHeight + yearSize.height;
+  let domainHeight = yearHeight + yearSize.height;
   let domainSize;
   if (get_property(data, "Domain").value === null) {
     domainSize = { width: 0, height: 0 };
@@ -285,12 +285,12 @@ function drawFMFactLabel(data, chartId) {
   updateProperties(data.metrics, "metrics");
 
   // Middle rule 2
-  var yRule2 = yMetrics + PROPERTY_HEIGHT * data.metrics.length;
+  let yRule2 = yMetrics + PROPERTY_HEIGHT * data.metrics.length;
   chart.append("g").attr("id", "rule2");
   drawRule("rule2", yRule2);
 
   // Analysis
-  var yAnalysis = yRule2 + MAIN_RULE_HEIGHT;
+  let yAnalysis = yRule2 + MAIN_RULE_HEIGHT;
   chart
     .append("g")
     .attr("id", "analysis")
