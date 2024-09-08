@@ -473,9 +473,11 @@ function drawFMFactLabelLandscape(data, chartId) {
     const group = chart.append("g").attr("id", groupId + "Landscape");
 
     properties.forEach((property) => {
+      if ((currentColumn === 0 && currentRow >= metricsInFirstColumn) || currentRow >= metricsPerColumn) {
         currentColumn++;
         currentRow = 0;
         currentY = MARGINS.top + PADDING - 10;
+      }
 
       const xMetric = MARGINS.left + currentColumn * columnWidth + PADDING - 10;
       const propertyGroup = group.append("g")
