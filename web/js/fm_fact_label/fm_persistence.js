@@ -76,7 +76,14 @@ setupPDFSaveButton('#savePDFDataSetLandscape', '#FMFactLabelDataSetChartLandscap
  */
 d3.select('#saveTXT').on('click', function () {
     const data = typeof fmData !== 'undefined' ? fmData : fmDataSetData;
-    var blob = new Blob([fmCharacterizationStr], { type: "text/plain" });
+    var blob;
+
+    if (typeof fmData !== 'undefined') {
+        blob = new Blob([fmCharacterizationStr], { type: "text/plain" });
+    } else {
+        blob = new Blob([fmDatasetCharacterizationStr], { type: "text/plain" });
+    }
+
     saveAs(blob, get_property(data, 'Name').value + ".txt");
 });
 
@@ -85,7 +92,14 @@ d3.select('#saveTXT').on('click', function () {
  */
 d3.select('#saveJSON').on('click', function () {
     const data = typeof fmData !== 'undefined' ? fmData : fmDataSetData;
-    var blob = new Blob([fmCharacterizationJSONStr], { type: "application/json" });
+    var blob;
+
+    if (typeof fmData !== 'undefined') {
+        blob = new Blob([fmCharacterizationJSONStr], { type: "application/json" });
+    } else {
+        blob = new Blob([fmDatasetCharacterizationJSONStr], { type: "application/json" });
+    }
+
     saveAs(blob, get_property(data, 'Name').value + ".json");
 });
 
