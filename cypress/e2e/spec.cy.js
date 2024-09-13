@@ -221,6 +221,21 @@ describe("Analyze Feature Model Dataset", () => {
       cy.readFile('cypress/downloads/Modelos.pdf').should('exist');
     });
 
+    it("Exports model to JSON", () => {
+      uploadDatasetAndProceed();
+      cy.get("#dropdownMenuLinkDataSet").click();
+      cy.get("#saveJSON").click();
+      cy.readFile('cypress/downloads/Modelos.json').should('exist');
+    });
+
+    it("Exports model to TXT", () => {
+      uploadDatasetAndProceed();
+      cy.get("#dropdownMenuLinkDataSet").click();
+      cy.get("#saveTXT").click();
+      cy.readFile('cypress/downloads/Modelos.txt').should('exist');
+    });
+
+
     it("Downloads Landscape SVG file", () => {
       uploadDatasetAndProceed();
       cy.get("#toggle-chart-data-set").click();

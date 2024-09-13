@@ -175,6 +175,13 @@ def generate_dataset_characterization_json(dataset_characterization, metrics_dat
 
     process_stats(metrics_data, metrics_with_ratios, dataset_characterization_json['metrics'])
     process_stats(analysis_data, analysis_with_ratios, dataset_characterization_json['analysis'])
+    
+    for metric in dataset_characterization_json['metrics']:
+        if 'value' in metric:
+            metric['value'] = None
+    for analysis in dataset_characterization_json['analysis']:
+        if 'value' in analysis:
+            analysis['value'] = None
 
     return dataset_characterization_json
 

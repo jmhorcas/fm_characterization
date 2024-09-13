@@ -1,6 +1,7 @@
 import os
 import shutil
 import tempfile
+import json
 from zipfile import ZipFile
 from typing import Tuple
 
@@ -228,10 +229,12 @@ def upload_zip():
 
         _, _, dataset_characterization_json = process_files(extracted_files, extract_dir, zip_name)
         if dataset_characterization_json:
+            dataset_characterization_json_str = json.dumps(dataset_characterization_json, ensure_ascii=False)
+
             data.update({
                 'fm_dataset_facts': dataset_characterization_json,
-                'fm_dataset_characterization_json_str': dataset_characterization_json,
-                'fm_dataset_characterization_str': str(dataset_characterization_json)
+                'fm_dataset_characterization_json_str': dataset_characterization_json_str,
+                'fm_dataset_characterization_str': dataset_characterization_json_str
             })
         else:
             data['zip_file_error'] = 'No valid UVL files found in the ZIP.'
