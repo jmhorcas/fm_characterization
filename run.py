@@ -229,12 +229,13 @@ def upload_zip():
 
         _, _, dataset_characterization_json = process_files(extracted_files, extract_dir, zip_name)
         if dataset_characterization_json:
-            dataset_characterization_json_str = json.dumps(dataset_characterization_json, ensure_ascii=False)
+            dataset_characterization_json_str = json.dumps(dataset_characterization_json, ensure_ascii=False, indent=4)
+            dataset_characterization_plain_text = generate_custom_text_string(dataset_characterization_json)
 
             data.update({
                 'fm_dataset_facts': dataset_characterization_json,
                 'fm_dataset_characterization_json_str': dataset_characterization_json_str,
-                'fm_dataset_characterization_str': dataset_characterization_json_str
+                'fm_dataset_characterization_str': dataset_characterization_plain_text
             })
         else:
             data['zip_file_error'] = 'No valid UVL files found in the ZIP.'
@@ -248,6 +249,47 @@ def upload_zip():
 
     return render_template('index.html', data=data)
 
+def json_to_custom_text(json_data, section=None, indent=0):
+    plain_text = ''
+    indent_str = '    ' * indent
+
+    if isinstance(json_data, dict):
+        if section == "metadata":
+            if 'name' in json_data and 'value' in json_data and json_data['value'] is not None:
+                plain_text += f"{indent_str}{json_data['name']}: {json_data['value']}\n"
+        elif section in ["metrics", "analysis"]:
+            if 'name' in json_data:
+                plain_text += f"{indent_str}{json_data['name']}"
+                if 'size' in json_data and json_data['size'] is not None:
+                    plain_text += f": {json_data['size']}"
+                if 'ratio' in json_data and json_data['ratio'] is not None:
+                    ratio_percentage = json_data['ratio'] * 100  # Convertir ratio a porcentaje
+                    plain_text += f" ({ratio_percentage:.2f}%)"
+                if 'stats' in json_data and json_data['stats'] is not None:
+                    plain_text += f" {json_data['stats']}"
+                plain_text += "\n"
+
+        for key, value in json_data.items():
+            if isinstance(value, (dict, list)):
+                plain_text += json_to_custom_text(value, section, indent + 1)
+
+    elif isinstance(json_data, list):
+        for item in json_data:
+            plain_text += json_to_custom_text(item, section, indent)
+
+    return plain_text
+
+def generate_custom_text_string(dataset_characterization_json):
+    plain_text = "\nMETADATA:\n"
+    plain_text += json_to_custom_text(dataset_characterization_json['metadata'], section="metadata")
+    
+    plain_text += "\nMETRICS:\n"
+    plain_text += json_to_custom_text(dataset_characterization_json['metrics'], section="metrics")
+    
+    plain_text += "\nANALYSIS:\n"
+    plain_text += json_to_custom_text(dataset_characterization_json['analysis'], section="analysis")
+    
+    return plain_text
 
 def cleanup_files(paths):
     for path in paths:
