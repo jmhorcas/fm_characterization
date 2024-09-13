@@ -1,18 +1,17 @@
 import os
-from typing import Optional
+import shutil
+import tempfile
+import json
+from zipfile import ZipFile
+from typing import Tuple
 
 from flask import Flask, render_template, request
 
-from flamapy.metamodels.fm_metamodel.models import FeatureModel
-from flamapy.metamodels.fm_metamodel.transformations import UVLReader, FeatureIDEReader
-
-from fm_characterization import FMCharacterization
-from fm_characterization import models_info
-
+from fm_characterization import FMCharacterization, models_info
+from fm_characterization.process_files import process_files, read_fm_file, calculate_percentiles, classify_value
 
 STATIC_DIR = 'web'
 EXAMPLE_MODELS_DIR = 'fm_models'
-
 
 app = Flask(__name__,
             static_url_path='',
@@ -20,27 +19,12 @@ app = Flask(__name__,
             template_folder=STATIC_DIR)
 
 
-def read_fm_file(filename: str) -> Optional[FeatureModel]:
-    try:
-        if filename.endswith(".uvl"):
-            return UVLReader(filename).transform()
-        elif filename.endswith(".xml") or filename.endswith(".fide"):
-            return FeatureIDEReader(filename).transform()
-    except Exception as e:
-        print(e)
-        pass
-    try:
-        return UVLReader(filename).transform()
-    except Exception as e:
-        print(e)
-        pass
-    try:
-        return FeatureIDEReader(filename).transform()
-    except Exception as e:
-        print(e)
-        pass
-    return None
-
+def extract_zip(zip_path: str) -> Tuple[str, list]:
+    extract_dir = tempfile.mkdtemp()
+    with ZipFile(zip_path, 'r') as zip_ref:
+        zip_ref.extractall(extract_dir)
+        extracted_files = zip_ref.namelist()
+    return extract_dir, extracted_files
 
 # This sets the basepath from FLASK_BASE_PATH env variable
 # basepath = os.environ.get("FLASK_BASE_PATH")
@@ -62,7 +46,7 @@ EXAMPLE_MODELS = {m[models_info.NAME]: m for m in models_info.MODELS}
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    data = {}
+    data = {'active_tab': 'upload-single-tab'}
     data['models'] = EXAMPLE_MODELS
 
     if request.method == 'GET':
@@ -71,6 +55,7 @@ def index():
     if request.method == 'POST':
         fm_file = request.files['inputFM']
         fm_name = request.form['inputExample']
+        zip_file = request.files.get('inputZipThreshold')
         name = None
         description = None
         author = None
@@ -135,9 +120,79 @@ def index():
             characterization.metadata.tags = keywords
             characterization.metadata.reference = reference
             characterization.metadata.domains = domain
+            
+            if zip_file and zip_file.filename.endswith('.zip'):
+                extract_dir = None
+                try:
+                    with tempfile.NamedTemporaryFile(delete=False, suffix='.zip') as tmp_zip_file:
+                        zip_file.save(tmp_zip_file.name)
+                        extract_dir, extracted_files = extract_zip(tmp_zip_file.name)
+                        
+                        uvl_files = [f for f in extracted_files if f.endswith('.uvl')]
+                        if not uvl_files:
+                            data['zip_threshold_error'] = 'No valid UVL files found in the Threshold ZIP.'
+                            shutil.rmtree(extract_dir)
+                            return render_template('index.html', data=data)
+                        
+                        metrics_data, analysis_data, dataset_characterization_json = process_files(uvl_files, extract_dir, zip_file.filename)
+                        if dataset_characterization_json:
+                            thresholds = {}
+                            for metric in dataset_characterization_json['metrics']:
+                                name = metric['name']
+                                if name in metrics_data:
+                                    values = metrics_data[name]['values']
+                                if values:
+                                    thresholds[name] = calculate_percentiles(values)
+                            for analysis in dataset_characterization_json['analysis']:
+                                name = analysis['name']
+                                if name in analysis_data:
+                                    values = analysis_data[name]['values']
+                                    clean_values = []
+                                    for v in values:
+                                        if isinstance(v, str) and '≤' in v:
+                                            clean_values.append(float(v.replace('≤', '').strip()))
+                                        elif isinstance(v, (int, float)):
+                                            clean_values.append(v)
+                                    if clean_values:
+                                        thresholds[name] = calculate_percentiles(clean_values)
+                        shutil.rmtree(extract_dir)
+                finally:
+                    if extract_dir and os.path.exists(extract_dir):
+                        shutil.rmtree(extract_dir)
+                    if os.path.exists(tmp_zip_file.name):
+                        os.remove(tmp_zip_file.name)
 
             #json_characterization = interfaces.to_json(fm_characterization, FM_FACT_JSON_FILE)
             json_characterization = characterization.to_json()
+            if zip_file and zip_file.filename.endswith('.zip'):
+                for metric in json_characterization['metrics']:
+                    name = metric['name']
+                    if name in thresholds:
+                        percentil_33 = thresholds[name]['percentil_33']
+                        percentil_66 = thresholds[name]['percentil_66']
+                        value = None
+                        if metric['size'] is not None:
+                            value = metric['size']
+                        elif metric['value'] is not None:
+                            value = metric['value']
+                        if value is not None:
+                            metric['threshold'] = classify_value(value, percentil_33, percentil_66)
+                for analysis in json_characterization['analysis']:
+                    name = analysis['name']
+                    if name in thresholds:
+                        percentil_33 = thresholds[name]['percentil_33']
+                        percentil_66 = thresholds[name]['percentil_66']
+                        value = None
+                        if analysis['size'] is not None:
+                            value = analysis['size']
+                        elif analysis['value'] is not None:
+                            value = analysis['value']
+                        if value is not None:
+                            if isinstance(value, str) and '≤' in value:
+                                value = float(value.replace('≤', '').strip())
+                            analysis['threshold'] = classify_value(value, percentil_33, percentil_66)
+
+                
             json_str_characterization = characterization.to_json_str()
             str_characterization = str(characterization)
             data['fm_facts'] = json_characterization
@@ -147,13 +202,105 @@ def index():
             data = None
             print(e)
             raise e
-
+        finally:
+            if os.path.exists(filename) and filename == fm_file.filename:
+                os.remove(filename)
+        
         if os.path.exists(filename) and filename == fm_file.filename:
             os.remove(filename)
 
         return render_template('index.html', data=data)
 
+@app.route('/upload_zip', methods=['POST'])
+def upload_zip():
+    data = {'active_tab': 'upload-zip-tab', 'models': EXAMPLE_MODELS}
 
+    zip_file = request.files.get('inputZip')
+    if not zip_file or not zip_file.filename.lower().endswith('.zip'):
+        data['zip_file_error'] = 'Please upload a valid ZIP file.'
+        return render_template('index.html', data=data)
+
+    zip_name = os.path.splitext(zip_file.filename)[0]
+
+    try:
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.zip') as tmp_zip_file:
+            zip_file.save(tmp_zip_file.name)
+            extract_dir, extracted_files = extract_zip(tmp_zip_file.name)
+
+        _, _, dataset_characterization_json = process_files(extracted_files, extract_dir, zip_name)
+        if dataset_characterization_json:
+            dataset_characterization_json_str = json.dumps(dataset_characterization_json, ensure_ascii=False, indent=4)
+            dataset_characterization_plain_text = generate_custom_text_string(dataset_characterization_json)
+
+            data.update({
+                'fm_dataset_facts': dataset_characterization_json,
+                'fm_dataset_characterization_json_str': dataset_characterization_json_str,
+                'fm_dataset_characterization_str': dataset_characterization_plain_text
+            })
+        else:
+            data['zip_file_error'] = 'No valid UVL files found in the ZIP.'
+
+    except Exception as e:
+        data['zip_file_error'] = f'An error occurred while processing the ZIP file: {e}'
+        print(e)
+
+    finally:
+        cleanup_files([tmp_zip_file.name, extract_dir])
+
+    return render_template('index.html', data=data)
+
+def json_to_custom_text(json_data, section=None, indent=0):
+    plain_text = ''
+    indent_str = '    ' * indent
+
+    if isinstance(json_data, dict):
+        if section == "metadata":
+            if 'name' in json_data and 'value' in json_data and json_data['value'] is not None:
+                plain_text += f"{indent_str}{json_data['name']}: {json_data['value']}\n"
+        elif section in ["metrics", "analysis"]:
+            if 'name' in json_data:
+                plain_text += f"{indent_str}{json_data['name']}"
+                if 'size' in json_data and json_data['size'] is not None:
+                    plain_text += f": {json_data['size']}"
+                if 'ratio' in json_data and json_data['ratio'] is not None:
+                    ratio_percentage = json_data['ratio'] * 100 
+                    plain_text += f" ({ratio_percentage:.2f}%)"
+                if 'stats' in json_data and json_data['stats'] is not None:
+                    plain_text += f" {json_data['stats']}"
+                plain_text += "\n"
+
+        for key, value in json_data.items():
+            if isinstance(value, (dict, list)):
+                plain_text += json_to_custom_text(value, section, indent + 1)
+
+    elif isinstance(json_data, list):
+        for item in json_data:
+            plain_text += json_to_custom_text(item, section, indent)
+
+    return plain_text
+
+def generate_custom_text_string(dataset_characterization_json):
+    plain_text = "\nMETADATA:\n"
+    plain_text += json_to_custom_text(dataset_characterization_json['metadata'], section="metadata")
+    
+    plain_text += "\nMETRICS:\n"
+    plain_text += json_to_custom_text(dataset_characterization_json['metrics'], section="metrics")
+    
+    plain_text += "\nANALYSIS:\n"
+    plain_text += json_to_custom_text(dataset_characterization_json['analysis'], section="analysis")
+    
+    return plain_text
+
+def cleanup_files(paths):
+    for path in paths:
+        try:
+            if os.path.isdir(path):
+                shutil.rmtree(path)
+            elif os.path.isfile(path):
+                os.remove(path)
+        except OSError as e:
+            print(f"Error removing temporary file or directory: {e}")
+            
 # if __name__ == '__main__':
 #     app.debug = True
 #     app.run(host='0.0.0.0', port=5555)

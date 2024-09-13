@@ -1,0 +1,28 @@
+features
+    IceCream {abstract}
+        mandatory
+            Category  {abstract}
+                alternative
+                    Popsicle {Price 1}
+                    Scoop {Price 2.0}
+            Flavors  {abstract true}
+                or
+                    Lemon  {abstract false}
+                    Vanilla {vegan false, origin 'Madagascar'}
+                    Chocolate {vegan true, glutenfree true}
+                        alternative
+                            White 
+                            Dark {origin 'Guinea', Cacao {quantity 85, unit '%'}}
+            Container
+                alternative
+                    Stick {Price 1.25}
+                    Cup {Price 0.75}
+                    Cone {Price 1.00}
+        optional
+            Waffle {price 0.7}
+            ChocolateBar {Price 0.0, trademark 'Kit-Kat'}
+            Swirl {Price 0}
+constraints
+    Popsicle => Stick
+    Scoop => Cup | Cone
+    Lemon => !White

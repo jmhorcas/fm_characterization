@@ -127,3 +127,12 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Cypress
+cypress/screenshots/
+cypress/videos/
+cypress/downloads/
+node_modules/
+.DS_Store
+Thumbs.db
+

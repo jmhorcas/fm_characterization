@@ -2996,6 +2996,8 @@ input[type="button"].btn-block {
 
 .dropdown-toggle {
   white-space: nowrap;
+  display: flex;
+  align-items: center;
 }
 
 .dropdown-toggle::after {
@@ -4493,6 +4495,7 @@ input[type="button"].btn-block {
   background-clip: border-box;
   border: 1px solid #e3e6f0;
   border-radius: 0.35rem;
+  padding: 0;
 }
 
 .card > hr {
@@ -5787,6 +5790,7 @@ a.close.disabled {
   position: relative;
   flex: 1 1 auto;
   padding: 1rem;
+  word-wrap: break-word;
 }
 
 .modal-footer {
@@ -11279,3 +11283,58 @@ footer.sticky-footer .copyright {
 body.sidebar-toggled footer.sticky-footer {
   width: 100%;
 }
+
+
+.container-fluid {
+  min-height: 100vh;
+}
+
+
+.landscape-hidden {
+  visibility: hidden;
+  position: absolute; 
+  top: -9999px;
+  left: -9999px;
+}
+
+
+.landscape-visible {
+  visibility: visible;
+  position: relative;
+  top: 0;
+  left: 0;
+}
+
+#toggle-chart {
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+#toggle-chart-data-set {
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+
+#toggle-chart:hover {
+  color: #007bff; 
+}
+
+#toggle-chart-data-set:hover {
+  color: #007bff; 
+}
+
+
+.svg-container {
+  width: 100%;         
+  overflow: auto;
+}
+
+.btn-icon {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
+}
+
