@@ -263,7 +263,7 @@ def json_to_custom_text(json_data, section=None, indent=0):
                 if 'size' in json_data and json_data['size'] is not None:
                     plain_text += f": {json_data['size']}"
                 if 'ratio' in json_data and json_data['ratio'] is not None:
-                    ratio_percentage = json_data['ratio'] * 100  # Convertir ratio a porcentaje
+                    ratio_percentage = json_data['ratio'] * 100 
                     plain_text += f" ({ratio_percentage:.2f}%)"
                 if 'stats' in json_data and json_data['stats'] is not None:
                     plain_text += f" {json_data['stats']}"
