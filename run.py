@@ -1,4 +1,5 @@
 import os
+import sys
 from typing import Optional
 
 from flask import Flask, render_template, request
@@ -159,4 +160,6 @@ def index():
 #     app.run(host='0.0.0.0', port=5555)
 
 if __name__ == '__main__':
+    sys.set_int_max_str_digits(0)
+
     app.run(host='0.0.0.0')

@@ -342,11 +342,11 @@ class FMMetrics():
 
     def fm_avg_attributes_per_feature(self) -> FMPropertyMeasure:
         _result = self._metrics[FMProperties.AVG_ATTRIBUTES_PER_FEATURE.value]
-        return FMPropertyMeasure(FMProperties.AVG_ATTRIBUTES_PER_FEATURE.value, _result)
+        return FMPropertyMeasure(FMProperties.AVG_ATTRIBUTES_PER_FEATURE.value, round(_result, FMMetrics.PRECISION))
 
     def fm_avg_attributes_per_feature_with_attributes(self) -> FMPropertyMeasure:
         _result = self._metrics[FMProperties.AVG_ATTRIBUTES_PER_FEATURE_WITH_ATTRIBUTES.value]
-        return FMPropertyMeasure(FMProperties.AVG_ATTRIBUTES_PER_FEATURE_WITH_ATTRIBUTES.value, _result)
+        return FMPropertyMeasure(FMProperties.AVG_ATTRIBUTES_PER_FEATURE_WITH_ATTRIBUTES.value, round(_result, FMMetrics.PRECISION))
 
 
 def traverse_metrics(fm: FeatureModel) -> dict[str, Any]:
@@ -394,7 +394,6 @@ def traverse_metrics(fm: FeatureModel) -> dict[str, Any]:
     metrics[FMProperties.AVG_CHILDREN_PER_FEATURE.value] = 0 if not metrics[FMProperties.AVG_CHILDREN_PER_FEATURE.value] else statistics.mean(metrics[FMProperties.AVG_CHILDREN_PER_FEATURE.value])
     metrics[FMProperties.MIN_ATTRIBUTES_PER_FEATURE.value] = 0 if not metrics[FMProperties.AVG_ATTRIBUTES_PER_FEATURE.value] else min(metrics[FMProperties.AVG_ATTRIBUTES_PER_FEATURE.value])
     metrics[FMProperties.MAX_ATTRIBUTES_PER_FEATURE.value] = 0 if not metrics[FMProperties.AVG_ATTRIBUTES_PER_FEATURE.value] else max(metrics[FMProperties.AVG_ATTRIBUTES_PER_FEATURE.value])
-    metrics[FMProperties.AVG_ATTRIBUTES_PER_FEATURE.value] = 0 if not metrics[FMProperties.AVG_ATTRIBUTES_PER_FEATURE.value] else statistics.mean(metrics[FMProperties.AVG_ATTRIBUTES_PER_FEATURE.value])
     metrics[FMProperties.AVG_ATTRIBUTES_PER_FEATURE.value] = 0 if not metrics[FMProperties.AVG_ATTRIBUTES_PER_FEATURE.value] else statistics.mean(metrics[FMProperties.AVG_ATTRIBUTES_PER_FEATURE.value])
     metrics[FMProperties.AVG_ATTRIBUTES_PER_FEATURE_WITH_ATTRIBUTES.value] = 0 if not metrics[FMProperties.AVG_ATTRIBUTES_PER_FEATURE_WITH_ATTRIBUTES.value] else statistics.mean(metrics[FMProperties.AVG_ATTRIBUTES_PER_FEATURE_WITH_ATTRIBUTES.value])
     metrics[FMProperties.FEATURE_ATTRIBUTES.value] = list(metrics[FMProperties.FEATURE_ATTRIBUTES.value])

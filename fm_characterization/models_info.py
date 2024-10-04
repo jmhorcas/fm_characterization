@@ -8,6 +8,15 @@ DOMAIN = 6
 FILENAME = 7
 
 MODELS = [
+    {NAME: 'Icecream',
+     DESCRIPTION: 'Example of feature model using all language constructs and extensions from the UVL language.',
+     AUTHOR: 'Krieter et al.',
+     YEAR: 2023,
+     REFERENCE: 'https://doi.org/10.1145/3579027.3609002',
+     KEYWORDS: ['food', 'icecream', 'restaurant'],
+     DOMAIN: 'restauration',
+     FILENAME: 'icecream.uvl',
+    },
     {NAME: 'Pizzas',
      DESCRIPTION: 'Basic feature model representing a product line for pizzas.',
      AUTHOR: 'Alexander Knüppel et al.',
