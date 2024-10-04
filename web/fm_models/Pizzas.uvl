@@ -16,9 +16,7 @@ features
 				alternative
 					Neapolitan
 					Sicilian
-
 		optional
 			CheesyCrust
-
 constraints
 	CheesyCrust => Big

@@ -21,8 +21,8 @@ class FMAnalysis():
             self.bdd_model = None
 
         # For performance purposes
-        self._common_features = sat_operations.Glucose3CoreFeatures().execute(self.sat_model).get_result()
-        self._dead_features = sat_operations.Glucose3DeadFeatures().execute(self.sat_model).get_result()
+        self._common_features = sat_operations.PySATCoreFeatures().execute(self.sat_model).get_result()
+        self._dead_features = sat_operations.PySATDeadFeatures().execute(self.sat_model).get_result()
 
     def get_analysis(self) -> list[FMPropertyMeasure]:
         result = []
@@ -35,7 +35,7 @@ class FMAnalysis():
         return result
 
     def fm_valid(self) -> FMPropertyMeasure:
-        _valid = sat_operations.Glucose3Valid().execute(self.sat_model).get_result()
+        _valid = sat_operations.PySATSatisfiable().execute(self.sat_model).get_result()
         _result = 'Yes' if _valid else 'No'
         return FMPropertyMeasure(FMProperties.VALID.value, _result)
 
@@ -63,7 +63,7 @@ class FMAnalysis():
                         get_ratio(_variant_features, self.fm.get_features()))
 
     def fm_false_optional_features(self) -> FMPropertyMeasure:
-        _false_optional_features = sat_operations.Glucose3FalseOptionalFeatures(self.fm).execute(self.sat_model).get_result()
+        _false_optional_features = sat_operations.PySATFalseOptionalFeatures().execute(self.sat_model).get_result()
         return FMPropertyMeasure(FMProperties.FALSE_OPTIONAL_FEATURES.value, 
                         _false_optional_features, 
                         len(_false_optional_features),
@@ -71,10 +71,10 @@ class FMAnalysis():
 
     def fm_configurations_number(self) -> FMPropertyMeasure:
         if self.bdd_model is not None:
-            _configurations = bdd_operations.BDDProductsNumber().execute(self.bdd_model).get_result()
+            _configurations = bdd_operations.BDDConfigurationsNumber().execute(self.bdd_model).get_result()
             _approximation = False
         else:
-            _configurations = fm_operations.FMEstimatedProductsNumber().execute(self.fm).get_result()
+            _configurations = fm_operations.FMEstimatedConfigurationsNumber().execute(self.fm).get_result()
             _approximation = True
         _configurations = get_nof_configuration_as_str(_configurations, _approximation, len(self.fm.get_constraints()))
         return FMPropertyMeasure(FMProperties.CONFIGURATIONS.value, _configurations)

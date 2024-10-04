@@ -25,9 +25,7 @@ class FMProperty():
 
     def level(self) -> int:
         '''Return the level of parents.'''
-        if self.parent is None:
-            return 0
-        return 1 + self.parent.level()
+        return 0 if self.parent is None else 1 + self.parent.level()
 
 
 class FMPropertyMeasure():
@@ -94,11 +92,16 @@ class FMProperties(Enum):
     MAX_CHILDREN_PER_FEATURE = FMProperty('Max children per feature', 'Maximal number of children per feature.', BRANCHING_FACTOR)
     AVG_CHILDREN_PER_FEATURE = FMProperty('Avg children per feature', "Average number of children per feature.", BRANCHING_FACTOR)
     DEPTH_TREE = FMProperty('Depth of tree', 'Number of features of the longest path from the root to the leaf features.', None)
-    MAX_DEPTH_TREE = FMProperty('Max depth of tree', 'Number of features of the longest path from the root to the leaf features.', DEPTH_TREE)
     MEAN_DEPTH_TREE = FMProperty('Mean depth of tree', 'Number of features of the mean path from the root to the leaf features.', DEPTH_TREE)
-    MEDIAN_DEPTH_TREE = FMProperty('Median depth of tree', 'Number of features of the median path from the root to the leaf features.', DEPTH_TREE)
+    FEATURE_ATTRIBUTES = FMProperty('Attributes', 'Features attributes in the model (i.e., number of distinct attributes).', None)
+    FEATURES_WITH_ATTRIBUTES = FMProperty('Features with attributes', 'Features that contain some attributes defined in the model.', FEATURE_ATTRIBUTES)
+    MIN_ATTRIBUTES_PER_FEATURE = FMProperty('Min attributes per feature', 'The minimal number of attributes in a feature.', FEATURE_ATTRIBUTES)
+    MAX_ATTRIBUTES_PER_FEATURE = FMProperty('Max attributes per feature', 'The maximal number of attributes in a feature.', FEATURE_ATTRIBUTES)
+    AVG_ATTRIBUTES_PER_FEATURE = FMProperty('Avg attributes per feature', 'Average number of attributes in features.', FEATURE_ATTRIBUTES)
+    AVG_ATTRIBUTES_PER_FEATURE_WITH_ATTRIBUTES = FMProperty('Avg attributes per feature with attributes', 'Average number of attributes in features with attributes.', FEATURE_ATTRIBUTES)
 
     CROSS_TREE_CONSTRAINTS = FMProperty('Cross-tree constraints', 'Textual cross-tree constraints.', None)
+    SINGLE_FEATURE_CONSTRAINTS = FMProperty('Single feature constraints', 'Constraints with a single feature or negated feature.', CROSS_TREE_CONSTRAINTS)
     SIMPLE_CONSTRAINTS = FMProperty('Simple constraints', 'Requires and Excludes constraints.', CROSS_TREE_CONSTRAINTS)  # Requires and excludes
     REQUIRES_CONSTRAINTS = FMProperty('Requires constraints', 'Constraints modeling that the activation of a feature f1 implies the activation of a feature f2.', SIMPLE_CONSTRAINTS)
     EXCLUDES_CONSTRAINTS = FMProperty('Excludes constraints', 'Constraints modeling that two features are mutually exclusive and cannot be activated together.', SIMPLE_CONSTRAINTS)
@@ -109,6 +112,9 @@ class FMProperties(Enum):
     MAX_CONSTRAINTS_PER_FEATURE = FMProperty('Max constraints per feature', 'The maximal number of constraints per feature.', CROSS_TREE_CONSTRAINTS)
     AVG_CONSTRAINTS_PER_FEATURE = FMProperty('Avg constraints per feature', 'The average number of constraints per feature.', CROSS_TREE_CONSTRAINTS)
     EXTRA_CONSTRAINT_REPRESENTATIVENESS = FMProperty('Features in constraints', "Features involved in cross-tree constraints. The ratio to the total number of features is called 'Extra constraint representativeness (ECR)'.", CROSS_TREE_CONSTRAINTS)
+    MIN_FEATURES_PER_CONSTRAINT = FMProperty('Min features per constraint', "The minimal number of features involved per cross-tree constraint.", EXTRA_CONSTRAINT_REPRESENTATIVENESS)
+    MAX_FEATURES_PER_CONSTRAINT = FMProperty('Max features per constraint', "The maximal number of features involved per cross-tree constraint.", EXTRA_CONSTRAINT_REPRESENTATIVENESS)
+    AVG_FEATURES_PER_CONSTRAINT = FMProperty('Avg features per constraint', "The average number of features involved per cross-tree constraint.", EXTRA_CONSTRAINT_REPRESENTATIVENESS)
 
     VALID = FMProperty('Valid (not void)', 'A feature model is valid if it represents at least one configuration.', None)
     CORE_FEATURES = FMProperty('Core features', "Features that are part of all the configurations (aka 'common features').", None)  # Also 'Common features'
