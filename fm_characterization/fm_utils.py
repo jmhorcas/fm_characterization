@@ -19,3 +19,13 @@ def get_nof_configuration_as_str(nof_configurations: int, aproximation: bool, no
 
 def get_ratio(collection1: Collection, collection2: Collection, precision: int = 4) -> float:
     return 0.0 if not collection2 else round(len(collection1) / len(collection2), precision)
+
+
+def get_percentage_str(value: int | float, precision: int = 4) -> str:
+        if value == 0:
+            return str(value)
+        percentage = value * 100
+        format_percentage = '{:.pe}'
+        format_percentage = format_percentage.replace('p', str(precision))
+        percentage_value = round(percentage, precision)
+        return str(percentage_value) if percentage_value > 0 else format_percentage.format(percentage)

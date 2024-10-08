@@ -116,13 +116,18 @@ class FMProperties(Enum):
     MAX_FEATURES_PER_CONSTRAINT = FMProperty('Max features per constraint', "The maximal number of features involved per cross-tree constraint.", EXTRA_CONSTRAINT_REPRESENTATIVENESS)
     AVG_FEATURES_PER_CONSTRAINT = FMProperty('Avg features per constraint', "The average number of features involved per cross-tree constraint.", EXTRA_CONSTRAINT_REPRESENTATIVENESS)
 
-    VALID = FMProperty('Valid (not void)', 'A feature model is valid if it represents at least one configuration.', None)
+    VALID = FMProperty('Satisfiable (valid)', 'A feature model is satisfiable (valid, not void) if it represents at least one configuration.', None)
     CORE_FEATURES = FMProperty('Core features', "Features that are part of all the configurations (aka 'common features').", None)  # Also 'Common features'
-    VARIANT_FEATURES = FMProperty('Variant features', 'Features that do not appear in all the configurations.', None)  # Also 'Real optional features'
     DEAD_FEATURES = FMProperty('Dead features', 'Features that cannot appear in any configuration.', None)
+    VARIANT_FEATURES = FMProperty('Variant features', 'Features that appear only in some configurations (i.e., features that are neither core nor dead).', None)  # Also 'Real optional features'
     UNIQUE_FEATURES = FMProperty('Unique features', 'Features that appear in exactly one configuration.', None)
+    PURE_OPTIONAL_FEATURES = FMProperty('Pure optional features', 'Feature with 0.5 (50%) probability of being selected in a valid configuration (i.e., their selection is unconstrained).', None)
     FALSE_OPTIONAL_FEATURES = FMProperty('False-optional features', "Features defined as optionals the selection of their parents make the feature itself selected as well.", None)
     CONFIGURATIONS = FMProperty('Configurations', 'Number of configurations represented by the feature model. If <= is shown, the number represents an upper estimation bound.', None)
+    TOTAL_VARIABILITY = FMProperty('Total variability', 'The total variability measures the flexibility of the SPL considering all features.', None)
+    PARTIAL_VARIABILITY = FMProperty('Partial variability', 'The partial variability measures the flexibility of the SPL considering only variant features.', None)
+    HOMOGENEITY = FMProperty('Homogeneity', 'The homogeneity measures how similar are the configurations of the SPL.', None)
+
     # ATOMIC_SETS = FMProperty('Atomic sets', '', None)  # Atomic sets need to be fixed in FLAMA.
 
     
