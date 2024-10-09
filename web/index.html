@@ -37,6 +37,10 @@
 
         <!-- To save as files. -->
         <script src="js/FileSaver.js"></script>
+        
+        <!-- Save as PDF: SVG to PDF -->
+        <script src="https://cdn.jsdelivr.net/npm/pdfkit@0.10.0/js/pdfkit.standalone.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/svg-to-pdfkit@0.1.8/source.js"></script>
     </head>
 
     <body id="page-top">
@@ -163,6 +167,7 @@
                                                 <div class="dropdown-header">Save as...</div>
                                                 <a class="dropdown-item" id="saveSVG" href="#">SVG</a>
                                                 <a class="dropdown-item" id="savePNG" href="#">PNG</a>
+                                                <a class="dropdown-item" id="savePDF" href="#">PDF</a>
                                                 <!-- <a class="dropdown-item" id="savePDF" href="#">PDF</a> -->
                                                 <div class="dropdown-divider"></div>
                                                 <div class="dropdown-header">Export to...</div>
