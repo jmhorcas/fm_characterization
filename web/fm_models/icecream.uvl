@@ -22,8 +22,15 @@ features
             Waffle {Price 0.7}
             String "Name of customer"
             Integer Scoops
+            Topping
+                or
+                    Caramel
+                    "Whipped cream"
+                    Sprinkles
 constraints
     Scoops
     !Waffle
     Popsicle => Stick
     Scoop => Cup | Cone
+    Topping => Caramel
+    Vanilla => Topping

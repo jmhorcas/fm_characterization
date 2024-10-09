@@ -122,7 +122,7 @@ class FMProperties(Enum):
     VARIANT_FEATURES = FMProperty('Variant features', 'Features that appear only in some configurations (i.e., features that are neither core nor dead).', None)  # Also 'Real optional features'
     UNIQUE_FEATURES = FMProperty('Unique features', 'Features that appear in exactly one configuration.', None)
     PURE_OPTIONAL_FEATURES = FMProperty('Pure optional features', 'Feature with 0.5 (50%) probability of being selected in a valid configuration (i.e., their selection is unconstrained).', None)
-    FALSE_OPTIONAL_FEATURES = FMProperty('False-optional features', "Features defined as optionals the selection of their parents make the feature itself selected as well.", None)
+    FALSE_OPTIONAL_FEATURES = FMProperty('False-optional features', "Features included in all possible configurations although not being modelled as mandatory.", None)
     CONFIGURATIONS = FMProperty('Configurations', 'Number of configurations represented by the feature model. If <= is shown, the number represents an upper estimation bound.', None)
     TOTAL_VARIABILITY = FMProperty('Total variability', 'The total variability measures the flexibility of the SPL considering all features.', None)
     PARTIAL_VARIABILITY = FMProperty('Partial variability', 'The partial variability measures the flexibility of the SPL considering only variant features.', None)
