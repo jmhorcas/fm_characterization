@@ -427,8 +427,11 @@ def traverse_feature_metrics(feature: Feature, metrics: dict[str, Any], depth: i
         metrics[FMProperties.FEATURES.value].append(feature.name)
         if feature.parent is None:
             metrics[FMProperties.ROOT_FEATURE.value].append(feature.name)
+            metrics[FMProperties.SOLITARY_FEATURES.value].append(feature.name)
         elif feature.parent.is_root():
             metrics[FMProperties.TOP_FEATURES.value].append(feature.name)
+        if feature.parent is not None and not feature.parent.is_group():
+            metrics[FMProperties.SOLITARY_FEATURES.value].append(feature.name)
         
         # Attributes
         attributes = feature.get_attributes()
@@ -456,12 +459,10 @@ def traverse_feature_metrics(feature: Feature, metrics: dict[str, Any], depth: i
                 if relation.is_mandatory():
                     n_children += 1
                     metrics[FMProperties.MANDATORY_FEATURES.value].append(feature.name)
-                    metrics[FMProperties.SOLITARY_FEATURES.value].append(feature.name)
                     traverse_feature_metrics(relation.children[0], metrics, depth + 1)
                 elif relation.is_optional():
                     n_children += 1
                     metrics[FMProperties.OPTIONAL_FEATURES.value].append(feature.name)
-                    metrics[FMProperties.SOLITARY_FEATURES.value].append(feature.name)
                     traverse_feature_metrics(relation.children[0], metrics, depth + 1)
                 elif relation.is_group():
                     n_children += len(relation.children)
