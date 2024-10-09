@@ -1,3 +1,5 @@
+from typing import Optional, Any
+
 from fm_characterization import FMProperties, FMPropertyMeasure
 from .fm_utils import get_ratio, get_nof_configuration_as_str, get_percentage_str
 
@@ -28,6 +30,8 @@ class FMAnalysis():
             self._configurations = bdd_operations.BDDConfigurationsNumber().execute(self.bdd_model).get_result()
             self._approximation = False
             self._fip = bdd_operations.BDDFeatureInclusionProbability().execute(self.bdd_model).get_result()
+            self._pd = bdd_operations.BDDProductDistribution().execute(self.bdd_model).get_result()
+            self._descriptive_statistics = descriptive_statistics(self._pd)
             self._core_features = [feat for feat, prob, in self._fip.items() if prob >= 1.0]
             self._dead_features = [feat for feat, prob, in self._fip.items() if prob <= 0.0]
             self._variant_features = [feat for feat, prob, in self._fip.items() if 0.0 < prob < 1.0]
@@ -45,15 +49,28 @@ class FMAnalysis():
         result = []
         result.append(self.fm_valid())
         result.append(self.fm_core_features())
+        result.append(self.fm_false_optional_features())
         result.append(self.fm_dead_features())
         result.append(self.fm_variant_features())
-        result.append(self.fm_unique_features())
-        result.append(self.fm_pure_optional_features())
-        result.append(self.fm_false_optional_features())
+        if self.bdd_model is not None:
+            result.append(self.fm_unique_features())
+        if self._fip:
+            result.append(self.fm_pure_optional_features())
         result.append(self.fm_configurations_number())
         result.append(self.fm_total_variability())
         result.append(self.fm_partial_variability())
-        result.append(self.fm_homogeneity())
+        if self.bdd_model:
+            result.append(self.fm_homogeneity())
+        if self._descriptive_statistics:
+            result.append(self.fm_product_distribution())
+            result.append(self.fm_mean_pd())
+            result.append(self.fm_std_pd())
+            result.append(self.fm_median_pd())
+            result.append(self.fm_mad_pd())
+            result.append(self.fm_mode_pd())
+            result.append(self.fm_min_pd())
+            result.append(self.fm_max_pd())
+            result.append(self.fm_range_pd())
         return result
 
     def fm_valid(self) -> FMPropertyMeasure:
@@ -83,32 +100,18 @@ class FMAnalysis():
                         get_ratio(self._variant_features, self._features))
     
     def fm_unique_features(self) -> FMPropertyMeasure:
-        if self.bdd_model is not None:
-            _unique_features = bdd_operations.BDDUniqueFeatures().execute(self.bdd_model).get_result()
-            _size = len(_unique_features)
-            _ratio = get_ratio(_unique_features, self._features)
-        else:
-            _unique_features = '?'
-            _size = None
-            _ratio = None
+        _unique_features = bdd_operations.BDDUniqueFeatures().execute(self.bdd_model).get_result()
         return FMPropertyMeasure(FMProperties.UNIQUE_FEATURES.value, 
                                  _unique_features, 
-                                 _size,
-                                 _ratio)
+                                 len(_unique_features),
+                                 get_ratio(_unique_features, self._features))
     
     def fm_pure_optional_features(self) -> FMPropertyMeasure:
-        if self.bdd_model is not None:
-            _pure_optional_features = [feat for feat, prob, in self._fip.items() if prob == 0.5]
-            _size = len(_pure_optional_features)
-            _ratio = get_ratio(_pure_optional_features, self._features)
-        else:
-            _pure_optional_features = '?'
-            _size = None
-            _ratio = None
+        _pure_optional_features = [feat for feat, prob, in self._fip.items() if prob == 0.5]
         return FMPropertyMeasure(FMProperties.PURE_OPTIONAL_FEATURES.value, 
                                  _pure_optional_features, 
-                                 _size,
-                                 _ratio)
+                                 len(_pure_optional_features),
+                                 get_ratio(_pure_optional_features, self._features))
 
     def fm_false_optional_features(self) -> FMPropertyMeasure:
         if self.bdd_model is not None:
@@ -137,9 +140,120 @@ class FMAnalysis():
         return FMPropertyMeasure(FMProperties.PARTIAL_VARIABILITY.value, _partial_variability)
     
     def fm_homogeneity(self) -> FMPropertyMeasure:
-        if self.bdd_model is not None:
-            _homogeneity = bdd_operations.BDDHomogeneity().execute(self.bdd_model).get_result()
-            _homogeneity = get_percentage_str(_homogeneity, 2) + "%"
-        else:
-            _homogeneity = '?'
+        _homogeneity = bdd_operations.BDDHomogeneity().execute(self.bdd_model).get_result()
+        _homogeneity = get_percentage_str(_homogeneity, 2) + "%"
         return FMPropertyMeasure(FMProperties.HOMOGENEITY.value, _homogeneity)
+
+    def fm_product_distribution(self) -> FMPropertyMeasure:
+        return FMPropertyMeasure(FMProperties.PRODUCT_DISTRIBUTION.value, None)
+
+    def fm_mean_pd(self) -> FMPropertyMeasure:
+        return FMPropertyMeasure(FMProperties.PD_MEAN.value, self._descriptive_statistics['Mean'])
+    
+    def fm_std_pd(self) -> FMPropertyMeasure:
+        _std_pd = round(self._descriptive_statistics['Standard deviation'], 2)
+        return FMPropertyMeasure(FMProperties.PD_STD.value, _std_pd)
+    
+    def fm_median_pd(self) -> FMPropertyMeasure:
+        return FMPropertyMeasure(FMProperties.PD_MEDIAN.value, self._descriptive_statistics['Median'])
+    
+    def fm_mad_pd(self) -> FMPropertyMeasure:
+        _mad_pd = round(self._descriptive_statistics['Median absolute deviation'], 2)
+        return FMPropertyMeasure(FMProperties.PD_MAD.value, _mad_pd)
+    
+    def fm_mode_pd(self) -> FMPropertyMeasure:
+        return FMPropertyMeasure(FMProperties.PD_MODE.value, self._descriptive_statistics['Mode'])
+    
+    def fm_min_pd(self) -> FMPropertyMeasure:
+        return FMPropertyMeasure(FMProperties.PD_MIN.value, self._descriptive_statistics['Min'])
+    
+    def fm_max_pd(self) -> FMPropertyMeasure:
+        return FMPropertyMeasure(FMProperties.PD_MAX.value, self._descriptive_statistics['Max'])
+    
+    def fm_range_pd(self) -> FMPropertyMeasure:
+        return FMPropertyMeasure(FMProperties.PD_RANGE.value, self._descriptive_statistics['Range'])
+
+
+def descriptive_statistics(prod_dist: list[int]) -> dict[str, Any]: # noqa: MC0001
+    total_elements = sum(prod_dist)
+    if total_elements == 0:
+        return {
+            'Mean': 0,
+            'Standard deviation': 0,
+            'Median': 0,
+            'Median absolute deviation': 0,
+            'Mode': 0,
+            'Min': None,
+            'Max': None,
+            'Range': 0
+        }
+
+    total_sum = 0
+    running_total = 0
+    median1: Optional[float] = None
+    median2: Optional[float] = None
+    median_pos1 = (total_elements + 1) // 2
+    median_pos2 = (total_elements + 2) // 2
+    min_val = None
+    max_val = None
+    mode = None
+
+    sum_squared_diff = 0
+    abs_deviation_total = 0.0
+    abs_deviation_running_total = 0
+    mad1: Optional[float] = None
+    mad2: Optional[float] = None
+    mad_pos1 = (total_elements + 1) // 2
+    mad_pos2 = (total_elements + 2) // 2
+
+    for i, count in enumerate(prod_dist):
+        if count > 0:
+            if min_val is None:
+                min_val = i
+            max_val = i
+
+            total_sum += i * count
+            running_total += count
+
+            if mode is None:
+                mode = i
+
+            if median1 is None and running_total >= median_pos1:
+                median1 = i
+            if median2 is None and running_total >= median_pos2:
+                median2 = i
+
+    mean = total_sum // total_elements
+    median = (median1 + median2) // 2 if median1 is not None and median2 is not None else 0
+
+    running_total = 0
+    for i, count in enumerate(prod_dist):
+        if count > 0:
+            deviation = abs(i - median)
+            abs_deviation_total += deviation * count
+            running_total += count
+
+            sum_squared_diff += count * (i - mean) ** 2
+
+            abs_deviation_running_total += count
+            if mad1 is None and abs_deviation_running_total >= mad_pos1:
+                mad1 = deviation
+            if mad2 is None and abs_deviation_running_total >= mad_pos2:
+                mad2 = deviation
+            if mad1 is not None and mad2 is not None:
+                break
+
+    std_dev = (sum_squared_diff / total_elements) ** 0.5
+    mad = (mad1 + mad2) / 2 if mad1 is not None and mad2 is not None else 0
+
+    statistics = {
+        'Mean': mean,
+        'Standard deviation': std_dev,
+        'Median': median,
+        'Median absolute deviation': mad,
+        'Mode': mode,
+        'Min': min_val,
+        'Max': max_val,
+        'Range': max_val - min_val if min_val is not None and max_val is not None else 0
+    }
+    return statistics

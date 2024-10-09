@@ -656,6 +656,7 @@ function drawSecondaryRules(data) {
    if (get_property_in_data(data, 'Compound features') !== null) drawSecondaryRule("Compound features");
    if (get_property_in_data(data, 'Root feature') !== null) drawSecondaryRule("Root feature");
    if (get_property_in_data(data, 'Features in constraints') !== null) drawSecondaryRule("Features in constraints");
+   if (get_property_in_data(data, 'Configurations') !== null) drawSecondaryRule("Configurations");
    
    // var translate = d3.select("g[id='Compound features']").node() // get the node
    //    .transform          // get the animated transform list

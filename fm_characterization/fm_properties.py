@@ -98,7 +98,7 @@ class FMProperties(Enum):
     MIN_ATTRIBUTES_PER_FEATURE = FMProperty('Min attributes per feature', 'The minimal number of attributes in a feature.', FEATURE_ATTRIBUTES)
     MAX_ATTRIBUTES_PER_FEATURE = FMProperty('Max attributes per feature', 'The maximal number of attributes in a feature.', FEATURE_ATTRIBUTES)
     AVG_ATTRIBUTES_PER_FEATURE = FMProperty('Avg attributes per feature', 'Average number of attributes in features.', FEATURE_ATTRIBUTES)
-    AVG_ATTRIBUTES_PER_FEATURE_WITH_ATTRIBUTES = FMProperty('Avg attributes per feature with attributes', 'Average number of attributes in features with attributes.', FEATURE_ATTRIBUTES)
+    AVG_ATTRIBUTES_PER_FEATURE_WITH_ATTRIBUTES = FMProperty('Avg attributes per feature w. attributes', 'Average number of attributes in features with attributes.', FEATURE_ATTRIBUTES)
 
     CROSS_TREE_CONSTRAINTS = FMProperty('Cross-tree constraints', 'Textual cross-tree constraints.', None)
     SINGLE_FEATURE_CONSTRAINTS = FMProperty('Single feature constraints', 'Constraints with a single feature or negated feature.', CROSS_TREE_CONSTRAINTS)
@@ -120,14 +120,23 @@ class FMProperties(Enum):
     CORE_FEATURES = FMProperty('Core features', "Features that are part of all the configurations (aka 'common features').", None)  # Also 'Common features'
     DEAD_FEATURES = FMProperty('Dead features', 'Features that cannot appear in any configuration.', None)
     VARIANT_FEATURES = FMProperty('Variant features', 'Features that appear only in some configurations (i.e., features that are neither core nor dead).', None)  # Also 'Real optional features'
-    UNIQUE_FEATURES = FMProperty('Unique features', 'Features that appear in exactly one configuration.', None)
-    PURE_OPTIONAL_FEATURES = FMProperty('Pure optional features', 'Feature with 0.5 (50%) probability of being selected in a valid configuration (i.e., their selection is unconstrained).', None)
-    FALSE_OPTIONAL_FEATURES = FMProperty('False-optional features', "Features included in all possible configurations although not being modelled as mandatory.", None)
+    UNIQUE_FEATURES = FMProperty('Unique features', 'Features that appear in exactly one configuration. The ratio is based on the total number of features.', VARIANT_FEATURES)
+    PURE_OPTIONAL_FEATURES = FMProperty('Pure optional features', 'Feature with 0.5 (50%) probability of being selected in a valid configuration (i.e., their selection is unconstrained). The ratio is based on the total number of features.', VARIANT_FEATURES)
+    FALSE_OPTIONAL_FEATURES = FMProperty('False-optional features', "Features included in all possible configurations although not being modelled as mandatory. The ratio is based on the total number of features.", CORE_FEATURES)
     CONFIGURATIONS = FMProperty('Configurations', 'Number of configurations represented by the feature model. If <= is shown, the number represents an upper estimation bound.', None)
     TOTAL_VARIABILITY = FMProperty('Total variability', 'The total variability measures the flexibility of the SPL considering all features.', None)
     PARTIAL_VARIABILITY = FMProperty('Partial variability', 'The partial variability measures the flexibility of the SPL considering only variant features.', None)
     HOMOGENEITY = FMProperty('Homogeneity', 'The homogeneity measures how similar are the configurations of the SPL.', None)
-
+    PRODUCT_DISTRIBUTION = FMProperty('Configuration distribution', 'Number of configurations having a given number of features.', None)
+    PD_MODE = FMProperty('Mode', 'Most frequently occurring number of features for a configuration.', PRODUCT_DISTRIBUTION)
+    PD_MIN = FMProperty('Min', 'Number of features in the smallest configuration.', PRODUCT_DISTRIBUTION)
+    PD_MAX = FMProperty('Max', 'Number of features in the largest configuration.', PRODUCT_DISTRIBUTION)
+    PD_RANGE = FMProperty('Range', 'Range of number of features in configurations.', PRODUCT_DISTRIBUTION)
+    PD_MEAN = FMProperty('Mean', 'Mean number of features occurring in configurations.', PRODUCT_DISTRIBUTION)
+    PD_STD = FMProperty('Standard deviation', 'Standard deviation of number of features in configurations.', PRODUCT_DISTRIBUTION)
+    PD_MEDIAN = FMProperty('Median', 'Median number of features in configurations.', PRODUCT_DISTRIBUTION)
+    PD_MAD = FMProperty('Median absolute deviation', 'Median absolute deviation number of features in configurations.', PRODUCT_DISTRIBUTION)
+    
     # ATOMIC_SETS = FMProperty('Atomic sets', '', None)  # Atomic sets need to be fixed in FLAMA.
 
     
