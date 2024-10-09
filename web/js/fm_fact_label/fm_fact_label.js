@@ -56,34 +56,40 @@ function drawFMFactLabel(data) {
       .attr('type', 'text/css')
       .text(function (d) { return "@import url('" + d + "');"; });
 
-   // Create a div for mouse hover effect
-   tooltip = d3.select("body").append("div").attr("class", "tooltip").style("opacity", 0)
-      .style("position", "absolute")
-      .style("text-align", "left")
-      .style("padding", "0.1rem")
-      .style("background", "#FFFFFF")
-      .style("color", "#313639")
-      .style("border", "1px solid #313639")
-      .style("border-radius", "8px")
-      .style("pointer-events", "none")
-      .style("font-size", "0.8rem")
+  // Create a div for mouse hover effect
+  tooltip = d3
+    .select("body")
+    .append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0)
+    .style("position", "absolute")
+    .style("text-align", "left")
+    .style("padding", "0.1rem")
+    .style("background", "#FFFFFF")
+    .style("color", "#313639")
+    .style("border", "1px solid #313639")
+    .style("border-radius", "8px")
+    .style("pointer-events", "none")
+    .style("font-size", "0.8rem");
    
-   // Create a div to show the content detail on mouse click
-   contentDetail = d3.select("body").append("div").attr("class", "contentDetail").style("opacity", 0)
-   .style("position", "absolute")
-   .style("text-align", "left")
-   .style("padding", "0.1rem")
-   .style("background", "#FFFFFF")
-   .style("color", "#313639")
-   .style("border", "1px solid #313639")
-   .style("border-radius", "8px")
-   .style("font-size", "0.8rem")
-   //.style("width", "400px")
-   .on('mouseout', function (event, d) {
-      d3.select(this).transition()
-         .duration('50')
-         .style('opacity', 0);
-   });
+  // Create a div to show the content detail on mouse click
+  contentDetail = d3
+    .select("body")
+    .append("div")
+    .attr("class", "contentDetail")
+    .style("opacity", 0)
+    .style("position", "absolute")
+    .style("text-align", "left")
+    .style("padding", "0.1rem")
+    .style("background", "#FFFFFF")
+    .style("color", "#313639")
+    .style("border", "1px solid #313639")
+    .style("border-radius", "8px")
+    .style("font-size", "0.8rem")
+    //.style("width", "400px")
+    .on("mouseout", function (event, d) {
+      d3.select(this).transition().duration("50").style("opacity", 0);
+    });
 
    ALL_DATA = data
    // Initialize visible properties   
@@ -269,49 +275,46 @@ function updateProperties(data, id) {
             var collapseIconWidth = collapseIcon.node() === null ? 0 : collapseIcon.node().getBBox().width;
 
             // Property name
-            property.append("text")
-               .attr("id", "propertyName")
-               .attr("text-anchor", "start")
-               .attr("x", function (d) { return get_indentation(d) + collapseIconWidth + PROPERTY_INDENTATION; })
-               .attr("y", PROPERTY_HEIGHT / 2)
-               .attr("dy", ".35em")
-               .attr("font-family", PROPERTY_FONT_FAMILY)
-               .attr("font-size", PROPERTY_FONT_SIZE)
-               .attr("font-weight", function (d) { return parseInt(d.level, 10) == 0 ? "bold" : "normal"; })
-               .text(function (d) { return d.name; })
-               .on('mouseover', function (event, d) {
-                  const [posX, posY] = d3.pointer(event, chart.node());
-                  d3.select(this).transition()
-                     .duration('50')
-                     .attr('opacity', 0.85);
+            property
+            .append("text")
+            .attr("id", "propertyName")
+            .attr("text-anchor", "start")
+            .attr("x", function (d) {
+              return (
+                get_indentation(d) + collapseIconWidth + PROPERTY_INDENTATION
+              );
+            })
+            .attr("y", PROPERTY_HEIGHT / 2)
+            .attr("dy", ".35em")
+            .attr("font-family", PROPERTY_FONT_FAMILY)
+            .attr("font-size", PROPERTY_FONT_SIZE)
+            .attr("font-weight", function (d) {
+              return parseInt(d.level, 10) == 0 ? "bold" : "normal";
+            })
+            .attr("cursor", "pointer")
+            .text(function (d) {
+              return d.name;
+            })
+               .on("mouseover", function (event, d) {
+                  d3.select(this).transition().duration("50").attr("opacity", 0.85);
                   //Makes the new div appear on hover:
-                  tooltip.transition()
-                     .duration(50)
-                     .style("opacity", 1);
-                  tooltip.html(d.description)
-                     .style("left", (event.pageX + 10) + "px")
-                     .style("top", (event.pageY - 15) + "px");
-               })
-               .on('mouseout', function (event, d) {
-                  d3.select(this).transition()
-                     .duration('50')
-                     .attr('opacity', 1);
+                  tooltip.transition().duration(50).style("opacity", 1);
+                  tooltip
+                    .html(d.description)
+                    .style("left", event.pageX + 10 + "px")
+                    .style("top", event.pageY - 15 + "px");
+                })
+                .on("mouseout", function (event, d) {
+                  d3.select(this).transition().duration("50").attr("opacity", 1);
                   //Makes the new div disappear:
-                  tooltip.transition()
-                     .duration('50')
-                     .style("opacity", 0);
-               })
-               .on("click", function (event, d) { 
-                  tooltip.transition()
-                     .duration('50')
-                     .style("opacity", 0);
-                  contentDetail.transition()
-                     .duration(50)
-                     .style("opacity", 1);
-                  contentDetail.html(d.value)
-                     .style("left", (event.pageX + 10) + "px")
-                     .style("top", (event.pageY - 15) + "px")
-               });
+                  tooltip.transition().duration("50").style("opacity", 0);
+                })
+               .on("click", function (event, d) {
+                  // Hide the tooltip
+                  tooltip.transition().duration("50").style("opacity", 0);
+                  // Show the modal
+                  showMetricModal(d);
+                });
 
             // Property value (size)
             property.append("text")
@@ -693,3 +696,65 @@ function drawSecondaryRule(propertyName) {
 //       return indentationWidth + nameWidth + valueWidth + ratioWidth;
 //    })) + PROPERTIES_VALUES_SPACE + PROPERTIES_RATIO_SPACE + LEFT_MARGING;
 // };
+
+document.addEventListener("DOMContentLoaded", function () {
+   function copyToClipboard(text) {
+     navigator.clipboard.writeText(text).then(
+       function () {
+         const copyButton = document.getElementById("copyButton");
+         copyButton.textContent = "Copied!";
+         copyButton.classList.remove("btn-primary");
+         copyButton.classList.add("btn-success");
+         copyButton.disabled = true;
+ 
+         setTimeout(() => {
+           copyButton.textContent = "Copy";
+           copyButton.classList.remove("btn-success");
+           copyButton.classList.add("btn-primary");
+           copyButton.disabled = false;
+         }, 2000);
+       },
+       function (err) {
+         console.error("Could not copy text: ", err);
+       }
+     );
+   }
+ 
+   // Event listener for the copy button
+   document.getElementById("copyButton").addEventListener("click", function () {
+     const modalBodyText = document.querySelector(
+       "#metricModal .modal-body"
+     ).textContent;
+     copyToClipboard(modalBodyText);
+   });
+ });
+ 
+ function showMetricModal(metric) {
+   const modalTitle = document.getElementById("metricModalLabel");
+   const modalBody = document.querySelector("#metricModal .modal-body");
+ 
+   modalTitle.innerHTML = `<b>${metric.name} </b><br><small>${metric.description}</small>`;
+ 
+   if (metric.stats) {
+     modalBody.innerHTML = `
+       <p><strong>Mean:</strong> ${
+         metric.stats.mean !== null ? metric.stats.mean : "N/A"
+       }</p>
+       <p><strong>Median:</strong> ${
+         metric.stats.median !== null ? metric.stats.median : "N/A"
+       }</p>
+       <p><strong>Min:</strong> ${
+         metric.stats.min !== null ? metric.stats.min : "N/A"
+       }</p>
+       <p><strong>Max:</strong> ${
+         metric.stats.max !== null ? metric.stats.max : "N/A"
+       }</p>
+     `;
+   } else {
+     modalBody.innerHTML = metric.value.join(", ");
+   }
+   const metricModal = new bootstrap.Modal(
+     document.getElementById("metricModal")
+   );
+   metricModal.show();
+ }
