@@ -25,7 +25,6 @@ class FMAnalysis():
 
         # For performance purposes
         self._features = self.fm.get_features()
-        
         if self.bdd_model is not None:
             self._configurations = bdd_operations.BDDConfigurationsNumber().execute(self.bdd_model).get_result()
             self._approximation = False
@@ -43,7 +42,8 @@ class FMAnalysis():
             self._variant_features = [f.name for f in self._features 
                                       if f.name not in self._core_features and
                                       f.name not in self._dead_features]
-
+            self._fip = None
+            self._descriptive_statistics = None
 
     def get_analysis(self) -> list[FMPropertyMeasure]:
         result = []
@@ -54,14 +54,14 @@ class FMAnalysis():
         result.append(self.fm_variant_features())
         if self.bdd_model is not None:
             result.append(self.fm_unique_features())
-        if self._fip:
+        if self._fip is not None:
             result.append(self.fm_pure_optional_features())
         result.append(self.fm_configurations_number())
         result.append(self.fm_total_variability())
         result.append(self.fm_partial_variability())
-        if self.bdd_model:
+        if self.bdd_model is not None:
             result.append(self.fm_homogeneity())
-        if self._descriptive_statistics:
+        if self._descriptive_statistics is not None:
             result.append(self.fm_product_distribution())
             result.append(self.fm_mean_pd())
             result.append(self.fm_std_pd())
@@ -131,7 +131,9 @@ class FMAnalysis():
     
     def fm_total_variability(self) -> FMPropertyMeasure:
         _total_variability = self._configurations / (2 ** len(self._features) - 1)
-        _total_variability = get_percentage_str(_total_variability, 2) + "%"
+        _total_variability_res = round(_total_variability * 100, 2)
+        _total_variability_str = str(_total_variability_res) if _total_variability_res > 0 else '{:.2e}'.format(_total_variability * 100)
+        #_total_variability = get_percentage_str(_total_variability, 2) + "%"
         return FMPropertyMeasure(FMProperties.TOTAL_VARIABILITY.value, _total_variability)
     
     def fm_partial_variability(self) -> FMPropertyMeasure:

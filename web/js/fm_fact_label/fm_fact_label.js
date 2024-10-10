@@ -725,7 +725,8 @@ document.addEventListener("DOMContentLoaded", function () {
      const modalBodyText = document.querySelector(
        "#metricModal .modal-body"
      ).textContent;
-     copyToClipboard(modalBodyText);
+     text = modalBodyText.split(", ").join("\n");
+     copyToClipboard(text);
    });
  });
  
