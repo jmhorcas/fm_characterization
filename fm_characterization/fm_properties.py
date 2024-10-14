@@ -99,6 +99,12 @@ class FMProperties(Enum):
     MAX_ATTRIBUTES_PER_FEATURE = FMProperty('Max attributes per feature', 'The maximal number of attributes in a feature.', FEATURE_ATTRIBUTES)
     AVG_ATTRIBUTES_PER_FEATURE = FMProperty('Avg attributes per feature', 'Average number of attributes in features.', FEATURE_ATTRIBUTES)
     AVG_ATTRIBUTES_PER_FEATURE_WITH_ATTRIBUTES = FMProperty('Avg attributes per feature w. attributes', 'Average number of attributes in features with attributes.', FEATURE_ATTRIBUTES)
+    TYPED_FEATURES = FMProperty('Typed features', 'Non-Boolean features its selection require to provide a value (e.g., a number, a string,...', FEATURES)
+    NUMERICAL_FEATURES = FMProperty('Numerical features', 'Features with a Integer or Real type.', TYPED_FEATURES)
+    INTEGER_FEATURES = FMProperty('Integer features', 'Features with a Integer type.', NUMERICAL_FEATURES)
+    REAL_FEATURES = FMProperty('Real features', 'Features with a Real type.', NUMERICAL_FEATURES)
+    STRING_FEATURES = FMProperty('String features', 'Features with a String type.', TYPED_FEATURES)
+    MULTI_FEATURES = FMProperty('Multi-features', "Features with cardinalities (aka 'clonable features')", FEATURES)
 
     CROSS_TREE_CONSTRAINTS = FMProperty('Cross-tree constraints', 'Textual cross-tree constraints.', None)
     SINGLE_FEATURE_CONSTRAINTS = FMProperty('Single feature constraints', 'Constraints with a single feature or negated feature.', CROSS_TREE_CONSTRAINTS)

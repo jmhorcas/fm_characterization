@@ -5,7 +5,7 @@ from collections import defaultdict
 from fm_characterization import FMProperties, FMPropertyMeasure
 from .fm_utils import get_ratio
 from . import constraints_utils as ctcs_utils
-from flamapy.metamodels.fm_metamodel.models import FeatureModel, Feature
+from flamapy.metamodels.fm_metamodel.models import FeatureModel, Feature, FeatureType
 from flamapy.metamodels.fm_metamodel import operations as fm_operations
 
 
@@ -32,6 +32,12 @@ class FMMetrics():
         result.append(self.fm_top_features())
         result.append(self.fm_solitary_features())
         result.append(self.fm_grouped_features())
+        result.append(self.fm_typed_features())
+        result.append(self.fm_numerical_features())
+        result.append(self.fm_integer_features())
+        result.append(self.fm_real_features())
+        result.append(self.fm_string_features())
+        result.append(self.fm_multi_features())
         result.append(self.fm_tree_relationships())
         result.append(self.fm_mandatory_features())
         result.append(self.fm_optional_features())
@@ -348,6 +354,48 @@ class FMMetrics():
         _result = self._metrics[FMProperties.AVG_ATTRIBUTES_PER_FEATURE_WITH_ATTRIBUTES.value]
         return FMPropertyMeasure(FMProperties.AVG_ATTRIBUTES_PER_FEATURE_WITH_ATTRIBUTES.value, round(_result, FMMetrics.PRECISION))
 
+    def fm_multi_features(self) -> FMPropertyMeasure:
+        _result = self._metrics[FMProperties.MULTI_FEATURES.value]
+        return FMPropertyMeasure(FMProperties.MULTI_FEATURES.value, 
+                                 _result,
+                                 len(_result),
+                                 get_ratio(_result, self.fm_features().value))
+
+    def fm_typed_features(self) -> FMPropertyMeasure:
+        _result = self._metrics[FMProperties.TYPED_FEATURES.value]
+        return FMPropertyMeasure(FMProperties.TYPED_FEATURES.value, 
+                                 _result,
+                                 len(_result),
+                                 get_ratio(_result, self.fm_features().value))
+
+    def fm_numerical_features(self) -> FMPropertyMeasure:
+        _result = self._metrics[FMProperties.NUMERICAL_FEATURES.value]
+        return FMPropertyMeasure(FMProperties.NUMERICAL_FEATURES.value, 
+                                 _result,
+                                 len(_result),
+                                 get_ratio(_result, self.fm_features().value))
+
+    def fm_integer_features(self) -> FMPropertyMeasure:
+        _result = self._metrics[FMProperties.INTEGER_FEATURES.value]
+        return FMPropertyMeasure(FMProperties.INTEGER_FEATURES.value, 
+                                 _result,
+                                 len(_result),
+                                 get_ratio(_result, self.fm_features().value))
+    
+    def fm_real_features(self) -> FMPropertyMeasure:
+        _result = self._metrics[FMProperties.REAL_FEATURES.value]
+        return FMPropertyMeasure(FMProperties.REAL_FEATURES.value, 
+                                 _result,
+                                 len(_result),
+                                 get_ratio(_result, self.fm_features().value))
+    
+    def fm_string_features(self) -> FMPropertyMeasure:
+        _result = self._metrics[FMProperties.STRING_FEATURES.value]
+        return FMPropertyMeasure(FMProperties.STRING_FEATURES.value, 
+                                 _result,
+                                 len(_result),
+                                 get_ratio(_result, self.fm_features().value))
+    
 
 def traverse_metrics(fm: FeatureModel) -> dict[str, Any]:
     """Calculate all metrics from the feature model in only one traversing of the tree."""
@@ -387,6 +435,12 @@ def traverse_metrics(fm: FeatureModel) -> dict[str, Any]:
     metrics[FMProperties.AVG_ATTRIBUTES_PER_FEATURE_WITH_ATTRIBUTES.value] = list()
     metrics['Branches'] = 0
     metrics['Children'] = 0
+    metrics[FMProperties.INTEGER_FEATURES.value] = list()
+    metrics[FMProperties.REAL_FEATURES.value] = list()
+    metrics[FMProperties.STRING_FEATURES.value] = list()
+    metrics[FMProperties.NUMERICAL_FEATURES.value] = list()
+    metrics[FMProperties.TYPED_FEATURES.value] = list()
+    metrics[FMProperties.MULTI_FEATURES.value] = list()
 
     traverse_feature_metrics(fm.root, metrics)
     metrics[FMProperties.BRANCHING_FACTOR.value] = 0 if metrics['Branches'] == 0 else round(metrics['Children'] / metrics['Branches'], FMMetrics.PRECISION)
@@ -432,7 +486,19 @@ def traverse_feature_metrics(feature: Feature, metrics: dict[str, Any], depth: i
             metrics[FMProperties.TOP_FEATURES.value].append(feature.name)
         if feature.parent is not None and not feature.parent.is_group():
             metrics[FMProperties.SOLITARY_FEATURES.value].append(feature.name)
-        
+        if feature.feature_cardinality.min != 1 or feature.feature_cardinality.max != 1:
+            metrics[FMProperties.MULTI_FEATURES.value].append(feature.name)
+        if feature.feature_type != FeatureType.BOOLEAN:
+            metrics[FMProperties.TYPED_FEATURES.value].append(feature.name)
+            if feature.feature_type == FeatureType.INTEGER:
+                metrics[FMProperties.INTEGER_FEATURES.value].append(feature.name)
+                metrics[FMProperties.NUMERICAL_FEATURES.value].append(feature.name)
+            elif feature.feature_type == FeatureType.REAL:
+                metrics[FMProperties.REAL_FEATURES.value].append(feature.name)
+                metrics[FMProperties.NUMERICAL_FEATURES.value].append(feature.name)
+            elif feature.feature_type == FeatureType.STRING:
+                metrics[FMProperties.STRING_FEATURES.value].append(feature.name)
+
         # Attributes
         attributes = feature.get_attributes()
         metrics[FMProperties.AVG_ATTRIBUTES_PER_FEATURE.value].append(len(attributes))
