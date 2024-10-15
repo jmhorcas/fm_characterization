@@ -131,9 +131,7 @@ class FMAnalysis():
     
     def fm_total_variability(self) -> FMPropertyMeasure:
         _total_variability = self._configurations / (2 ** len(self._features) - 1)
-        _total_variability_res = round(_total_variability * 100, 2)
-        _total_variability_str = str(_total_variability_res) if _total_variability_res > 0 else '{:.2e}'.format(_total_variability * 100)
-        #_total_variability = get_percentage_str(_total_variability, 2) + "%"
+        _total_variability = get_percentage_str(_total_variability, 2) + "%"
         return FMPropertyMeasure(FMProperties.TOTAL_VARIABILITY.value, _total_variability)
     
     def fm_partial_variability(self) -> FMPropertyMeasure:
