@@ -49,7 +49,7 @@ class FMPropertyMeasure():
         self.ratio = ratio
 
     def to_dict(self) -> dict[str, Any]:
-        result = {'value': self.value,
+        result = {'value': safe_value(self.value),
                   'size': self.size,
                   'ratio': self.ratio}
         return self.property.to_dict() | result
@@ -107,11 +107,14 @@ class FMProperties(Enum):
     MULTI_FEATURES = FMProperty('Multi-features', "Features with cardinalities (aka 'clonable features')", FEATURES)
 
     CROSS_TREE_CONSTRAINTS = FMProperty('Cross-tree constraints', 'Textual cross-tree constraints.', None)
-    SINGLE_FEATURE_CONSTRAINTS = FMProperty('Single feature constraints', 'Constraints with a single feature or negated feature.', CROSS_TREE_CONSTRAINTS)
-    SIMPLE_CONSTRAINTS = FMProperty('Simple constraints', 'Requires and Excludes constraints.', CROSS_TREE_CONSTRAINTS)  # Requires and excludes
+    LOGICAL_CONSTRAINTS = FMProperty('Logical constraints', 'Constraints with only logical operators.', CROSS_TREE_CONSTRAINTS)
+    ARITHMETIC_CONSTRAINTS = FMProperty('Arithmetic constraints', 'Constraints with at least one arithmetic operator.', CROSS_TREE_CONSTRAINTS)
+    AGGREGATION_CONSTRAINTS = FMProperty('Aggregation constraints', 'Constraints with at least one aggregation operator.', CROSS_TREE_CONSTRAINTS)
+    SINGLE_FEATURE_CONSTRAINTS = FMProperty('Single feature constraints', 'Constraints with a single feature or negated feature.', LOGICAL_CONSTRAINTS)
+    SIMPLE_CONSTRAINTS = FMProperty('Simple constraints', 'Requires and Excludes constraints.', LOGICAL_CONSTRAINTS)  # Requires and excludes
     REQUIRES_CONSTRAINTS = FMProperty('Requires constraints', 'Constraints modeling that the activation of a feature f1 implies the activation of a feature f2.', SIMPLE_CONSTRAINTS)
     EXCLUDES_CONSTRAINTS = FMProperty('Excludes constraints', 'Constraints modeling that two features are mutually exclusive and cannot be activated together.', SIMPLE_CONSTRAINTS)
-    COMPLEX_CONSTRAINTS = FMProperty('Complex constraints', 'Constraints in arbitrary propositional logic formulae.', CROSS_TREE_CONSTRAINTS)  # Prop logic constraints (aka advanced constraints)
+    COMPLEX_CONSTRAINTS = FMProperty('Complex constraints', 'Constraints in arbitrary propositional logic formulae.', LOGICAL_CONSTRAINTS)  # Prop logic constraints (aka advanced constraints)
     PSEUDO_COMPLEX_CONSTRAINTS = FMProperty('Pseudo-complex constraints', 'Constraints that are convertible to a set of simple constraints.', COMPLEX_CONSTRAINTS)
     STRICT_COMPLEX_CONSTRAINTS = FMProperty('Strict-complex constraints', 'Constraints that cannot be converted to a set of simple constraints.', COMPLEX_CONSTRAINTS)
     MIN_CONSTRAINTS_PER_FEATURE = FMProperty('Min constraints per feature', 'The minimal number of constraints per feature.', CROSS_TREE_CONSTRAINTS)
@@ -145,4 +148,10 @@ class FMProperties(Enum):
     
     # ATOMIC_SETS = FMProperty('Atomic sets', '', None)  # Atomic sets need to be fixed in FLAMA.
 
-    
+
+def safe_value(value: Any) -> str:
+    if isinstance(value, str):
+        return value.replace('"', '')
+    if isinstance(value, list):
+        return [safe_value(v) for v in value if isinstance(v, str)]
+    return value

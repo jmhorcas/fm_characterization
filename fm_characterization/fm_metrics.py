@@ -53,6 +53,7 @@ class FMMetrics():
         result.append(self.fm_max_children_per_feature())
         result.append(self.fm_avg_children_per_feature())
         result.append(self.fm_cross_tree_constraints())
+        result.append(self.fm_logical_constraints())
         result.append(self.fm_single_feature_constraints())
         result.append(self.fm_simple_constraints())
         result.append(self.fm_requires_constraints())
@@ -60,6 +61,8 @@ class FMMetrics():
         result.append(self.fm_complex_constraints())
         result.append(self.fm_pseudocomplex_constraints())
         result.append(self.fm_strictcomplex_constraints())
+        result.append(self.fm_arithmetic_constraints())
+        result.append(self.fm_aggregation_constraints())
         result.append(self.fm_extra_constraint_representativeness())
         result.append(self.fm_min_features_per_constraint())
         result.append(self.fm_max_features_per_constraint())
@@ -248,19 +251,40 @@ class FMMetrics():
                                  _cross_tree_constraints,
                                  len(_cross_tree_constraints))
 
+    def fm_logical_constraints(self) -> FMPropertyMeasure:
+        _logical_constraints = self._metrics[FMProperties.LOGICAL_CONSTRAINTS.value]
+        return FMPropertyMeasure(FMProperties.LOGICAL_CONSTRAINTS.value, 
+                                 _logical_constraints,
+                                 len(_logical_constraints),
+                                 get_ratio(_logical_constraints, self.fm_cross_tree_constraints().value))
+    
+    def fm_arithmetic_constraints(self) -> FMPropertyMeasure:
+        _arithmetic_constraints = self._metrics[FMProperties.ARITHMETIC_CONSTRAINTS.value]
+        return FMPropertyMeasure(FMProperties.ARITHMETIC_CONSTRAINTS.value, 
+                                 _arithmetic_constraints,
+                                 len(_arithmetic_constraints),
+                                 get_ratio(_arithmetic_constraints, self.fm_cross_tree_constraints().value))
+    
+    def fm_aggregation_constraints(self) -> FMPropertyMeasure:
+        _aggregation_constraints = self._metrics[FMProperties.AGGREGATION_CONSTRAINTS.value]
+        return FMPropertyMeasure(FMProperties.AGGREGATION_CONSTRAINTS.value, 
+                                 _aggregation_constraints,
+                                 len(_aggregation_constraints),
+                                 get_ratio(_aggregation_constraints, self.fm_cross_tree_constraints().value))
+    
     def fm_single_feature_constraints(self) -> FMPropertyMeasure:
         _single_feature_constraints = self._metrics[FMProperties.SINGLE_FEATURE_CONSTRAINTS.value]
         return FMPropertyMeasure(FMProperties.SINGLE_FEATURE_CONSTRAINTS.value, 
                                  _single_feature_constraints,
                                  len(_single_feature_constraints),
-                                 get_ratio(_single_feature_constraints, self.fm_cross_tree_constraints().value))
+                                 get_ratio(_single_feature_constraints, self.fm_logical_constraints().value))
 
     def fm_simple_constraints(self) -> FMPropertyMeasure:
         _simple_constraints = self._metrics[FMProperties.SIMPLE_CONSTRAINTS.value]
         return FMPropertyMeasure(FMProperties.SIMPLE_CONSTRAINTS.value, 
                                  _simple_constraints,
                                  len(_simple_constraints),
-                                 get_ratio(_simple_constraints, self.fm_cross_tree_constraints().value))
+                                 get_ratio(_simple_constraints, self.fm_logical_constraints().value))
 
     def fm_requires_constraints(self) -> FMPropertyMeasure:
         _requires_constraints = self._metrics[FMProperties.REQUIRES_CONSTRAINTS.value]
@@ -281,7 +305,7 @@ class FMMetrics():
         return FMPropertyMeasure(FMProperties.COMPLEX_CONSTRAINTS.value, 
                                  _complex_constraints,
                                  len(_complex_constraints),
-                                 get_ratio(_complex_constraints, self.fm_cross_tree_constraints().value))
+                                 get_ratio(_complex_constraints, self.fm_logical_constraints().value))
 
     def fm_pseudocomplex_constraints(self) -> FMPropertyMeasure:
         _pseudocomplex_constraints = self._metrics[FMProperties.PSEUDO_COMPLEX_CONSTRAINTS.value]
@@ -454,6 +478,9 @@ def traverse_metrics(fm: FeatureModel) -> dict[str, Any]:
 
     ## Constraints metrics
     metrics[FMProperties.CROSS_TREE_CONSTRAINTS.value] = list()
+    metrics[FMProperties.LOGICAL_CONSTRAINTS.value] = list()
+    metrics[FMProperties.ARITHMETIC_CONSTRAINTS.value] = list()
+    metrics[FMProperties.AGGREGATION_CONSTRAINTS.value] = list()
     metrics[FMProperties.SINGLE_FEATURE_CONSTRAINTS.value] = list()
     metrics[FMProperties.SIMPLE_CONSTRAINTS.value] = list()
     metrics[FMProperties.REQUIRES_CONSTRAINTS.value] = list()
@@ -563,20 +590,27 @@ def traverse_feature_metrics(feature: Feature, metrics: dict[str, Any], depth: i
 def traverse_constraints_metrics(fm: FeatureModel, metrics: dict[str, Any]) -> None:
     for ctc in fm.get_constraints():
         metrics[FMProperties.CROSS_TREE_CONSTRAINTS.value].append(ctc.ast.pretty_str())
-        if ctc.is_single_feature_constraint():
-            metrics[FMProperties.SINGLE_FEATURE_CONSTRAINTS.value].append(ctc.ast.pretty_str())
-        elif ctc.is_requires_constraint():
-            metrics[FMProperties.SIMPLE_CONSTRAINTS.value].append(ctc.ast.pretty_str())
-            metrics[FMProperties.REQUIRES_CONSTRAINTS.value].append(ctc.ast.pretty_str())
-        elif ctc.is_excludes_constraint():
-            metrics[FMProperties.SIMPLE_CONSTRAINTS.value].append(ctc.ast.pretty_str())
-            metrics[FMProperties.EXCLUDES_CONSTRAINTS.value].append(ctc.ast.pretty_str())
-        else:
-            metrics[FMProperties.COMPLEX_CONSTRAINTS.value].append(ctc.ast.pretty_str())
-            if ctc.is_pseudocomplex_constraint():
-                metrics[FMProperties.PSEUDO_COMPLEX_CONSTRAINTS.value].append(ctc.ast.pretty_str())
+        if ctc.is_logical_constraint():
+            metrics[FMProperties.LOGICAL_CONSTRAINTS.value].append(ctc.ast.pretty_str())
+            if ctc.is_single_feature_constraint():
+                metrics[FMProperties.SINGLE_FEATURE_CONSTRAINTS.value].append(ctc.ast.pretty_str())
+            elif ctc.is_requires_constraint():
+                metrics[FMProperties.SIMPLE_CONSTRAINTS.value].append(ctc.ast.pretty_str())
+                metrics[FMProperties.REQUIRES_CONSTRAINTS.value].append(ctc.ast.pretty_str())
+            elif ctc.is_excludes_constraint():
+                metrics[FMProperties.SIMPLE_CONSTRAINTS.value].append(ctc.ast.pretty_str())
+                metrics[FMProperties.EXCLUDES_CONSTRAINTS.value].append(ctc.ast.pretty_str())
             else:
-                metrics[FMProperties.STRICT_COMPLEX_CONSTRAINTS.value].append(ctc.ast.pretty_str())
+                metrics[FMProperties.COMPLEX_CONSTRAINTS.value].append(ctc.ast.pretty_str())
+                if ctc.is_pseudocomplex_constraint():
+                    metrics[FMProperties.PSEUDO_COMPLEX_CONSTRAINTS.value].append(ctc.ast.pretty_str())
+                else:
+                    metrics[FMProperties.STRICT_COMPLEX_CONSTRAINTS.value].append(ctc.ast.pretty_str())
+        elif ctc.is_arithmetic_constraint():
+            metrics[FMProperties.ARITHMETIC_CONSTRAINTS.value].append(ctc.ast.pretty_str())
+        elif ctc.is_aggregation_constraint():
+            metrics[FMProperties.AGGREGATIONS_CONSTRAINTS.value].append(ctc.ast.pretty_str())
+        
         features = ctc.get_features()
         metrics[FMProperties.EXTRA_CONSTRAINT_REPRESENTATIVENESS.value].update(features)
         metrics[FMProperties.AVG_FEATURES_PER_CONSTRAINT.value].append(len(features))
