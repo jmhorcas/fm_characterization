@@ -261,11 +261,12 @@ class FMAnalysis():
 #     return statistics
 
 def descriptive_statistics(frequencies: list[int]) -> dict[str, Any]:
-    print(frequencies)
     total_count = sum(frequencies)
+    
+    # Mean calculation
     mean = sum(i * freq for i, freq in enumerate(frequencies)) / total_count
     
-    # Calculating the standard deviation
+    # Standard deviation calculation
     variance = sum(freq * (i - mean) ** 2 for i, freq in enumerate(frequencies)) / total_count
     std_dev = math.sqrt(variance)
     
@@ -278,18 +279,24 @@ def descriptive_statistics(frequencies: list[int]) -> dict[str, Any]:
         if cumulative_count >= median_position:
             median = i
             break
-
-    # MAD calculation (Median Absolute Deviation)
-    deviations = [abs(i - median) for i, freq in enumerate(frequencies) for _ in range(freq)]
-    mad = sum(deviations) / len(deviations)
     
-    # Mode
-    mode_val = frequencies.index(max(frequencies))
+    # Median Absolute Deviation (MAD) calculation
+    cumulative_count = 0
+    mad_total = 0
+    for i, freq in enumerate(frequencies):
+        mad_total += freq * abs(i - median)
+    mad = mad_total / total_count
     
-    # Min, Max, and Range
+    # Mode calculation
+    mode_val = max(range(len(frequencies)), key=lambda i: frequencies[i])
+    
+    # Min and Max calculation
     min_val = next(i for i, freq in enumerate(frequencies) if freq > 0)
-    max_val = len(frequencies) - 1 - next(i for i, freq in enumerate(reversed(frequencies)) if freq > 0)
+    max_val = next(i for i, freq in reversed(list(enumerate(frequencies))) if freq > 0)
+    
+    # Range calculation
     range_val = max_val - min_val
+
 
     return {
         'Mean': mean,
