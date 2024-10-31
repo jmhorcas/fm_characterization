@@ -149,14 +149,16 @@ class FMAnalysis():
         return FMPropertyMeasure(FMProperties.PRODUCT_DISTRIBUTION.value, None)
 
     def fm_mean_pd(self) -> FMPropertyMeasure:
-        return FMPropertyMeasure(FMProperties.PD_MEAN.value, self._descriptive_statistics['Mean'])
+        _mean_pd = round(self._descriptive_statistics['Mean'], 2)
+        return FMPropertyMeasure(FMProperties.PD_MEAN.value, _mean_pd)
     
     def fm_std_pd(self) -> FMPropertyMeasure:
         _std_pd = round(self._descriptive_statistics['Standard deviation'], 2)
         return FMPropertyMeasure(FMProperties.PD_STD.value, _std_pd)
     
     def fm_median_pd(self) -> FMPropertyMeasure:
-        return FMPropertyMeasure(FMProperties.PD_MEDIAN.value, self._descriptive_statistics['Median'])
+        _median_pd = round(self._descriptive_statistics['Median'], 2)
+        return FMPropertyMeasure(FMProperties.PD_MEDIAN.value, _median_pd)
     
     def fm_mad_pd(self) -> FMPropertyMeasure:
         _mad_pd = round(self._descriptive_statistics['Median absolute deviation'], 2)
