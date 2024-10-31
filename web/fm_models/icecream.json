@@ -1,0 +1,1009 @@
+{
+    "metadata": [
+        {
+            "name": "Name",
+            "description": "Name of the feature model.",
+            "parent": null,
+            "level": 0,
+            "value": "icecream",
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Description",
+            "description": "Description of the feature model.",
+            "parent": null,
+            "level": 0,
+            "value": null,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Author",
+            "description": "Author of the feature model",
+            "parent": null,
+            "level": 0,
+            "value": null,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Year",
+            "description": "Year of creation of the feature model",
+            "parent": null,
+            "level": 0,
+            "value": 2024,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Reference",
+            "description": "Main paper for reference or DOI of the feature model",
+            "parent": null,
+            "level": 0,
+            "value": null,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Tags",
+            "description": "Tags or keywords that identify the feature model.",
+            "parent": null,
+            "level": 0,
+            "value": null,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Domain",
+            "description": "Domain of the feature model.",
+            "parent": null,
+            "level": 0,
+            "value": null,
+            "size": null,
+            "ratio": null
+        }
+    ],
+    "metrics": [
+        {
+            "name": "Features",
+            "description": "Set of features in the feature model.",
+            "parent": null,
+            "level": 0,
+            "value": [
+                "Ice Cream",
+                "Category",
+                "Popsicle",
+                "Scoop",
+                "Flavors",
+                "Lemon",
+                "Vanilla",
+                "Chocolate",
+                "White",
+                "Dark",
+                "Container",
+                "Stick",
+                "Cup",
+                "Cone",
+                "Waffle",
+                "Name of customer",
+                "Scoops",
+                "Topping",
+                "Caramel",
+                "Whipped cream",
+                "Sprinkles"
+            ],
+            "size": 21,
+            "ratio": null
+        },
+        {
+            "name": "Abstract features",
+            "description": "Features used to structure the feature model that, however, do not have any impact at implementation level.",
+            "parent": "Features",
+            "level": 1,
+            "value": [
+                "Ice Cream"
+            ],
+            "size": 1,
+            "ratio": 0.0476
+        },
+        {
+            "name": "Abstract leaf features",
+            "description": "Abstract and leaf features.",
+            "parent": "Abstract features",
+            "level": 2,
+            "value": [],
+            "size": 0,
+            "ratio": 0.0
+        },
+        {
+            "name": "Abstract compound features",
+            "description": "Abstract and compound features.",
+            "parent": "Abstract features",
+            "level": 2,
+            "value": [
+                "Ice Cream"
+            ],
+            "size": 1,
+            "ratio": 1.0
+        },
+        {
+            "name": "Concrete features",
+            "description": "Features that are mapped to at least one implementation artifact.",
+            "parent": "Features",
+            "level": 1,
+            "value": [
+                "Category",
+                "Popsicle",
+                "Scoop",
+                "Flavors",
+                "Lemon",
+                "Vanilla",
+                "Chocolate",
+                "White",
+                "Dark",
+                "Container",
+                "Stick",
+                "Cup",
+                "Cone",
+                "Waffle",
+                "Name of customer",
+                "Scoops",
+                "Topping",
+                "Caramel",
+                "Whipped cream",
+                "Sprinkles"
+            ],
+            "size": 20,
+            "ratio": 0.9524
+        },
+        {
+            "name": "Concrete leaf features",
+            "description": "Concrete and leaf features.",
+            "parent": "Concrete features",
+            "level": 2,
+            "value": [
+                "Popsicle",
+                "Scoop",
+                "Lemon",
+                "Vanilla",
+                "White",
+                "Dark",
+                "Stick",
+                "Cup",
+                "Cone",
+                "Waffle",
+                "Name of customer",
+                "Scoops",
+                "Caramel",
+                "Whipped cream",
+                "Sprinkles"
+            ],
+            "size": 15,
+            "ratio": 0.75
+        },
+        {
+            "name": "Concrete compound features",
+            "description": "Concrete and compound features.",
+            "parent": "Concrete features",
+            "level": 2,
+            "value": [
+                "Category",
+                "Flavors",
+                "Chocolate",
+                "Container",
+                "Topping"
+            ],
+            "size": 5,
+            "ratio": 0.25
+        },
+        {
+            "name": "Compound features",
+            "description": "Features that have subfeatures.",
+            "parent": "Features",
+            "level": 1,
+            "value": [
+                "Ice Cream",
+                "Category",
+                "Flavors",
+                "Chocolate",
+                "Container",
+                "Topping"
+            ],
+            "size": 6,
+            "ratio": 0.2857
+        },
+        {
+            "name": "Leaf features",
+            "description": "Features that have not subfeatures (aka 'primitive features' or 'terminal features').",
+            "parent": "Features",
+            "level": 1,
+            "value": [
+                "Popsicle",
+                "Scoop",
+                "Lemon",
+                "Vanilla",
+                "White",
+                "Dark",
+                "Stick",
+                "Cup",
+                "Cone",
+                "Waffle",
+                "Name of customer",
+                "Scoops",
+                "Caramel",
+                "Whipped cream",
+                "Sprinkles"
+            ],
+            "size": 15,
+            "ratio": 0.7143
+        },
+        {
+            "name": "Root feature",
+            "description": "The root of the feature model.",
+            "parent": "Features",
+            "level": 1,
+            "value": [
+                "Ice Cream"
+            ],
+            "size": 1,
+            "ratio": 0.0476
+        },
+        {
+            "name": "Top features",
+            "description": "Features that are first descendants of the root.",
+            "parent": "Root feature",
+            "level": 2,
+            "value": [
+                "Category",
+                "Flavors",
+                "Container",
+                "Waffle",
+                "Name of customer",
+                "Scoops",
+                "Topping"
+            ],
+            "size": 7,
+            "ratio": 0.3333
+        },
+        {
+            "name": "Solitary features",
+            "description": "Features that are not grouped in a feature group.",
+            "parent": "Features",
+            "level": 1,
+            "value": [
+                "Ice Cream",
+                "Category",
+                "Flavors",
+                "Container",
+                "Waffle",
+                "Name of customer",
+                "Scoops",
+                "Topping"
+            ],
+            "size": 8,
+            "ratio": 0.381
+        },
+        {
+            "name": "Grouped features",
+            "description": "Features that occurs in a feature group.",
+            "parent": "Features",
+            "level": 1,
+            "value": [
+                "Popsicle",
+                "Scoop",
+                "Lemon",
+                "Vanilla",
+                "Chocolate",
+                "White",
+                "Dark",
+                "Stick",
+                "Cup",
+                "Cone",
+                "Caramel",
+                "Whipped cream",
+                "Sprinkles"
+            ],
+            "size": 13,
+            "ratio": 0.619
+        },
+        {
+            "name": "Typed features",
+            "description": "Non-Boolean features its selection require to provide a value (e.g., a number, a string,...",
+            "parent": "Features",
+            "level": 1,
+            "value": [
+                "Name of customer",
+                "Scoops"
+            ],
+            "size": 2,
+            "ratio": 0.0952
+        },
+        {
+            "name": "Numerical features",
+            "description": "Features with a Integer or Real type.",
+            "parent": "Typed features",
+            "level": 2,
+            "value": [
+                "Scoops"
+            ],
+            "size": 1,
+            "ratio": 0.0476
+        },
+        {
+            "name": "Integer features",
+            "description": "Features with a Integer type.",
+            "parent": "Numerical features",
+            "level": 3,
+            "value": [
+                "Scoops"
+            ],
+            "size": 1,
+            "ratio": 0.0476
+        },
+        {
+            "name": "Real features",
+            "description": "Features with a Real type.",
+            "parent": "Numerical features",
+            "level": 3,
+            "value": [],
+            "size": 0,
+            "ratio": 0.0
+        },
+        {
+            "name": "String features",
+            "description": "Features with a String type.",
+            "parent": "Typed features",
+            "level": 2,
+            "value": [
+                "Name of customer"
+            ],
+            "size": 1,
+            "ratio": 0.0476
+        },
+        {
+            "name": "Multi-features",
+            "description": "Features with cardinalities (aka 'clonable features')",
+            "parent": "Features",
+            "level": 1,
+            "value": [
+                "Chocolate"
+            ],
+            "size": 1,
+            "ratio": 0.0476
+        },
+        {
+            "name": "Tree relationships",
+            "description": "Number of relationships (edges) of the feature model.",
+            "parent": null,
+            "level": 0,
+            "value": [
+                "(mandatory) Ice Cream[1,1]Category",
+                "(alternative) Category[1,1]Popsicle Scoop",
+                "(mandatory) Ice Cream[1,1]Flavors",
+                "(or) Flavors[1,3]Lemon Vanilla Chocolate",
+                "(alternative) Chocolate[1,1]White Dark",
+                "(mandatory) Ice Cream[1,1]Container",
+                "(alternative) Container[1,1]Stick Cup Cone",
+                "(optional) Ice Cream[0,1]Waffle",
+                "(optional) Ice Cream[0,1]Name of customer",
+                "(optional) Ice Cream[0,1]Scoops",
+                "(optional) Ice Cream[0,1]Topping",
+                "(or) Topping[1,3]Caramel Whipped cream Sprinkles"
+            ],
+            "size": 12,
+            "ratio": null
+        },
+        {
+            "name": "Mandatory features",
+            "description": "Features marked as mandatory that need to be selected if its parent is selected.",
+            "parent": "Tree relationships",
+            "level": 1,
+            "value": [
+                "Ice Cream",
+                "Ice Cream",
+                "Ice Cream"
+            ],
+            "size": 3,
+            "ratio": 0.375
+        },
+        {
+            "name": "Optional features",
+            "description": "Feature marked as optional.",
+            "parent": "Tree relationships",
+            "level": 1,
+            "value": [
+                "Ice Cream",
+                "Ice Cream",
+                "Ice Cream",
+                "Ice Cream"
+            ],
+            "size": 4,
+            "ratio": 0.5
+        },
+        {
+            "name": "Feature groups",
+            "description": "Features that express a choice over the grouped features in a group.",
+            "parent": "Tree relationships",
+            "level": 1,
+            "value": [
+                "(alternative) Category[1,1]Popsicle Scoop",
+                "(or) Flavors[1,3]Lemon Vanilla Chocolate",
+                "(alternative) Chocolate[1,1]White Dark",
+                "(alternative) Container[1,1]Stick Cup Cone",
+                "(or) Topping[1,3]Caramel Whipped cream Sprinkles"
+            ],
+            "size": 5,
+            "ratio": 0.4167
+        },
+        {
+            "name": "Alternative groups",
+            "description": "Feature groups that require the selection of just one child (i.e., [1..1] cardinality).",
+            "parent": "Feature groups",
+            "level": 2,
+            "value": [
+                "(alternative) Category[1,1]Popsicle Scoop",
+                "(alternative) Chocolate[1,1]White Dark",
+                "(alternative) Container[1,1]Stick Cup Cone"
+            ],
+            "size": 3,
+            "ratio": 0.6
+        },
+        {
+            "name": "Or groups",
+            "description": "Feature groups that require the selection of at least one child (i.e., [1..*] cardinality).",
+            "parent": "Feature groups",
+            "level": 2,
+            "value": [
+                "(or) Flavors[1,3]Lemon Vanilla Chocolate",
+                "(or) Topping[1,3]Caramel Whipped cream Sprinkles"
+            ],
+            "size": 2,
+            "ratio": 0.4
+        },
+        {
+            "name": "Mutex groups",
+            "description": "Feature groups that require the selection of zero or just one child (i.e., [0..1] cardinality).",
+            "parent": "Feature groups",
+            "level": 2,
+            "value": [],
+            "size": 0,
+            "ratio": 0.0
+        },
+        {
+            "name": "Cardinality groups",
+            "description": "Feature groups with arbitraty cardinality [a..b] that require the selection of an minimum and a maximum number of children.",
+            "parent": "Feature groups",
+            "level": 2,
+            "value": [],
+            "size": 0,
+            "ratio": 0.0
+        },
+        {
+            "name": "Depth of tree",
+            "description": "Number of features of the longest path from the root to the leaf features.",
+            "parent": null,
+            "level": 0,
+            "value": 3,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Mean depth of tree",
+            "description": "Number of features of the mean path from the root to the leaf features.",
+            "parent": "Depth of tree",
+            "level": 1,
+            "value": 1.93,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Branching factor",
+            "description": "Average number of children per non-leaf feature (aka 'Ratio of Variability').",
+            "parent": null,
+            "level": 0,
+            "value": 3.33,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Min children per feature",
+            "description": "Minimal number of children per non-leaf feature.",
+            "parent": "Branching factor",
+            "level": 1,
+            "value": 2,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Max children per feature",
+            "description": "Maximal number of children per feature.",
+            "parent": "Branching factor",
+            "level": 1,
+            "value": 7,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Avg children per feature",
+            "description": "Average number of children per feature.",
+            "parent": "Branching factor",
+            "level": 1,
+            "value": 0.95,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Cross-tree constraints",
+            "description": "Textual cross-tree constraints.",
+            "parent": null,
+            "level": 0,
+            "value": [
+                "Scoops",
+                "NOT Waffle",
+                "Popsicle IMPLIES Stick",
+                "Scoop IMPLIES (Cup OR Cone)",
+                "Topping IMPLIES Caramel",
+                "Vanilla IMPLIES Topping"
+            ],
+            "size": 6,
+            "ratio": null
+        },
+        {
+            "name": "Logical constraints",
+            "description": "Constraints with only logical operators.",
+            "parent": "Cross-tree constraints",
+            "level": 1,
+            "value": [
+                "Scoops",
+                "NOT Waffle",
+                "Popsicle IMPLIES Stick",
+                "Scoop IMPLIES (Cup OR Cone)",
+                "Topping IMPLIES Caramel",
+                "Vanilla IMPLIES Topping"
+            ],
+            "size": 6,
+            "ratio": 1.0
+        },
+        {
+            "name": "Single feature constraints",
+            "description": "Constraints with a single feature or negated feature.",
+            "parent": "Logical constraints",
+            "level": 2,
+            "value": [
+                "Scoops",
+                "NOT Waffle"
+            ],
+            "size": 2,
+            "ratio": 0.3333
+        },
+        {
+            "name": "Simple constraints",
+            "description": "Requires and Excludes constraints.",
+            "parent": "Logical constraints",
+            "level": 2,
+            "value": [
+                "Popsicle IMPLIES Stick",
+                "Topping IMPLIES Caramel",
+                "Vanilla IMPLIES Topping"
+            ],
+            "size": 3,
+            "ratio": 0.5
+        },
+        {
+            "name": "Requires constraints",
+            "description": "Constraints modeling that the activation of a feature f1 implies the activation of a feature f2.",
+            "parent": "Simple constraints",
+            "level": 3,
+            "value": [
+                "Popsicle IMPLIES Stick",
+                "Topping IMPLIES Caramel",
+                "Vanilla IMPLIES Topping"
+            ],
+            "size": 3,
+            "ratio": 1.0
+        },
+        {
+            "name": "Excludes constraints",
+            "description": "Constraints modeling that two features are mutually exclusive and cannot be activated together.",
+            "parent": "Simple constraints",
+            "level": 3,
+            "value": [],
+            "size": 0,
+            "ratio": 0.0
+        },
+        {
+            "name": "Complex constraints",
+            "description": "Constraints in arbitrary propositional logic formulae.",
+            "parent": "Logical constraints",
+            "level": 2,
+            "value": [
+                "Scoop IMPLIES (Cup OR Cone)"
+            ],
+            "size": 1,
+            "ratio": 0.1667
+        },
+        {
+            "name": "Pseudo-complex constraints",
+            "description": "Constraints that are convertible to a set of simple constraints.",
+            "parent": "Complex constraints",
+            "level": 3,
+            "value": [],
+            "size": 0,
+            "ratio": 0.0
+        },
+        {
+            "name": "Strict-complex constraints",
+            "description": "Constraints that cannot be converted to a set of simple constraints.",
+            "parent": "Complex constraints",
+            "level": 3,
+            "value": [
+                "Scoop IMPLIES (Cup OR Cone)"
+            ],
+            "size": 1,
+            "ratio": 1.0
+        },
+        {
+            "name": "Arithmetic constraints",
+            "description": "Constraints with at least one arithmetic operator.",
+            "parent": "Cross-tree constraints",
+            "level": 1,
+            "value": [],
+            "size": 0,
+            "ratio": 0.0
+        },
+        {
+            "name": "Aggregation constraints",
+            "description": "Constraints with at least one aggregation operator.",
+            "parent": "Cross-tree constraints",
+            "level": 1,
+            "value": [],
+            "size": 0,
+            "ratio": 0.0
+        },
+        {
+            "name": "Features in constraints",
+            "description": "Features involved in cross-tree constraints. The ratio to the total number of features is called 'Extra constraint representativeness (ECR)'.",
+            "parent": "Cross-tree constraints",
+            "level": 1,
+            "value": [
+                "Cup",
+                "Popsicle",
+                "Cone",
+                "Scoops",
+                "Scoop",
+                "Vanilla",
+                "Caramel",
+                "Stick",
+                "Topping",
+                "Waffle"
+            ],
+            "size": 10,
+            "ratio": 0.48
+        },
+        {
+            "name": "Min features per constraint",
+            "description": "The minimal number of features involved per cross-tree constraint.",
+            "parent": "Features in constraints",
+            "level": 2,
+            "value": 1,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Max features per constraint",
+            "description": "The maximal number of features involved per cross-tree constraint.",
+            "parent": "Features in constraints",
+            "level": 2,
+            "value": 3,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Avg features per constraint",
+            "description": "The average number of features involved per cross-tree constraint.",
+            "parent": "Features in constraints",
+            "level": 2,
+            "value": 1.83,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Avg constraints per feature",
+            "description": "The average number of constraints per feature.",
+            "parent": "Cross-tree constraints",
+            "level": 1,
+            "value": 1.1,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Min constraints per feature",
+            "description": "The minimal number of constraints per feature.",
+            "parent": "Cross-tree constraints",
+            "level": 1,
+            "value": 1,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Max constraints per feature",
+            "description": "The maximal number of constraints per feature.",
+            "parent": "Cross-tree constraints",
+            "level": 1,
+            "value": 2,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Attributes",
+            "description": "Features attributes in the model (i.e., number of distinct attributes).",
+            "parent": null,
+            "level": 0,
+            "value": [
+                "Price"
+            ],
+            "size": 1,
+            "ratio": null
+        },
+        {
+            "name": "Features with attributes",
+            "description": "Features that contain some attributes defined in the model.",
+            "parent": "Attributes",
+            "level": 1,
+            "value": [
+                "Popsicle",
+                "Scoop",
+                "Waffle"
+            ],
+            "size": 3,
+            "ratio": 0.1429
+        },
+        {
+            "name": "Min attributes per feature",
+            "description": "The minimal number of attributes in a feature.",
+            "parent": "Attributes",
+            "level": 1,
+            "value": 0,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Max attributes per feature",
+            "description": "The maximal number of attributes in a feature.",
+            "parent": "Attributes",
+            "level": 1,
+            "value": 1,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Avg attributes per feature",
+            "description": "Average number of attributes in features.",
+            "parent": "Attributes",
+            "level": 1,
+            "value": 0.14,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Avg attributes per feature w. attributes",
+            "description": "Average number of attributes in features with attributes.",
+            "parent": "Attributes",
+            "level": 1,
+            "value": 1,
+            "size": null,
+            "ratio": null
+        }
+    ],
+    "analysis": [
+        {
+            "name": "Satisfiable (valid)",
+            "description": "A feature model is satisfiable (valid, not void) if it represents at least one configuration.",
+            "parent": null,
+            "level": 0,
+            "value": "Yes",
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Core features",
+            "description": "Features that are part of all the configurations (aka 'common features').",
+            "parent": null,
+            "level": 0,
+            "value": [
+                "Ice Cream",
+                "Category",
+                "Flavors",
+                "Container",
+                "Scoops"
+            ],
+            "size": 5,
+            "ratio": 0.2381
+        },
+        {
+            "name": "False-optional features",
+            "description": "Features included in all possible configurations although not being modelled as mandatory. The ratio is based on the total number of features.",
+            "parent": "Core features",
+            "level": 1,
+            "value": [
+                "Scoops"
+            ],
+            "size": 1,
+            "ratio": 0.0476
+        },
+        {
+            "name": "Dead features",
+            "description": "Features that cannot appear in any configuration.",
+            "parent": null,
+            "level": 0,
+            "value": [
+                "Waffle"
+            ],
+            "size": 1,
+            "ratio": 0.0476
+        },
+        {
+            "name": "Variant features",
+            "description": "Features that appear only in some configurations (i.e., features that are neither core nor dead).",
+            "parent": null,
+            "level": 0,
+            "value": [
+                "Popsicle",
+                "Scoop",
+                "Lemon",
+                "Vanilla",
+                "Chocolate",
+                "White",
+                "Dark",
+                "Stick",
+                "Cup",
+                "Cone",
+                "Name of customer",
+                "Topping",
+                "Caramel",
+                "Whipped cream",
+                "Sprinkles"
+            ],
+            "size": 15,
+            "ratio": 0.7143
+        },
+        {
+            "name": "Unique features",
+            "description": "Features that appear in exactly one configuration. The ratio is based on the total number of features.",
+            "parent": "Variant features",
+            "level": 1,
+            "value": [],
+            "size": 0,
+            "ratio": 0.0
+        },
+        {
+            "name": "Pure optional features",
+            "description": "Feature with 0.5 (50%) probability of being selected in a valid configuration (i.e., their selection is unconstrained). The ratio is based on the total number of features.",
+            "parent": "Variant features",
+            "level": 1,
+            "value": [
+                "Name of customer"
+            ],
+            "size": 1,
+            "ratio": 0.0476
+        },
+        {
+            "name": "Configurations",
+            "description": "Number of configurations represented by the feature model. If <= is shown, the number represents an upper estimation bound.",
+            "parent": null,
+            "level": 0,
+            "value": "294",
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Total variability",
+            "description": "The total variability measures the flexibility of the SPL considering all features.",
+            "parent": null,
+            "level": 0,
+            "value": "0.01%",
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Partial variability",
+            "description": "The partial variability measures the flexibility of the SPL considering only variant features.",
+            "parent": null,
+            "level": 0,
+            "value": "0.9%",
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Homogeneity",
+            "description": "The homogeneity measures how similar are the configurations of the SPL.",
+            "parent": null,
+            "level": 0,
+            "value": "60.5%",
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Configuration distribution",
+            "description": "Number of configurations having a given number of features.",
+            "parent": null,
+            "level": 0,
+            "value": null,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Mean",
+            "description": "Mean number of features occurring in configurations.",
+            "parent": "Configuration distribution",
+            "level": 1,
+            "value": 12.704081632653061,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Standard deviation",
+            "description": "Standard deviation of number of features in configurations.",
+            "parent": "Configuration distribution",
+            "level": 1,
+            "value": 1.63,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Median",
+            "description": "Median number of features in configurations.",
+            "parent": "Configuration distribution",
+            "level": 1,
+            "value": 13,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Median absolute deviation",
+            "description": "Median absolute deviation number of features in configurations.",
+            "parent": "Configuration distribution",
+            "level": 1,
+            "value": 1.26,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Mode",
+            "description": "Most frequently occurring number of features for a configuration.",
+            "parent": "Configuration distribution",
+            "level": 1,
+            "value": 13,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Min",
+            "description": "Number of features in the smallest configuration.",
+            "parent": "Configuration distribution",
+            "level": 1,
+            "value": 8,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Max",
+            "description": "Number of features in the largest configuration.",
+            "parent": "Configuration distribution",
+            "level": 1,
+            "value": 16,
+            "size": null,
+            "ratio": null
+        },
+        {
+            "name": "Range",
+            "description": "Range of number of features in configurations.",
+            "parent": "Configuration distribution",
+            "level": 1,
+            "value": 8,
+            "size": null,
+            "ratio": null
+        }
+    ]
+}

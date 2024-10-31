@@ -66,88 +66,139 @@
 
                         <div class="row">
 
-                            <!-- Form component -->
                             <div class="col-xl-6 col-lg-5">
                                 <div class="card shadow mb-4">
-                                    <!-- Card Header - Dropdown -->
-                                    <div
-                                        class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                        <h6 class="m-0 font-weight-bold text-primary">Upload your feature model</h6>
-                                    </div>
-                                    <!-- Card Body -->
-                                    <div class="card-body">
-                                        <!-- Form -->
-                                        <form action="{{url_for('index')}}" method='POST' enctype="multipart/form-data">
-                                            <div class="form-group row">
-                                                <label for="inputName" class="col-sm-2 col-form-label">Name</label>
-                                                <div class="col-sm">
-                                                <input type="text" class="form-control" id="inputName" name="inputName" placeholder="Feature model's name">
-                                                </div>
-                                            </div>
-                                            <div class="form-group row">
-                                                <label for="inputDescription" class="col-sm-2 col-form-label">Description</label>
-                                                <div class="col-sm">
-                                                    <textarea class="form-control" id="inputDescription" name="inputDescription" rows="3" placeholder="Brief description of the feature model."></textarea>
-                                                </div>
-                                            </div>
-                                            <div class="form-group row">
-                                                <label for="inputAuthor" class="col-sm-2 col-form-label">Author</label>
-                                                <div class="col-sm">
-                                                <input type="text" class="form-control" id="inputAuthor" name="inputAuthor" placeholder="Author(s)">
-                                                </div>
-                                            </div>
-                                            <div class="form-group row">
-                                                <label for="inputYear" class="col-sm-2 col-form-label">Year</label>
-                                                <div class="col-sm">
-                                                <input type="number" class="form-control" id="inputYear" name="inputYear" placeholder="Year">
-                                                </div>
-                                            </div>
-                                            <div class="form-group row">
-                                                <label for="inputReference" class="col-sm-2 col-form-label">Reference</label>
-                                                <div class="col-sm">
-                                                <input type="text" class="form-control" id="inputReference" name="inputReference" placeholder="Main reference or DOI">
-                                                </div>
-                                            </div>
-                                            <div class="form-group row">
-                                                <label for="inputKeywords" class="col-sm-2 col-form-label">Keywords</label>
-                                                <div class="col-sm">
-                                                <input type="text" class="form-control" id="inputKeywords" name="inputKeywords" placeholder="Tags or keywords">
-                                                </div>
-                                            </div>
-                                            <div class="form-group row">
-                                                <label for="inputDomain" class="col-sm-2 col-form-label">Domain</label>
-                                                <div class="col-sm">
-                                                <input type="text" class="form-control" id="inputDomain" name="inputDomain" placeholder="Domain">
-                                                </div>
-                                            </div>
-                                            <div class="form-group row">
-                                                <label for="inputFM" class="col-sm-2 col-form-label">FM file</label>
-                                                <div class="col-sm">
-                                                    <input type="file" class="form-control-file" id="inputFM" name="inputFM">
-                                                    {% if data and data.file_error %}
-                                                    <div class="alert alert-danger" role="alert">
-                                                        {{ data.file_error }}
-                                                    </div>
-                                                    {% else %}
-                                                    Supported formats: UVL (.uvl), FeatureIDE (.xml, .fide)
-                                                    {% endif %}
-                                                    <select class="custom-select" id="inputExample" name="inputExample">
-                                                        <option value="">Or select an FM</option>
-                                                        {% for file in data.models %}
-                                                        <option value="{{ file }}">{{ file }}</option>
-                                                        {% endfor %}
-                                                    </select>
-                                                    {% if data and data.fm_example %}
-                                                        <a href="{{ data.fm_example }}" id="downloadButton" class="btn btn-primary" role="button" download>Download FM</a> 
-                                                    {% endif %}
-                                                </div>
-                                            </div>
-                                            <button type="submit" id="submitButton" class="spinner-button btn btn-primary">Submit</button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
 
+                                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                    <button class="nav-link{% if data and data.uploadFM %} active{% endif %}" id="uploadfm-tab" data-bs-toggle="tab" data-bs-target="#uploadfm" type="button" role="tab" aria-controls="uploadfm" aria-selected={% if data and data.uploadFM %}"true"{% else %}"false"{% endif %}>Upload FM</button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                    <button class="nav-link{% if data and data.uploadJSON %} active{% endif %}" id="uploadjson-tab" data-bs-toggle="tab" data-bs-target="#uploadjson" type="button" role="tab" aria-controls="uploadjson" aria-selected={% if data and data.uploadJSON %}"true"{% else %}"false"{% endif %}>Upload JSON</button>
+                                    </li>
+                                    <!--
+                                    <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">Contact</button>
+                                    </li>
+                                    -->
+                                </ul>
+                              <div class="tab-content" id="myTabContent">
+                                <div class="tab-pane fade{% if data and data.uploadFM %} show active{% endif %}" id="uploadfm" role="tabpanel" aria-labelledby="uploadfm-tab">
+                                    <!-- Form component -->
+                                    
+
+                                            <!-- Card Header - Dropdown -->
+                                            <div
+                                                class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                                <h6 class="m-0 font-weight-bold text-primary">Upload your feature model</h6>
+                                            </div>
+                                            <!-- Card Body -->
+                                            <div class="card-body">
+                                                <!-- Form -->
+                                                <form action="{{url_for('index')}}" method='POST' enctype="multipart/form-data">
+                                                    <div class="form-group row">
+                                                        <label for="inputName" class="col-sm-2 col-form-label">Name</label>
+                                                        <div class="col-sm">
+                                                        <input type="text" class="form-control" id="inputName" name="inputName" placeholder="Feature model's name">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label for="inputDescription" class="col-sm-2 col-form-label">Description</label>
+                                                        <div class="col-sm">
+                                                            <textarea class="form-control" id="inputDescription" name="inputDescription" rows="3" placeholder="Brief description of the feature model."></textarea>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label for="inputAuthor" class="col-sm-2 col-form-label">Author</label>
+                                                        <div class="col-sm">
+                                                        <input type="text" class="form-control" id="inputAuthor" name="inputAuthor" placeholder="Author(s)">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label for="inputYear" class="col-sm-2 col-form-label">Year</label>
+                                                        <div class="col-sm">
+                                                        <input type="number" class="form-control" id="inputYear" name="inputYear" placeholder="Year">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label for="inputReference" class="col-sm-2 col-form-label">Reference</label>
+                                                        <div class="col-sm">
+                                                        <input type="text" class="form-control" id="inputReference" name="inputReference" placeholder="Main reference or DOI">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label for="inputKeywords" class="col-sm-2 col-form-label">Keywords</label>
+                                                        <div class="col-sm">
+                                                        <input type="text" class="form-control" id="inputKeywords" name="inputKeywords" placeholder="Tags or keywords">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label for="inputDomain" class="col-sm-2 col-form-label">Domain</label>
+                                                        <div class="col-sm">
+                                                        <input type="text" class="form-control" id="inputDomain" name="inputDomain" placeholder="Domain">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label for="inputFM" class="col-sm-2 col-form-label">FM file</label>
+                                                        <div class="col-sm">
+                                                            <input type="file" class="form-control-file" id="inputFM" name="inputFM">
+                                                            {% if data and data.file_error %}
+                                                            <div class="alert alert-danger" role="alert">
+                                                                {{ data.file_error }}
+                                                            </div>
+                                                            {% else %}
+                                                            Supported formats: UVL (.uvl), FeatureIDE (.xml, .fide)
+                                                            {% endif %}
+                                                            <select class="custom-select" id="inputExample" name="inputExample">
+                                                                <option value="">Or select an FM</option>
+                                                                {% for file in data.models %}
+                                                                <option value="{{ file }}">{{ file }}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                            {% if data and data.fm_example %}
+                                                                <a href="{{ data.fm_example }}" id="downloadButton" class="btn btn-primary" role="button" download>Download FM</a> 
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                    <button type="submit" id="submitButton" class="spinner-button btn btn-primary">Submit</button>
+                                                </form>
+                                            </div>
+
+                                </div>
+                                <div class="tab-pane fade{% if data and data.uploadJSON %} show active{% endif %}" id="uploadjson" role="tabpanel" aria-labelledby="uploadjson-tab">
+                                    <!-- Form component -->
+                                    
+                                            <!-- Card Header - Dropdown -->
+                                            <div
+                                                class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                                <h6 class="m-0 font-weight-bold text-primary">Upload your characterization in JSON</h6>
+                                            </div>
+                                            <!-- Card Body -->
+                                            <div class="card-body">
+                                                <!-- Form -->
+                                                <form action="{{url_for('uploadJSON')}}" method='POST' enctype="multipart/form-data">
+                                                    <div class="form-group row">
+                                                        <label for="inputFM" class="col-sm-2 col-form-label">JSON file</label>
+                                                        <div class="col-sm">
+                                                            <input type="file" class="form-control-file" id="inputJSON" name="inputJSON">
+                                                            {% if data and data.file_error %}
+                                                            <div class="alert alert-danger" role="alert">
+                                                                {{ data.file_error }}
+                                                            </div>
+                                                            {% else %}
+                                                            Supported formats: JSON (.json)
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                    <button type="submit" id="submitButton" class="spinner-button btn btn-primary">Submit</button>
+                                                </form>
+                                            </div>
+
+                                </div>
+                                <!-- <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">...</div> -->
+                              </div>
+                            </div>
+                            </div>
                             
                             {% if data and data.fm_facts %}
                             <!-- FM Fact Label chart -->

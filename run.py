@@ -1,5 +1,6 @@
 import os
 import sys
+import json
 from typing import Optional
 
 from flask import Flask, render_template, request
@@ -64,6 +65,7 @@ EXAMPLE_MODELS = {m[models_info.NAME]: m for m in models_info.MODELS}
 @app.route('/', methods=['GET', 'POST'])
 def index():
     data = {}
+    data['uploadFM'] = True
     data['models'] = EXAMPLE_MODELS
 
     if request.method == 'GET':
@@ -155,9 +157,41 @@ def index():
         return render_template('index.html', data=data)
 
 
-# if __name__ == '__main__':
-#     app.debug = True
-#     app.run(host='0.0.0.0', port=5555)
+@app.route('/uploadJSON', methods=['GET', 'POST'])
+def uploadJSON():
+    data = {}
+    data['uploadJSON'] = True
+    data['models'] = EXAMPLE_MODELS
+
+    if request.method == 'GET':
+        return render_template('index.html', data=data)
+
+    if request.method == 'POST':
+        json_file = request.files['inputJSON']
+        if not json_file:
+            # The file is required and this is controlled in the front-end.
+            data['file_error'] = 'Please upload a JSON file.'
+            return render_template('index.html', data=data)
+        
+        filename = json_file.filename
+        json_file.save(filename)
+        try:
+            # Read the json
+            json_characterization = json.load(open(filename))
+            if json_characterization is None:
+                data['file_error'] = 'JSON format not supported.'
+                return render_template('index.html', data=data)
+            data['fm_facts'] = json_characterization
+        except Exception as e:
+            data = None
+            print(e)
+            raise e
+
+        if os.path.exists(filename) and filename == json_file.filename:
+            os.remove(filename)
+
+        return render_template('index.html', data=data)
+
 
 if __name__ == '__main__':
     sys.set_int_max_str_digits(0)
