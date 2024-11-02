@@ -606,10 +606,10 @@ def traverse_constraints_metrics(fm: FeatureModel, metrics: dict[str, Any]) -> N
                     metrics[FMProperties.PSEUDO_COMPLEX_CONSTRAINTS.value].append(ctc.ast.pretty_str())
                 else:
                     metrics[FMProperties.STRICT_COMPLEX_CONSTRAINTS.value].append(ctc.ast.pretty_str())
+        elif ctc.is_aggregation_constraint():
+            metrics[FMProperties.AGGREGATION_CONSTRAINTS.value].append(ctc.ast.pretty_str())
         elif ctc.is_arithmetic_constraint():
             metrics[FMProperties.ARITHMETIC_CONSTRAINTS.value].append(ctc.ast.pretty_str())
-        elif ctc.is_aggregation_constraint():
-            metrics[FMProperties.AGGREGATIONS_CONSTRAINTS.value].append(ctc.ast.pretty_str())
         
         features = ctc.get_features()
         metrics[FMProperties.EXTRA_CONSTRAINT_REPRESENTATIVENESS.value].update(features)
