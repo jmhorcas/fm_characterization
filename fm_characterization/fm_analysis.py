@@ -1,4 +1,5 @@
 import math
+import logging
 from typing import Optional, Any
 
 from fm_characterization import FMProperties, FMPropertyMeasure
@@ -22,7 +23,7 @@ class FMAnalysis():
         try:
             self.bdd_model = FmToBDD(model).transform()
         except Exception as e:
-            print(f'Warning: the feature model is too large to build the BDD model. (Exception: {e})')
+            logging.warning(f'Warning: the feature model is too large to build the BDD model. (Exception: {e})')
 
         # For performance purposes
         self._features = self.fm.get_features()
