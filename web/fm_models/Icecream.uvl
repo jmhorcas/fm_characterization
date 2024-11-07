@@ -34,4 +34,3 @@ constraints
     Scoop => Cup | Cone
     Topping => Caramel
     Vanilla => Topping
-    sum(Price) < 2.5
