@@ -20,10 +20,8 @@ features
 											DESede
 											Blowfish
 											DES
-
 						optional
 							KeySize
-
 						mandatory
 							EncryptionImplementations	
 								alternative
@@ -64,7 +62,6 @@ features
 									SocialID
 									Pin
 									MatrixCode
-
 						optional
 							PasswordLength
 							PasswordType	
@@ -125,7 +122,6 @@ features
 									Info
 									Warning
 									Error
-
 						optional
 							CypheredMessages
 							HistoryLog
@@ -150,7 +146,6 @@ features
 									Intermediate
 									Advanced
 									Expert
-
 						optional
 							AuthenticatedUser
 					ExecutionControl	
@@ -161,7 +156,6 @@ features
 									Redo
 									Cancel
 									GoBack
-
 						optional
 							Shortcuts
 					Internationalization	
@@ -191,7 +185,6 @@ features
 							FileStorageImplementations	
 								mandatory
 									JavaIO
-
 						optional
 							TemporalFile
 					DatabaseStorage	
@@ -215,7 +208,6 @@ features
 									Strings
 									Floats
 									Objects
-
 						optional
 							SecureDatabase
 			ContextAwareness	
@@ -249,11 +241,9 @@ features
 								alternative
 									LocalCache
 									RemoteCache
-
 						optional
 							MaxLifeSeconds
 							EternalObjects
-
 constraints
 	TimeAware | !BatteryStatus
 	Alerts | !BatteryStatus

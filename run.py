@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+import logging
 from typing import Optional
 
 from flask import Flask, render_template, request
@@ -195,5 +196,6 @@ def uploadJSON():
 
 if __name__ == '__main__':
     sys.set_int_max_str_digits(0)
+    #logging.basicConfig(filename='app.log', level=logging.INFO)
 
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0', debug=True)

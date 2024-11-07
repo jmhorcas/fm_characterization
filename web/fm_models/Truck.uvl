@@ -41,17 +41,14 @@ features
 								alternative
 									Axles3
 									Axles4
-
 				optional
 					AdditionalSteeringAxle
-
 				mandatory
 					Drivetrain	
 						alternative
 							DrivenAxle1
 							DrivenAxles2
 							DrivenAxles3
-
 constraints
 	Beds2 => HighRoof
 	DrivenAxles2 => MultipleRearAxles

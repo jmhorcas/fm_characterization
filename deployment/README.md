@@ -28,6 +28,11 @@
    
    `pip install -r requirements.txt`
 
+   `sudo apt install build-essential`
+   
+   `sudo apt install libgmp3-dev`
+
+
 8. Create a configuration file for the virtual website:
 Create the following file `/etc/nginx/sites-available/fmfactlabel.conf`:
 
