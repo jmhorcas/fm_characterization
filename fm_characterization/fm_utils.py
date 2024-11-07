@@ -17,7 +17,7 @@ def get_nof_configuration_as_str(nof_configurations: int, aproximation: bool, no
     return f"{'≤ ' if aproximation and nof_cross_tree_constraints > 0 else ''}{int_to_scientific_notation(nof_configurations) if nof_configurations > 1e6 else nof_configurations}"
 
 
-def get_ratio(collection1: Collection, collection2: Collection, precision: int = 4) -> float:
+def get_ratio(collection1: Collection, collection2: Collection, precision: int = 2) -> float:
     return 0.0 if not collection2 else round(len(collection1) / len(collection2), precision)
 
 

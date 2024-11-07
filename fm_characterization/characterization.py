@@ -11,10 +11,10 @@ SPACE = ' '
 
 class FMCharacterization():
     
-    def __init__(self, model: FeatureModel) -> None:
+    def __init__(self, model: FeatureModel, light_fact_label: bool = False) -> None:
         self.metadata = FMMetadata(model)
         self.metrics = FMMetrics(model)
-        self.analysis = FMAnalysis(model)
+        self.analysis = FMAnalysis(model, light_fact_label)
         
     def __str__(self) -> str:
         lines = ['METADATA']

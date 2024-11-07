@@ -15,15 +15,17 @@ from flamapy.metamodels.fm_metamodel import operations as fm_operations
 
 class FMAnalysis():
 
-    def __init__(self, model: FeatureModel):
+    def __init__(self, model: FeatureModel, light_fact_label: bool = False) -> None:
         self.fm = model
+        self.light_fact_label = light_fact_label
         self.bdd_model = None
         self.sat_model = FmToPysat(model).transform()
         self.sat_model.original_model = self.fm
-        try:
-            self.bdd_model = FmToBDD(model).transform()
-        except Exception as e:
-            logging.warning(f'Warning: the feature model is too large to build the BDD model. (Exception: {e})')
+        if not self.light_fact_label:
+            try:
+                self.bdd_model = FmToBDD(model).transform()
+            except Exception as e:
+                logging.warning(f'Warning: the feature model is too large to build the BDD model. (Exception: {e})')
 
         # For performance purposes
         self._features = self.fm.get_features()

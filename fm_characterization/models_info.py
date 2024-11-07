@@ -9,7 +9,7 @@ FILENAME = 7
 
 MODELS = [
     {NAME: 'Icecream',
-     DESCRIPTION: 'Example of feature model using all language constructs and extensions from the UVL language. This model was used in the second tutorial on the UVL in SPLC 2023 (Tokyo, Japan).',
+     DESCRIPTION: 'Example of feature model using all language extensions from UVL. This model was used in the second tutorial on the UVL in SPLC 2023 (Tokyo, Japan).',
      AUTHOR: 'Krieter et al.',
      YEAR: 2023,
      REFERENCE: 'https://doi.org/10.1145/3579027.3609002',

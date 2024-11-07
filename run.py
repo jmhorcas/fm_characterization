@@ -83,6 +83,8 @@ def index():
         return render_template('index.html', data=data)
 
     if request.method == 'POST':
+        light_fact_label = 'lightFactLabel' in request.form
+        logging.warning(f'light_fact_label: {light_fact_label}')
         fm_file = request.files['inputFM']
         fm_name = request.form['inputExample']
         name = None
@@ -141,7 +143,7 @@ def index():
             if not name:
                 name = os.path.splitext(os.path.basename(filename))[0]
 
-            characterization = FMCharacterization(fm)
+            characterization = FMCharacterization(fm, light_fact_label)
             characterization.metadata.name = name
             characterization.metadata.description = description
             characterization.metadata.author = author

@@ -160,6 +160,12 @@
                                                             {% endif %}
                                                         </div>
                                                     </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" value="on" id="lightFactLabel" name="lightFactLabel">
+                                                        <label class="form-check-label" for="lightFactLabel" data-toggle="tooltip" data-placement="top" title="Exclude some analytical metrics (i.e., no BDD analysis)">
+                                                          Light fact label
+                                                        </label>
+                                                      </div>
                                                     <button type="submit" id="submitButton" class="spinner-button btn btn-primary">Submit</button>
                                                 </form>
                                             </div>
@@ -299,6 +305,12 @@
 
         <!-- sb-admin-2 template (custom scripts for all pages) -->
         <script src="js/sb_admin_2/sb-admin-2.min.js"></script>
+
+        <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+          })
+        </script>
 
         {% if data and data.fm_facts %}
         <script type="text/javascript">
