@@ -4,7 +4,7 @@
   - [Available online](#available-online)
   - [Artifact description](#artifact-description)
   - [How to use it](#how-to-use-it)
-  - [Deployment of the web application](#deployment-of-the-web-application)
+  - [Deployment of the web application locally](#deployment-of-the-web-application-locally)
     - [Requirements](#requirements)
     - [Download and install](#download-and-install)
     - [Execution](#execution)
@@ -46,12 +46,12 @@ The main use case of the tool is uploading an FM and automatically generates a v
 
 
 
-## Deployment of the web application
+## Deployment of the web application locally
 
 ### Requirements
 - [Python 3.9+](https://www.python.org/)
 - [Flask](https://flask.palletsprojects.com/en/3.0.x/)
-- [Flama](https://www.flamapy.org/)
+- [Flamapy](https://www.flamapy.org/)
 - [D3.js](https://d3js.org/)
 
 ### Download and install
@@ -69,8 +69,6 @@ The main use case of the tool is uploading an FM and automatically generates a v
    In Linux: `source env/bin/activate`
 
    In Windows: `.\env\Scripts\Activate`
-
-   ** In case that you are running Ubuntu, please install the package python3.9-dev and update wheel and setuptools with the command `pip  install --upgrade pip wheel setuptools` right after step 4.
    
 5. Install the dependencies: 
    
