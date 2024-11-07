@@ -36,7 +36,7 @@ MODELS = [
      FILENAME: 'Truck.gfm.json',
     },
     {NAME: 'Xiaomi Mi Band',
-     DESCRIPTION: 'Feature model representing the Smartwatch SPL of Xiaomi Mi Band including versions 1, 1s, 2, 3, 4, 5, 6, 7, and 8',
+     DESCRIPTION: 'Feature model representing the Smartwatch SPL of Xiaomi Mi Band including versions 1, 1s, 2, 3, 4, 5, 6, 7, and 8.',
      AUTHOR: 'Horcas et al.',
      YEAR: 2025,
      REFERENCE: 'https://doi.org/10.1016/j.jss.2024.112235',
