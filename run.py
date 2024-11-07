@@ -4,14 +4,14 @@ import json
 import logging
 from typing import Optional
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, g, redirect, url_for
 
 from flamapy.metamodels.fm_metamodel.models import FeatureModel
 from flamapy.metamodels.fm_metamodel.transformations import UVLReader, FeatureIDEReader
 
 from fm_characterization import FMCharacterization
 from fm_characterization import models_info
-
+import config
 
 STATIC_DIR = 'web'
 EXAMPLE_MODELS_DIR = 'fm_models'
@@ -21,6 +21,26 @@ app = Flask(__name__,
             static_url_path='',
             static_folder=STATIC_DIR,
             template_folder=STATIC_DIR)
+app.config.from_object(config)
+
+# Add version to the global context before each request
+@app.before_request
+def add_version_to_g():
+    g.version = app.config['VERSION']
+
+
+# Automatically add the version parameter in each generated URL
+@app.url_defaults
+def add_version_to_url(endpoint, values):
+    if 'v' not in values:
+        values['v'] = g.version
+
+
+# Redirect automatically to the URL with the version parameter if not present
+@app.before_request
+def enforce_version_in_url():
+    if 'v' not in request.args:
+        return redirect(url_for(request.endpoint, **request.view_args, v=g.version))
 
 
 def read_fm_file(filename: str) -> Optional[FeatureModel]:
@@ -45,26 +65,16 @@ def read_fm_file(filename: str) -> Optional[FeatureModel]:
     return None
 
 
-# This sets the basepath from FLASK_BASE_PATH env variable
-# basepath = os.environ.get("FLASK_BASE_PATH")
-
-# if basepath == None:
-#     basepath = ""
-# else:
-#     os.system("ln -sf /app/web /app/" + static_dir + "/" + basepath)
-#     basepath = "/" + basepath
-
 # Get example models
 EXAMPLE_MODELS = {m[models_info.NAME]: m for m in models_info.MODELS}
-# for root, dirs, files in os.walk(os.path.join(static_dir, EXAMPLE_MODELS_DIR)):
-#     for file in files:
-#         #filepath = os.path.join(root, file)
-#         EXAMPLE_MODELS.append(file)
-# EXAMPLE_MODELS.sort()
 
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
+    version = request.args.get('v')
+    if version != g.version:
+        return "Incorrect version", 404
+    
     data = {}
     data['uploadFM'] = True
     data['models'] = EXAMPLE_MODELS
@@ -160,6 +170,10 @@ def index():
 
 @app.route('/uploadJSON', methods=['GET', 'POST'])
 def uploadJSON():
+    version = request.args.get('v')
+    if version != g.version:
+        return "Incorrect version", 404
+    
     data = {}
     data['uploadJSON'] = True
     data['models'] = EXAMPLE_MODELS
