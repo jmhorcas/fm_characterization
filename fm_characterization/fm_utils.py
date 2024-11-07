@@ -1,4 +1,11 @@
-from typing import Collection
+from typing import Collection, Optional
+
+from flamapy.metamodels.fm_metamodel.models import FeatureModel
+from flamapy.metamodels.fm_metamodel.transformations import (
+    UVLReader, 
+    FeatureIDEReader, 
+    GlencoeReader
+)
 
 
 def int_to_scientific_notation(n: int, precision: int = 2) -> str:
@@ -29,3 +36,32 @@ def get_percentage_str(value: int | float, precision: int = 4) -> str:
         format_percentage = format_percentage.replace('p', str(precision))
         percentage_value = round(percentage, precision)
         return str(percentage_value) if percentage_value > 0 else format_percentage.format(percentage)
+
+
+def read_fm_file(filename: str) -> Optional[FeatureModel]:
+    try:
+        if filename.endswith(".uvl"):
+            return UVLReader(filename).transform()
+        elif filename.endswith(".xml") or filename.endswith(".fide"):
+            return FeatureIDEReader(filename).transform()
+        elif filename.endswith("gfm.json"):
+            return GlencoeReader(filename).transform()
+    except Exception as e:
+        print(e)
+        pass
+    try:
+        return UVLReader(filename).transform()
+    except Exception as e:
+        print(e)
+        pass
+    try:
+        return FeatureIDEReader(filename).transform()
+    except Exception as e:
+        print(e)
+        pass
+    try:
+        return GlencoeReader(filename).transform()
+    except Exception as e:
+        print(e)
+        pass
+    return None

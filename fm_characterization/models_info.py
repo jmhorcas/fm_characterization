@@ -33,7 +33,7 @@ MODELS = [
      REFERENCE: 'https://ebooks.iospress.nl/volumearticle/49851',
      KEYWORDS: ['automotive', 'truck'],
      DOMAIN: 'automotive',
-     FILENAME: 'Truck.uvl',
+     FILENAME: 'Truck.gfm.json',
     },
     {NAME: 'JHipster v3.6.1',
      DESCRIPTION: 'A popular open-source code generator for web applications',

@@ -9,9 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Light fact label option. A version excluding some analytical metrics (i.e., no BDD analysis).
+- Deployed version of the tool in the URL.
+- Support for Glencoe feature models.
 - This CHANGELOG file.
   
-
 
 ## [1.5.0] - 2024-10-31
 

@@ -2,16 +2,15 @@ import os
 import sys
 import json
 import logging
-from typing import Optional
 
 from flask import Flask, render_template, request, g, redirect, url_for
 
-from flamapy.metamodels.fm_metamodel.models import FeatureModel
-from flamapy.metamodels.fm_metamodel.transformations import UVLReader, FeatureIDEReader
 
 from fm_characterization import FMCharacterization
 from fm_characterization import models_info
+from fm_characterization.fm_utils import read_fm_file
 import config
+
 
 STATIC_DIR = 'web'
 EXAMPLE_MODELS_DIR = 'fm_models'
@@ -41,28 +40,6 @@ def add_version_to_url(endpoint, values):
 def enforce_version_in_url():
     if 'v' not in request.args:
         return redirect(url_for(request.endpoint, **request.view_args, v=g.version))
-
-
-def read_fm_file(filename: str) -> Optional[FeatureModel]:
-    try:
-        if filename.endswith(".uvl"):
-            return UVLReader(filename).transform()
-        elif filename.endswith(".xml") or filename.endswith(".fide"):
-            return FeatureIDEReader(filename).transform()
-    except Exception as e:
-        print(e)
-        pass
-    try:
-        return UVLReader(filename).transform()
-    except Exception as e:
-        print(e)
-        pass
-    try:
-        return FeatureIDEReader(filename).transform()
-    except Exception as e:
-        print(e)
-        pass
-    return None
 
 
 # Get example models
