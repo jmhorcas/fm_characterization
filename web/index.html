@@ -76,11 +76,11 @@
                                     <li class="nav-item" role="presentation">
                                     <button class="nav-link{% if data and data.uploadJSON %} active{% endif %}" id="uploadjson-tab" data-bs-toggle="tab" data-bs-target="#uploadjson" type="button" role="tab" aria-controls="uploadjson" aria-selected={% if data and data.uploadJSON %}"true"{% else %}"false"{% endif %}>Upload JSON</button>
                                     </li>
-                                    <!--
+                                    
                                     <li class="nav-item" role="presentation">
-                                    <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">Contact</button>
+                                    <button class="nav-link" id="about-tab" data-bs-toggle="tab" data-bs-target="#about" type="button" role="tab" aria-controls="about" aria-selected="false">About</button>
                                     </li>
-                                    -->
+                                    
                                 </ul>
                               <div class="tab-content" id="myTabContent">
                                 <div class="tab-pane fade{% if data and data.uploadFM %} show active{% endif %}" id="uploadfm" role="tabpanel" aria-labelledby="uploadfm-tab">
@@ -201,7 +201,7 @@
                                             </div>
 
                                 </div>
-                                <!-- <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">...</div> -->
+                                <div class="tab-pane fade" id="about" role="tabpanel" aria-labelledby="about-tab">{% include 'about.html' %}</div>
                               </div>
                             </div>
                             </div>
