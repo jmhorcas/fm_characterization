@@ -5,13 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.6.0]
 
 ### Added
 
 - Light fact label option. A version excluding some analytical metrics (i.e., no BDD analysis).
 - Deployed version of the tool in the URL.
 - Support for Glencoe feature models.
+- About information about the tool.
 - This CHANGELOG file.
   
 
