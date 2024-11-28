@@ -50,7 +50,7 @@ class FMAnalysis():
             self._fip = None
             self._descriptive_statistics = None
 
-    def __del__(self):
+    def clean(self) -> None:
         bdd_filepath = pathlib.Path(self.bdd_model.bdd_file())
         if bdd_filepath.exists():
             bdd_filepath.unlink()

@@ -15,7 +15,10 @@ class FMCharacterization():
         self.metadata = FMMetadata(model)
         self.metrics = FMMetrics(model)
         self.analysis = FMAnalysis(model, light_fact_label)
-        
+    
+    def clean(self) -> None:
+        self.analysis.clean()
+
     def __str__(self) -> str:
         lines = ['METADATA']
         for property in self.metadata.get_metadata():
