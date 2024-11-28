@@ -136,6 +136,7 @@ def index():
             data['fm_facts'] = json_characterization
             data['fm_characterization_json_str'] = json_str_characterization
             data['fm_characterization_str'] = str_characterization
+            characterization.clean()
         except Exception as e:
             data = None
             print(e)
