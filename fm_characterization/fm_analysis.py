@@ -1,4 +1,5 @@
 import math
+import pathlib
 import logging
 from typing import Any
 
@@ -48,6 +49,11 @@ class FMAnalysis():
                                       f.name not in self._dead_features]
             self._fip = None
             self._descriptive_statistics = None
+
+    def __del__(self):
+        bdd_filepath = pathlib.Path(self.bdd_model.bdd_file())
+        if bdd_filepath.exists():
+            bdd_filepath.unlink()
 
     def get_analysis(self) -> list[FMPropertyMeasure]:
         result = []
