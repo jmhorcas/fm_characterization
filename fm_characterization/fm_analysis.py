@@ -52,6 +52,7 @@ class FMAnalysis():
 
     def clean(self) -> None:
         if self.bdd_model is not None:
+            logging.warning(f'BDD temp filepath: {self.bdd_model.bdd_file}')
             bdd_filepath = pathlib.Path(self.bdd_model.bdd_file)
             if bdd_filepath.exists():
                 bdd_filepath.unlink()
