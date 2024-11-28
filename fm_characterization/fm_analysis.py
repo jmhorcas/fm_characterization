@@ -54,7 +54,7 @@ class FMAnalysis():
         if self.bdd_model is not None:
             logging.warning(f'BDD temp filepath: {self.bdd_model.bdd_file}')
             filepath = self.bdd_model.bdd_file
-            filepath = filepath + '.dddmp' if filepath.endswith('.dddmp') else filepath
+            filepath = filepath + '.dddmp' if not filepath.endswith('.dddmp') else filepath
             bdd_filepath = pathlib.Path(filepath)
             if bdd_filepath.exists():
                 bdd_filepath.unlink()
