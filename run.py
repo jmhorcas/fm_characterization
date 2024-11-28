@@ -9,6 +9,7 @@ from flask import Flask, render_template, request, g, redirect, url_for
 from fm_characterization import FMCharacterization
 from fm_characterization import models_info
 from fm_characterization.fm_utils import read_fm_file
+from fm_characterization.location_stats import LocationStats
 import config
 
 
@@ -46,6 +47,10 @@ def enforce_version_in_url():
 EXAMPLE_MODELS = {m[models_info.NAME]: m for m in models_info.MODELS}
 
 
+LOCATION_STATS_FILE = 'location_stats.json'
+LOCATION_STATS = LocationStats(LOCATION_STATS_FILE)
+
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     version = request.args.get('v')
@@ -55,6 +60,8 @@ def index():
     data = {}
     data['uploadFM'] = True
     data['models'] = EXAMPLE_MODELS
+    data['usage_stats'] = {'total_fact_labels': LOCATION_STATS.get_total_visits(),
+                           'countries': LOCATION_STATS.get_countries_stats()}
 
     if request.method == 'GET':
         return render_template('index.html', data=data)
@@ -145,6 +152,10 @@ def index():
         if os.path.exists(filename) and filename == fm_file.filename:
             os.remove(filename)
 
+        location = LOCATION_STATS.get_location_from_ip(request.remote_addr)
+        LOCATION_STATS.add_location(location['continent_code'], location['country_name'], location['city'])
+        data['usage_stats'] = {'total_fact_labels': LOCATION_STATS.get_total_visits(),
+                               'countries': LOCATION_STATS.get_countries_stats()}
         return render_template('index.html', data=data)
 
 
@@ -157,6 +168,8 @@ def uploadJSON():
     data = {}
     data['uploadJSON'] = True
     data['models'] = EXAMPLE_MODELS
+    data['usage_stats'] = {'total_fact_labels': LOCATION_STATS.get_total_visits(),
+                           'countries': LOCATION_STATS.get_countries_stats()}
 
     if request.method == 'GET':
         return render_template('index.html', data=data)
@@ -185,6 +198,10 @@ def uploadJSON():
         if os.path.exists(filename) and filename == json_file.filename:
             os.remove(filename)
 
+        location = LOCATION_STATS.get_location_from_ip(request.remote_addr)
+        LOCATION_STATS.add_location(location['continent_code'], location['country_name'], location['city'])
+        data['usage_stats'] = {'total_fact_labels': LOCATION_STATS.get_total_visits(),
+                               'countries': LOCATION_STATS.get_countries_stats()}
         return render_template('index.html', data=data)
 
 

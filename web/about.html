@@ -28,6 +28,16 @@
   </div>
 </div>
 
+<div class="card">
+  <div class="card-body">
+    <h5 class="card-title">Usage stats</h5>
+    <h5 class="card-title">Total fact labels generated: {{data.usage_stats.total_fact_labels}}</h5>
+    <div class="chart-pie pt-6 pb-2">
+      <canvas id="chart_countries"></canvas>
+    </div>
+  </div>
+</div>
+
 <script>
   // Store the BibTeX entry in a JavaScript variable
   {% raw %}
@@ -61,3 +71,60 @@
       document.body.removeChild(tempTextarea);
   }
 </script>
+
+<script type="text/javascript">
+
+  function chart_countries() {
+    var ctx = document.getElementById('chart_countries');
+  
+    var x = '{{data["usage_stats"]["countries"].keys()}}';
+    x = JSON.parse(x);
+    var y = '{{data["usage_stats"]["countries"].keys()}}';
+    y = JSON.parse(y);
+  
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: x,
+        datasets: [{
+          label: 'Countries',
+          data: y,
+          borderWidth: 1,
+          borderColor: 'black',
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: {
+                display: true,
+                text: "Fact Labels generated"
+            }
+          },
+          x: {
+            title: {
+                display: true,
+                text: "Countries"
+            },
+          }
+        },
+        barThickness: 4,
+        plugins: {
+            legend: {
+                display: false
+            },
+            tooltip: {
+                displayColors: false,
+                callbacks: {
+                    label: function(context) {
+                        return context.parsed.y;
+                    },
+                }
+            }
+        }
+      }
+    });
+  }
+  chart_countries();
+  </script>
