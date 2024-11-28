@@ -5,7 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.6.0]
+## [1.7.0] - 
+
+### Added
+
+- Usage statistics: Location of the generated fact labels.
+- Privacy message with terms and conditions of the service.
+
+### Fixed
+
+- _Partial variability_ metric when there are no variant features.
+
+## [1.6.0] - 2024-11-11
 
 ### Added
 
@@ -26,6 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - _Mode_ calculation in _Configuration distribution_.
 - Round values for _Mean_ and _Median_ in _Configuration distribution_.
+
 
 ## [1.4.0] - 2024-10-29
 

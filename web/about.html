@@ -31,10 +31,12 @@
 <div class="card">
   <div class="card-body">
     <h5 class="card-title">Usage stats</h5>
-    <h5 class="card-title">Total fact labels generated: {{data.usage_stats.total_fact_labels}}</h5>
+    <p class="card-text">Total fact labels generated: {{data.usage_stats.total_fact_labels}}</p>
     <div class="chart-pie pt-6 pb-2">
       <canvas id="chart_countries"></canvas>
     </div>
+    <p class="card-text"><i class="fa-solid fa-circle-info"></i>We value your privacy: this service does not store any personal data or models. When submitting a model, only your IP location (continent, country, city) is collected solely for statistical purposes. By using this service, you consent to this data collection.</p>
+    
   </div>
 </div>
 
@@ -77,11 +79,11 @@
   function chart_countries() {
     var ctx = document.getElementById('chart_countries');
   
-    var x = '{{data["usage_stats"]["countries"].keys()}}';
-    //x = JSON.parse(x);
-    var y = '{{data["usage_stats"]["countries"].values()}}';
-    //y = JSON.parse(y);
-  
+    data = '{{data["usage_stats"]["countries"] | tojson | safe}}';
+    data = JSON.parse(data);
+    var x = Object.keys(data);
+    var y = Object.values(data);
+
     new Chart(ctx, {
       type: 'bar',
       data: {
@@ -89,8 +91,8 @@
         datasets: [{
           label: 'Countries',
           data: y,
-          borderWidth: 1,
-          borderColor: 'black',
+          //borderWidth: 1,
+          //borderColor: 'black',
         }]
       },
       options: {
@@ -100,10 +102,34 @@
             title: {
                 display: true,
                 text: "Fact Labels generated"
+            },
+            ticks: {
+                callback: function(value) {
+                    return Number.isInteger(value) ? value : null; // Mostrar solo enteros
+                }
             }
           },
+          x: {
+            title: {
+                display: true,
+                text: "Countries"
+            },
+          }
         },
-        barThickness: 4,
+        //barThickness: 4,
+        plugins: {
+            legend: {
+                display: false
+            },
+            tooltip: {
+                displayColors: false,
+                callbacks: {
+                    label: function(context) {
+                        return context.parsed.y;
+                    },
+                }
+            }
+        }
       }
     });
   }
