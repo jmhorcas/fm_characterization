@@ -8,7 +8,7 @@ class LocationStats:
     def __init__(self, location_stats_file: str) -> None:
         self._location_stats_file = location_stats_file
         if pathlib.Path(location_stats_file).exists():
-            with open(location_stats_file) as file:
+            with open(location_stats_file, encoding='UTF8') as file:
                 self._data = json.load(file)
         else:
             self._data: dict[str, dict[str, dict[str, int]]] = {}  # Continent -> Country -> City -> Count
@@ -21,7 +21,7 @@ class LocationStats:
         if city not in self._data[continent][country]:
             self._data[continent][country][city] = 0
         self._data[continent][country][city] += 1
-        with open(self._location_stats_file, 'w') as file:
+        with open(self._location_stats_file, 'w', encoding='UTF8') as file:
             json.dump(self._data, file)
 
     def get_total_visits(self) -> int:
