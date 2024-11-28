@@ -51,9 +51,10 @@ class FMAnalysis():
             self._descriptive_statistics = None
 
     def clean(self) -> None:
-        bdd_filepath = pathlib.Path(self.bdd_model.bdd_file())
-        if bdd_filepath.exists():
-            bdd_filepath.unlink()
+        if self.bdd_model is not None:
+            bdd_filepath = pathlib.Path(self.bdd_model.bdd_file)
+            if bdd_filepath.exists():
+                bdd_filepath.unlink()
 
     def get_analysis(self) -> list[FMPropertyMeasure]:
         result = []
